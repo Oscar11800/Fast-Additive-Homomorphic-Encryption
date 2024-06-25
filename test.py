@@ -14,6 +14,8 @@ class TestFAHE1(unittest.TestCase):
         m = secrets.randbelow(2**self.m_max - 1)
         print("\nEncoding: ", m)
         c = enc(self.ek, m)
+        c_length = c.bit_length()
+        print("Length of cyphertext (in bits):", c_length)
         m_outcome = dec(self.dk, c)
         print("Decoding: ", m)
         self.assertEqual(m, m_outcome, "Decoded message does not match the original")
