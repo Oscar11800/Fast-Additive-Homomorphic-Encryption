@@ -24,7 +24,7 @@ def keygen2(l, m_max, alpha) -> tuple[float]:
     rho = l + alpha + m_max
     eta = rho + alpha
     gamma = rho / math.log2(rho) * ((eta - rho)**2)
-    p = helpfunctions.generate_large_prime(eta)
+    p = helper.generate_large_prime(eta)
     X = (Decimal(2) ** Decimal(gamma)) / p
     pos = secrets.randbelow(l+1)
 
@@ -66,6 +66,6 @@ def dec2(dk, c):
         m (float): decrypted message (least significant bits)
     """
     m_full_string = bin((c % dk[0]) >> (dk[1] + dk[3]))
-    m = int(m_full_string[len(m_full_string)-m_max:],2)
+    m = int(m_full_string[len(m_full_string)-dk[2]:],2)
     return m
 

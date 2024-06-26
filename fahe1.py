@@ -26,7 +26,7 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     rho = l
     eta = rho + 2*alpha + m_max
     gamma = rho / math.log2(rho) * ((eta - rho)**2)
-    p = helpfunctions.generate_large_prime(eta)
+    p = helper.generate_large_prime(eta)
     X = (Decimal(2) ** Decimal(gamma)) / p
 
     k = (p, m_max, X, rho, alpha)
