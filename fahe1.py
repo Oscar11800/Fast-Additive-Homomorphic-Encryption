@@ -9,7 +9,7 @@ from typing import Tuple
 #  Cominetti, Eduardo & Simplicio, Marcos. (2020). Fast Additive Partially Homomorphic Encryption From the Approximate Common Divisor Problem. IEEE Transactions on Information Forensics and Security. PP. 1-1. 10.1109/TIFS.2020.2981239.
 
 
-def keygen(l, m_max, alpha) -> tuple[float]:
+def keygen1(l, m_max, alpha) -> tuple[float]:
     """
     Generates a FAHE1 key.
 
@@ -24,10 +24,10 @@ def keygen(l, m_max, alpha) -> tuple[float]:
     """
 
     rho = l
-    eta = rho + 2 * alpha + m_max
-    gamma = rho / math.log2(rho) * ((eta - rho) ** 2)
-    p = helper.generate_large_prime(eta)
-    X = Decimal(2) ** (Decimal(gamma)) / p
+    eta = rho + 2*alpha + m_max
+    gamma = rho / math.log2(rho) * ((eta - rho)**2)
+    p = helpfunctions.generate_large_prime(eta)
+    X = (Decimal(2) ** Decimal(gamma)) / p
 
     k = (p, m_max, X, rho, alpha)
     ek = (p, X, rho, alpha)
@@ -35,7 +35,7 @@ def keygen(l, m_max, alpha) -> tuple[float]:
     return k, ek, dk
 
 
-def enc(ek, m) -> float:
+def enc1(ek, m) -> float:
     """
     Encrypts a messsage using FAHE1 scheme.
 
@@ -46,15 +46,15 @@ def enc(ek, m) -> float:
     Returns:
         c (float): ciphertext
     """
-    q = random.randrange(0, int(ek[1]))
-    noise = secrets.randbelow(2 ** ek[2] - 1)
+    q = secrets.randbelow(int(ek[1])+1)
+    noise = secrets.randbelow(2**ek[2]-1)
     M = (m << (ek[2] + ek[3])) + noise
     n = ek[0] * q
     c = n + M
     return c
 
 
-def dec(dk, c):
+def dec1(dk, c):
     """
     Decrypts a messsage using FAHE1 scheme.
 
