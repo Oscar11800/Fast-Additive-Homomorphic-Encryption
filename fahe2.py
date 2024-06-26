@@ -23,7 +23,7 @@ def keygen2(l, m_max, alpha) -> tuple[float]:
 
     rho = l + alpha + m_max
     eta = rho + alpha
-    gamma = rho / math.log2(rho) * ((eta - rho)**2)
+    gamma = (rho / math.log2(rho)) * ((eta - rho)**2)
     p = helper.generate_large_prime(eta)
     X = (Decimal(2) ** Decimal(gamma)) / p
     pos = secrets.randbelow(l+1)
