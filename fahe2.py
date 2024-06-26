@@ -4,6 +4,7 @@ import secrets
 import sys
 import helper
 import random
+from typing import Tuple
 
 
 def keygen(l, m_max, alpha) -> tuple[float]:
@@ -22,7 +23,7 @@ def keygen(l, m_max, alpha) -> tuple[float]:
 
     rho = l + alpha + m_max
     eta = rho + alpha
-    gamma = rho / math.log10(rho) * ((eta - rho) ** 2)
+    gamma = rho / math.log2(rho) * ((eta - rho) ** 2)
     p = helper.generate_large_prime(eta)
     X = (Decimal(2) ** (Decimal(gamma))) / p
     pos = random.randint(0, l)

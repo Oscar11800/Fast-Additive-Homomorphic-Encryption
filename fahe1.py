@@ -4,6 +4,7 @@ import secrets
 import sys
 import helper
 import random
+from typing import Tuple
 
 #  Cominetti, Eduardo & Simplicio, Marcos. (2020). Fast Additive Partially Homomorphic Encryption From the Approximate Common Divisor Problem. IEEE Transactions on Information Forensics and Security. PP. 1-1. 10.1109/TIFS.2020.2981239.
 
@@ -24,7 +25,7 @@ def keygen(l, m_max, alpha) -> tuple[float]:
 
     rho = l
     eta = rho + 2 * alpha + m_max
-    gamma = rho / math.log10(rho) * ((eta - rho) ** 2)
+    gamma = rho / math.log2(rho) * ((eta - rho) ** 2)
     p = helper.generate_large_prime(eta)
     X = Decimal(2) ** (Decimal(gamma)) / p
 
