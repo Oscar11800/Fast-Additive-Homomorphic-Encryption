@@ -2,8 +2,35 @@ import secrets
 import unittest
 from fahe1 import dec1, enc1, keygen1
 from fahe2 import dec2, enc2, keygen2
+import time
 
-
+class TestFAHE1Timed(unittest.TestCase):
+    def test_keygen_timed(self):
+        """
+        Test FAHE1 key generation.
+        """
+        start_time = time.perf_counter()  # Start timing
+        self.m_max = 32
+        self.k, self.ek, self.dk = keygen1(128, self.m_max, 6)
+        end_time = time.perf_counter()  # End timing
+        self.setup_time = end_time - start_time
+        print(f"\nFAHE1 key gen time: {self.setup_time:.10f} seconds")
+    def test_encrypt_timed(self):
+        self.m_max = 32
+        self.k, self.ek, self.dk = keygen1(128, self.m_max, 6)
+        start_time = time.perf_counter()  # Start timing
+        
+        m = secrets.randbelow(2**self.m_max - 1)
+        c = enc1(self.ek, m)
+        
+        end_time = time.perf_counter()  # End timing
+        self.encode_time = end_time - start_time
+        print(f"FAHE1 encode time: {self.encode_time:.10f} seconds")
+        
+        c_length = c.bit_length()
+        print("Length of cyphertext (in bits):", c_length)
+        m_outcome = dec1(self.dk, c)
+        
 class TestFAHE1(unittest.TestCase):
     def setUp(self):
         """
@@ -13,8 +40,8 @@ class TestFAHE1(unittest.TestCase):
         self.m_max = 32
         self.k, self.ek, self.dk = keygen1(128, self.m_max, 6)
 
-    def test_keygen(self):
-        """Test the key gen, encode, and decoding of a message."""
+    def test_encrypt_decrypt(self):
+        """Test the encoding message."""
         m = secrets.randbelow(2**self.m_max - 1)
         print("\nEncoding: ", m)
         c = enc1(self.ek, m)
