@@ -64,7 +64,7 @@ def timed_keygen1(l, m_max, alpha) -> float:
     return performance_time
 
 
-def length_enc1(ek, m) -> float:
+def enc1(ek, m) -> float:
     """
     Encrypts a messsage using FAHE1 scheme.
 
