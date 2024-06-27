@@ -81,7 +81,7 @@ class TestFAHE2(unittest.TestCase):
     def setUp(self):
         """Setup params for the tests."""
         self.m_max = 32
-        self.k, self.ek, self.dk = keygen2(128, self.m_max, 6)
+        self.k, self.ek, self.dk = keygen2(128, self.m_max, 128)
         
     def test_keygen(self):
         m = secrets.randbelow(2**self.m_max - 1)
