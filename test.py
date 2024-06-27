@@ -1,12 +1,12 @@
 import secrets
 import unittest
-from data_collection import Operation, collect_security_param_performance, get_op_func_map, print_data_points, collect_security_param_ciphertext
+from data_collection import Operation, collect_security_param_performance, get_op_func_map, print_data_points, collect_security_param_ciphertext, collect_alpha_performance
 from fahe1 import dec1, length_enc1, keygen1
 from fahe2 import dec2, enc2, keygen2
 import time
-from plotting import plot_security_param_vs_performance, plot_security_param_vs_ciphertext_length
+from plotting import plot_performance, plot_ciphertext_size
 
-class TestFAHE1GraphKeyGenPerformance(unittest.TestCase):
+class TestFAHE1GraphKeyGenLambdaPerformance(unittest.TestCase):
     def setUp(self) -> None:
         self.operation_map = get_op_func_map()
         
@@ -18,11 +18,41 @@ class TestFAHE1GraphKeyGenPerformance(unittest.TestCase):
 
         }
 
-        data_points = collect_security_param_performance(64, 1000, 2, Operation.TIMED_KEYGEN, self.operation_map, params)
+        data_points = collect_security_param_performance(2, 100, 2, Operation.TIMED_KEYGEN, self.operation_map, params)
         print_data_points(data_points)
-        plot_security_param_vs_performance(data_points, 'Key Generation Time Performance vs. Lambda', 'Lambda', 'Time Performance (millisec)')
+        plot_performance(data_points, 'Key Generation Time Performance vs. Lambda', 'Lambda', 'Time Performance (millisec)')
 
-class TestFAHE1GraphEncryptPerformance(unittest.TestCase):
+class TestFAHE1GraphKeyGenAlphaPerformance(unittest.TestCase):
+    def setUp(self) -> None:
+        self.operation_map = get_op_func_map()
+        
+    def test_data_collection_timed_keygen1(self):
+        params = {
+            'lambda': 32,
+            'm_max': 32,
+            'm': 'example message',
+
+        }
+        data_points = collect_alpha_performance(2, 100, 2, Operation.TIMED_KEYGEN, self.operation_map, params)
+        print_data_points(data_points)
+        plot_performance(data_points, 'Key Generation Time Performance vs. Alpha', 'Alpha', 'Time Performance (millisec)')
+        
+class TestFAHE1GraphKeyGenMMAxPerformance(unittest.TestCase):
+    def setUp(self) -> None:
+        self.operation_map = get_op_func_map()
+        
+    def test_data_collection_timed_keygen1(self):
+        params = {
+            'lambda': 32,
+            'alpha': 6,
+            'm': 'example message',
+        }
+        data_points = collect_alpha_performance(2, 100, 2, Operation.TIMED_KEYGEN, self.operation_map, params)
+        print_data_points(data_points)
+        plot_performance(data_points, 'Key Generation Time Performance vs. Alpha', 'Alpha', 'Time Performance (millisec)')
+
+
+class TestFAHE1GraphEncryptLambdaPerformance(unittest.TestCase):
     def setUp(self) -> None:
         self.operation_map = get_op_func_map()
         self.m_max = 32
@@ -36,9 +66,9 @@ class TestFAHE1GraphEncryptPerformance(unittest.TestCase):
         
         data_points = collect_security_param_performance(64, 256, 8, Operation.TIMED_ENCODE, self.operation_map, params)
         print_data_points(data_points)
-        plot_security_param_vs_performance(data_points, 'Encrypt Time Performance vs. Lambda', 'Lambda', 'Time Performance (millisec)')
+        plot_performance(data_points, 'Encrypt Time Performance vs. Lambda', 'Lambda', 'Time Performance (millisec)')
         
-class TestFAHE1GraphEncryptCiphertext(unittest.TestCase):
+class TestFAHE1GraphEncryptLambdaCiphertext(unittest.TestCase):
     def setUp(self) -> None:
         self.m_max = 32
         
@@ -51,7 +81,7 @@ class TestFAHE1GraphEncryptCiphertext(unittest.TestCase):
         
         data_points = collect_security_param_ciphertext(2, 1000, 8, params)
         print_data_points(data_points)
-        plot_security_param_vs_ciphertext_length(data_points, 'Encrypt Ciphertext Size vs. Lambda', 'Lambda', 'Ciphertext Size')
+        plot_ciphertext_size(data_points, 'Encrypt Ciphertext Size vs. Lambda', 'Lambda', 'Ciphertext Size')
 class TestFAHE1Timed(unittest.TestCase):
     def test_keygen_timed(self):
         """
