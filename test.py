@@ -1,9 +1,39 @@
 import secrets
 import unittest
+from data_collection import Operation, collect_security_param_performance, get_op_func_map, print_data_points
 from fahe1 import dec1, enc1, keygen1
 from fahe2 import dec2, enc2, keygen2
 import time
 
+class TestFAHE1GraphKeyGen(unittest.TestCase):
+    def setUp(self) -> None:
+        self.operation_map = get_op_func_map()
+        
+    def test_data_collection_timed_keygen1(self):
+        params = {
+            'm_max': 32,
+            'alpha': 6,
+            'm': 'example message',
+
+        }
+
+        data_points = collect_security_param_performance(64, 256, 8, Operation.KEYGEN, self.operation_map, params)
+        print_data_points(data_points)
+
+class TestFAHE1GraphEncrypt(unittest.TestCase):
+    def setUp(self) -> None:
+        self.operation_map = get_op_func_map()
+        self.m_max = 32
+        
+    def test_data_collection_timed_encrypt(self):
+        params = {
+            'm_max': self.m_max,
+            'alpha': 6,
+            'm': secrets.randbelow(2**self.m_max - 1),
+        }
+        
+        data_points = collect_security_param_performance(64, 256, 8, Operation.ENCODE, self.operation_map, params)
+        print_data_points(data_points)
 class TestFAHE1Timed(unittest.TestCase):
     def test_keygen_timed(self):
         """
@@ -15,6 +45,7 @@ class TestFAHE1Timed(unittest.TestCase):
         end_time = time.perf_counter()  # End timing
         self.setup_time = end_time - start_time
         print(f"\nFAHE1 key gen time: {self.setup_time:.10f} seconds")
+        
     def test_encrypt_timed(self):
         self.m_max = 32
         self.k, self.ek, self.dk = keygen1(128, self.m_max, 6)

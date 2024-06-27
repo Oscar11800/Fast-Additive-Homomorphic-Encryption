@@ -2,6 +2,7 @@ from decimal import Decimal
 import math
 import secrets
 import sys
+import time
 import helper
 import random
 from typing import Tuple
@@ -14,8 +15,8 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     Generates a FAHE1 key.
 
     Args:
-        lambda: security parameter
-        m_max: maximum message size
+        l: security parameter (lambda)
+        m_max: maximum message size (int bits)
         alpha: total number of supported additions
         p: a prime number of eta size bits
 
@@ -33,6 +34,34 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     ek = (p, X, rho, alpha)
     dk = (p, m_max, rho, alpha)
     return k, ek, dk
+
+def timed_keygen1(l, m_max, alpha) -> float:
+    """
+    Time FAHE1 key generation.
+
+    Args:
+        l (int): security parameter (lambda)
+        m_max (int): maximum message size (int bits)
+        alpha (int): total number of supported additions
+
+    Returns:
+        performance_time: time it takes to keygen (in secs)
+    """
+    start_time = time.perf_counter()  # Start timing
+    rho = l
+    eta = rho + 2*alpha + m_max
+    gamma = rho / math.log2(rho) * ((eta - rho)**2)
+    p = helper.generate_large_prime(eta)
+    X = (Decimal(2) ** Decimal(gamma)) / p
+
+    k = (p, m_max, X, rho, alpha)
+    ek = (p, X, rho, alpha)
+    dk = (p, m_max, rho, alpha)
+    
+    end_time = time.perf_counter()  # End timing
+    performance_time = end_time - start_time
+    return performance_time
+
 
 
 def enc1(ek, m) -> float:
@@ -53,6 +82,30 @@ def enc1(ek, m) -> float:
     c = n + M
     return c
 
+def timed_enc1(l, m_max, alpha, m) ->float:
+    """
+    Time FAHE1 key generation.
+
+    Args:
+        l (int): security parameter (lambda)
+        m_max (int): maximum message size (int bits)
+        alpha (int): total number of supported additions
+        m (str): given message to encrypt
+
+    Returns:
+        performance_time: time it takes to keygen (in secs)
+    """
+    scheme_key = keygen1(l, m_max, alpha)   #initial keygen
+    
+    start_time = time.perf_counter()
+    q = secrets.randbelow(int(scheme_key[2][1])+1)
+    noise = secrets.randbelow(2**scheme_key[2][2]-1)
+    M = (m << (scheme_key[2][2] + scheme_key[2][3])) + noise
+    n = scheme_key[2][0] * q
+    
+    end_time = time.perf_counter()
+    performance_time = end_time - start_time
+    return performance_time
 
 def dec1(dk, c):
     """
