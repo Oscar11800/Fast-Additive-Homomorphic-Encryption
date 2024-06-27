@@ -2,7 +2,7 @@ from decimal import Decimal
 import math
 import secrets
 import sys
-import helper
+import src.helper as helper
 import random
 from typing import Tuple
 
