@@ -3,7 +3,7 @@ import math
 import secrets
 import sys
 import time
-import src.helper as helper
+import helper
 import random
 from typing import Tuple
 

@@ -1,5 +1,5 @@
 import secrets
-import src.fahe1 as fahe1
+import fahe1
 from enum import Enum
 
 
