@@ -179,3 +179,4 @@ thus it can take advantage of the performance gains of FAHE 1 & 2
 
 References:
 Cominetti, Eduardo & Simplicio, Marcos. (2020). Fast Additive Partially Homomorphic Encryption From the Approximate Common Divisor Problem. IEEE Transactions on Information Forensics and Security. DOI: 10.1109/TIFS.2020.2981239.
+https://github.com/oleiba/RSA-accumulator
