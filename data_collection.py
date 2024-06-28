@@ -357,48 +357,6 @@ def lambda_performance_1(lambda_start, lambda_end, lambda_step, rep, m_max, alph
         l += lambda_step
     return lambdas, keygen_times, enc_times, dec_times, total_times, clengths
 
-def lambda_performance_1(lambda_start, lambda_end, lambda_step, rep, m_max, alpha, m):
-    lambdas = []
-    keygen_times = []
-    enc_times = []
-    dec_times = []
-    total_times = []
-    clengths = []
-    l = lambda_start
-    while l <= lambda_end:
-        keygen_time = []
-        enc_time = []
-        dec_time = []
-        clength = 0
-        lambdas.append(l)
-        for i in range(rep):
-            keygen_tik = time.time()
-            k, ek, dk = keygen1(l, m_max, alpha)
-            keygen_tok = time.time()
-            keygen_time.append(keygen_tok - keygen_tik)
-            enc_tik = time.time()
-            c = enc1(ek, m)
-            clength += c.bit_length()
-            enc_tok = time.time()
-            enc_time.append(enc_tok - enc_tik)
-            dec_tik = time.time()
-            m_outcome = dec1(dk, c)
-            dec_tok = time.time()
-            dec_time.append(dec_tok - dec_tik)
-
-        average_keygen_time = sum(keygen_time)/rep
-        keygen_times.append(average_keygen_time)
-        average_enc_time = sum(enc_time)/rep
-        enc_times.append(average_enc_time)
-        average_dec_time = sum(dec_time)/rep
-        dec_times.append(average_dec_time)
-        total_time = average_keygen_time + average_enc_time + average_dec_time
-        total_times.append(total_time)
-        clengths.append(clength/rep)
-
-        l += lambda_step
-    return lambdas, keygen_times, enc_times, dec_times, total_times, clengths
-
 def m_max_performance_1(m_max_start, m_max_end, m_max_step, rep, l, alpha, m):
     m_maxs = []
     keygen_times = []
@@ -449,7 +407,7 @@ def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
     total_times = []
     clengths = []
     alpha = alpha_start
-    while l <= alpha_end:
+    while alpha <= alpha_end:
         keygen_time = []
         enc_time = []
         dec_time = []
