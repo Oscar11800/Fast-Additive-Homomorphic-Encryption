@@ -1,7 +1,7 @@
 import secrets
 import unittest
 from data_collection import Operation, collect_security_param_performance, get_op_func_map, print_data_points, collect_security_param_ciphertext, collect_alpha_performance
-from fahe1 import dec1, length_enc1, keygen1
+from fahe1 import dec1, enc1, length_enc1, keygen1
 from fahe2 import dec2, enc2, keygen2
 import time
 from plotting import plot_performance, plot_ciphertext_size
@@ -100,7 +100,7 @@ class TestFAHE1Timed(unittest.TestCase):
         start_time = time.perf_counter()  # Start timing
         
         m = secrets.randbelow(2**self.m_max - 1)
-        c = length_enc1(self.ek, m)
+        c = enc1(self.ek, m)
         
         end_time = time.perf_counter()  # End timing
         self.encode_time = end_time - start_time
@@ -123,7 +123,7 @@ class TestFAHE1(unittest.TestCase):
         """Test the encoding message."""
         m = secrets.randbelow(2**self.m_max - 1)
         print("\nEncoding: ", m)
-        c = length_enc1(self.ek, m)
+        c = enc1(self.ek, m)
         c_length = c.bit_length()
         print("Length of ciphertext (in bits):", c_length)
         m_outcome = dec1(self.dk, c)
@@ -131,14 +131,14 @@ class TestFAHE1(unittest.TestCase):
         self.assertEqual(m, m_outcome, "Decoded message does not match the original")
 
     def test_add(self):
-        """Test encoding of two messages, their sum, and validate the addition operations. NOTE: alpha should be > than m_max to maintain additivity."""
+        """Test encoding of two messages, their sum, and validate the addition operations."""
         m1 = secrets.randbelow(2**self.m_max - 1)
-        c1 = length_enc1(self.ek, m1)
+        c1 = enc1(self.ek, m1)
         m2 = secrets.randbelow(2**self.m_max - 1)
-        c2 = length_enc1(self.ek, m2)
+        c2 = enc1(self.ek, m2)
         m_sum = m1 + m2
         print("\nEncoding Sum: ", m_sum)
-        c_from_m_sum = length_enc1(self.ek, m_sum)
+        c_from_m_sum = enc1(self.ek, m_sum)
         c_from_adding = c1 + c2
         m_outcome_from_c_m_sum = dec1(self.dk, c_from_m_sum)
         m_outcome_from_c_adding = dec1(self.dk, c_from_adding)
