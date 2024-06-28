@@ -4,6 +4,7 @@ from enum import Enum
 import csv
 import time
 from fahe1 import keygen1, enc1, dec1
+import math
 
 
 class Operation(Enum):
@@ -420,12 +421,10 @@ def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
     clengths = []
     alpha = alpha_start
     while alpha <= alpha_end:
+        print('alpha = {}'.format(alpha))
         rho = l
         eta = rho + 2 * alpha + m_max
         gamma = math.ceil(rho / math.log2(rho) * ((eta - rho) ** 2))
-        rhos.append(rho)
-        etas.append(etas)
-        gammas.append(gamma)
         keygen_time = []
         enc_time = []
         dec_time = []
@@ -446,6 +445,9 @@ def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
             dec_tok = time.time()
             dec_time.append(dec_tok - dec_tik)
 
+        rhos.append(rho)
+        etas.append(eta)
+        gammas.append(gamma)
         average_keygen_time = sum(keygen_time)/rep
         keygen_times.append(average_keygen_time)
         average_enc_time = sum(enc_time)/rep
