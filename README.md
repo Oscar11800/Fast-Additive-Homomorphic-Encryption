@@ -9,11 +9,11 @@ This project attempts to replicate Cominetti's experiments on FAHE1 and FAHE2 wi
 
 ### How to Replicate the Experiment and Test Your Own Values
 Suggested Experiments:
-- Start with $\(\lambda = 128\)$, $\(\rho = 128\)$, and $\(\eta = 172\)$ (FAHE1) or $\(\eta = 150\)$ (FAHE2).
+- Start with $\(\lambda = 128\)$
 - Test with $\(|m_{max}| = 32\)$ and $\(\alpha = 6\)$.
 - Increase $\(|m_{max}|\)$ to 64 and observe the impact.
 - Increment $\(\alpha\)$ gradually (e.g., $\(\alpha = 10, 15, 20, 25, 30\)$) and evaluate performance.
-- If higher security is needed, test with $\(\lambda = 256\)$ and appropriately larger $\(\rho\)$ and $\(\eta\)$.
+- If higher security is needed, test with $\(\lambda = 256\)$ 
 - **NOTE:  $\(\rho\)$ and $\(\eta\)$ and $\gamma\$ are calculated, not set. Take a look at the suggest values section for more information.
 
 ## How to Use This Project
@@ -36,7 +36,7 @@ To run the ipynb graphing file:
 jupyter notebook plot_performance.ipynb
 ```
 
-To run csv benchmark tests, edit ```bash analysis.py``` with desired values and run:
+To run csv benchmark tests, edit ```analysis.py``` with desired values and run:
 ```bash
 python3 analysis.py
 ```
@@ -160,7 +160,7 @@ thus it can take advantage of the performance gains of FAHE 1 & 2
 - Paillier vs FAHE1 & FAHE2:
 	FAHE1 20x faster @ keygen, 120x faster @ encrypt, 25x faster @ decrypt, 8x faster @ homomorphic operation, 50x more cyphertext 
 	FAHE2 95x faster @ keygen, 1200x faster @ encrypt, 1300x faster @ decrypt, 90x faster @ homomorphic operation, 5x more cyphertext
-	Paillier can perform unlimited # of additions, FAHE can perform 2^(alpha - 1) additions
+	Paillier can perform unlimited # of additions, FAHE can perform $2^\(alpha - 1\)$ additions
 	Paillier is asymmetric, FAHE is symmetric
 
 - How is FAHE1 different than FAHE2?
