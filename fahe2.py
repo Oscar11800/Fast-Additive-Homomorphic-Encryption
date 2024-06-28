@@ -45,10 +45,10 @@ def enc2(ek, m):
     Returns:
         c (float): ciphertext
     """
-    q = secrets.randbelow(int(ek[1])+1)
-    noise1 = secrets.randbelow(2**ek[2])
-    noise2 = secrets.randbelow(2**(ek[4]-ek[2]))
-    M = (noise2 << (ek[2]+ek[3]+ek[5])) + (m << (ek[2]+ek[5])) + noise1
+    q = secrets.randbelow(int(ek[1]) + 1)
+    noise1 = secrets.randbelow(2 ** ek[2])
+    noise2 = secrets.randbelow(2 ** (ek[4] - ek[2]))
+    M = (noise2 << (ek[2] + ek[3] + ek[5])) + (m << (ek[2] + ek[5])) + noise1
     n = ek[0] * q
     c = n + M
     return c
@@ -65,7 +65,7 @@ def dec2(dk, c):
     Returns:
         m (float): decrypted message (least significant bits)
     """
-    m_full_string = bin((c % dk[0]) >> (dk[1] + dk[3]))
-    m = int(m_full_string[len(m_full_string)-dk[2]:],2)
+    m_full = (c % dk[0]) >> (dk[1] + dk[3])
+    m = m_full & ((1 << dk[2]) - 1)
     return m
 
