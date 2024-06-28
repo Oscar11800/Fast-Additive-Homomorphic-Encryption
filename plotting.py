@@ -15,7 +15,7 @@ def plot_performance(data_points, title, x_label, y_label):
     #     plt.text(x, y, f"({x}, {y:.3f})", color="red", fontsize=6)
 
     plt.grid(True)
-    plt.savefig(f"{title.lower().replace(' ', '_')}.png")
+    plt.savefig(f"/graphs/{title.lower().replace(' ', '_')}.png")
 
 def plot_ciphertext_size(data_points, title, x_label, y_label):
     keys = list(data_points.keys())
@@ -30,5 +30,5 @@ def plot_ciphertext_size(data_points, title, x_label, y_label):
     #     plt.text(x, y, f"({x}, {y:.3f})", color="red", fontsize=6)
 
     plt.grid(True)
-    plt.savefig(f"{title.lower().replace(' ', '_')}.png")
+    plt.savefig(f"/graphs/{title.lower().replace(' ', '_')}.png")
     

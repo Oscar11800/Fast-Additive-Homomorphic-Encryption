@@ -1,6 +1,6 @@
 from fahe1 import dec1, enc1, keygen1
 from fahe2 import dec2, enc2, keygen2
-from data_collection import output_csv_6, lambda_performance_1, m_max_performance_1, alpha_performance_1
+from data_collection import output_csv_6, lambda_performance_1, m_max_performance_1, alpha_performance_1, output_csv_9
 import time, secrets
 import matplotlib.pyplot as plt
 
