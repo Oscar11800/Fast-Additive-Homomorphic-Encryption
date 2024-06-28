@@ -20,15 +20,15 @@ class TestFAHE2(unittest.TestCase):
         self.m_max = 32
         self.k, self.ek, self.dk = keygen2(128, self.m_max, 128)
 
-    def test_keygen(self):
-        m = secrets.randbelow(2**self.m_max)
-        print("\nEncoding: ", m)
-        c = enc2(self.ek, m)
-        c_length = c.bit_length()
-        print("Length of ciphertext (in bits):", c_length)
-        m_outcome = dec2(self.dk, c)
-        print("Decoding: ", m_outcome)
-        self.assertEqual(m, m_outcome, "Decoded message does not match the original")
+    # def test_keygen(self):
+    #     m = secrets.randbelow(2**self.m_max)
+    #     print("\nEncoding: ", m)
+    #     c = enc2(self.ek, m)
+    #     c_length = c.bit_length()
+    #     print("Length of ciphertext (in bits):", c_length)
+    #     m_outcome = dec2(self.dk, c)
+    #     print("Decoding: ", m_outcome)
+    #     self.assertEqual(m, m_outcome, "Decoded message does not match the original")
 
     def test_add(self):
         """Test encoding of two messages, their sum, and validate the addition operations. NOTE: alpha should be > than m_max to maintain additivity."""

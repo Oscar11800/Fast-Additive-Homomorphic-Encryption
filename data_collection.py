@@ -6,6 +6,8 @@ import time
 from fahe1 import keygen1, enc1, dec1
 import math
 
+from fahe2 import dec2, enc2, keygen2
+
 
 class Operation(Enum):
     TIMED_KEYGEN = 1
@@ -442,6 +444,58 @@ def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
             enc_time.append(enc_tok - enc_tik)
             dec_tik = time.time()
             m_outcome = dec1(dk, c)
+            dec_tok = time.time()
+            dec_time.append(dec_tok - dec_tik)
+
+        rhos.append(rho)
+        etas.append(eta)
+        gammas.append(gamma)
+        average_keygen_time = sum(keygen_time)/rep
+        keygen_times.append(average_keygen_time)
+        average_enc_time = sum(enc_time)/rep
+        enc_times.append(average_enc_time)
+        average_dec_time = sum(dec_time)/rep
+        dec_times.append(average_dec_time)
+        total_time = average_keygen_time + average_enc_time + average_dec_time
+        total_times.append(total_time)
+        clengths.append(clength/rep)
+
+        alpha += alpha_step
+    return alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths
+
+def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
+    alphas = []
+    rhos = []
+    etas = []
+    gammas = []
+    keygen_times = []
+    enc_times = []
+    dec_times = []
+    total_times = []
+    clengths = []
+    alpha = alpha_start
+    while alpha <= alpha_end:
+        print('alpha = {}'.format(alpha))
+        rho = l
+        eta = rho + 2 * alpha + m_max
+        gamma = math.ceil(rho / math.log2(rho) * ((eta - rho) ** 2))
+        keygen_time = []
+        enc_time = []
+        dec_time = []
+        clength = 0
+        alphas.append(alpha)
+        for i in range(rep):
+            keygen_tik = time.time()
+            k, ek, dk = keygen2(l, m_max, alpha)
+            keygen_tok = time.time()
+            keygen_time.append(keygen_tok - keygen_tik)
+            enc_tik = time.time()
+            c = enc2(ek, m)
+            clength += c.bit_length()
+            enc_tok = time.time()
+            enc_time.append(enc_tok - enc_tik)
+            dec_tik = time.time()
+            m_outcome = dec2(dk, c)
             dec_tok = time.time()
             dec_time.append(dec_tok - dec_tik)
 
