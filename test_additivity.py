@@ -21,7 +21,7 @@ def additivity1(l, m_max, alpha, addition):
         passed = 'Passed'
     else:
         passed = 'Failed'
-    print('Testing fahe1. alpha = {}, therefore number of additions allowed = {}; number of additions done = {}; {}'.format(alpha, 2**(alpha-1), addition, passed))
+    print('Testing fahe1.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\n'.format(alpha, 2**(alpha-1), addition, m_total, m_outcome, passed))
     
 def additivity2(l, m_max, alpha, addition):
     m_list = []
@@ -42,13 +42,13 @@ def additivity2(l, m_max, alpha, addition):
         passed = 'Passed'
     else:
         passed = 'Failed'
-    print('Testing fahe2. alpha = {}, therefore number of additions allowed = {}; number of additions done = {}; {}'.format(alpha, 2**(alpha-1), addition, passed))
+    print('Testing fahe2.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\n'.format(alpha, 2**(alpha-1), addition, m_total, m_outcome, passed))
 
 
-additivity1(10, 8, 6, 2)
-additivity1(10, 8, 6, 3)
-additivity1(10, 8, 6, 4)
+additivity1(32, 16, 8, 2)
+additivity1(32, 16, 8, 3)
+additivity1(32, 16, 8, 4)
 
-additivity2(10, 8, 6, 2)
-additivity2(10, 8, 6, 3)
-additivity2(10, 8, 6, 4)
+additivity2(32, 16, 8, 2)
+additivity2(32, 16, 8, 3)
+additivity2(32, 16, 8, 4)

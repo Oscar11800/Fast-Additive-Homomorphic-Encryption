@@ -1,6 +1,9 @@
 import secrets
 import fahe1
 from enum import Enum
+import csv
+import time
+from fahe1 import keygen1, enc1, dec1
 
 
 class Operation(Enum):
@@ -297,3 +300,185 @@ def collect_security_param_ciphertext(
 def print_data_points(data_points: dict[int, float]):
     for key, value in data_points.items():
         print(f"{key} : {value:.8f}")
+
+def output_csv_6(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, x_name=None, y1_name=None, y2_name=None, y3_name=None, y4_name=None, y5_name=None, file_name='output_data'):
+    """
+    x_list, y1_list, y2_list: list of independent and dependent variables
+    x_name, y1_name, y2_name: string of headers
+    file_name: string of filename, not including the ".csv"
+    """
+    output_file = "{}.csv".format(file_name)
+    with open(output_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([x_name, y1_name, y2_name, y3_name, y4_name, y5_name])  # Write header
+        for x, y1, y2, y3, y4, y5 in zip(x_list, y1_list, y2_list, y3_list, y4_list, y5_list):
+            writer.writerow([x, y1, y2, y3, y4, y5])
+    print(f"CSV file '{output_file}' created successfully.")
+
+def lambda_performance_1(lambda_start, lambda_end, lambda_step, rep, m_max, alpha, m):
+    lambdas = []
+    keygen_times = []
+    enc_times = []
+    dec_times = []
+    total_times = []
+    clengths = []
+    l = lambda_start
+    while l <= lambda_end:
+        keygen_time = []
+        enc_time = []
+        dec_time = []
+        clength = 0
+        lambdas.append(l)
+        for i in range(rep):
+            keygen_tik = time.time()
+            k, ek, dk = keygen1(l, m_max, alpha)
+            keygen_tok = time.time()
+            keygen_time.append(keygen_tok - keygen_tik)
+            enc_tik = time.time()
+            c = enc1(ek, m)
+            clength += c.bit_length()
+            enc_tok = time.time()
+            enc_time.append(enc_tok - enc_tik)
+            dec_tik = time.time()
+            m_outcome = dec1(dk, c)
+            dec_tok = time.time()
+            dec_time.append(dec_tok - dec_tik)
+
+        average_keygen_time = sum(keygen_time)/rep
+        keygen_times.append(average_keygen_time)
+        average_enc_time = sum(enc_time)/rep
+        enc_times.append(average_enc_time)
+        average_dec_time = sum(dec_time)/rep
+        dec_times.append(average_dec_time)
+        total_time = average_keygen_time + average_enc_time + average_dec_time
+        total_times.append(total_time)
+        clengths.append(clength/rep)
+
+        l += lambda_step
+    return lambdas, keygen_times, enc_times, dec_times, total_times, clengths
+
+def lambda_performance_1(lambda_start, lambda_end, lambda_step, rep, m_max, alpha, m):
+    lambdas = []
+    keygen_times = []
+    enc_times = []
+    dec_times = []
+    total_times = []
+    clengths = []
+    l = lambda_start
+    while l <= lambda_end:
+        keygen_time = []
+        enc_time = []
+        dec_time = []
+        clength = 0
+        lambdas.append(l)
+        for i in range(rep):
+            keygen_tik = time.time()
+            k, ek, dk = keygen1(l, m_max, alpha)
+            keygen_tok = time.time()
+            keygen_time.append(keygen_tok - keygen_tik)
+            enc_tik = time.time()
+            c = enc1(ek, m)
+            clength += c.bit_length()
+            enc_tok = time.time()
+            enc_time.append(enc_tok - enc_tik)
+            dec_tik = time.time()
+            m_outcome = dec1(dk, c)
+            dec_tok = time.time()
+            dec_time.append(dec_tok - dec_tik)
+
+        average_keygen_time = sum(keygen_time)/rep
+        keygen_times.append(average_keygen_time)
+        average_enc_time = sum(enc_time)/rep
+        enc_times.append(average_enc_time)
+        average_dec_time = sum(dec_time)/rep
+        dec_times.append(average_dec_time)
+        total_time = average_keygen_time + average_enc_time + average_dec_time
+        total_times.append(total_time)
+        clengths.append(clength/rep)
+
+        l += lambda_step
+    return lambdas, keygen_times, enc_times, dec_times, total_times, clengths
+
+def m_max_performance_1(m_max_start, m_max_end, m_max_step, rep, l, alpha, m):
+    m_maxs = []
+    keygen_times = []
+    enc_times = []
+    dec_times = []
+    total_times = []
+    clengths = []
+    m_max = m_max_start
+    while m_max <= m_max_end:
+        keygen_time = []
+        enc_time = []
+        dec_time = []
+        clength = 0
+        m_maxs.append(m_max)
+        for i in range(rep):
+            keygen_tik = time.time()
+            k, ek, dk = keygen1(l, m_max, alpha)
+            keygen_tok = time.time()
+            keygen_time.append(keygen_tok - keygen_tik)
+            enc_tik = time.time()
+            c = enc1(ek, m)
+            clength += c.bit_length()
+            enc_tok = time.time()
+            enc_time.append(enc_tok - enc_tik)
+            dec_tik = time.time()
+            m_outcome = dec1(dk, c)
+            dec_tok = time.time()
+            dec_time.append(dec_tok - dec_tik)
+
+        average_keygen_time = sum(keygen_time)/rep
+        keygen_times.append(average_keygen_time)
+        average_enc_time = sum(enc_time)/rep
+        enc_times.append(average_enc_time)
+        average_dec_time = sum(dec_time)/rep
+        dec_times.append(average_dec_time)
+        total_time = average_keygen_time + average_enc_time + average_dec_time
+        total_times.append(total_time)
+        clengths.append(clength/rep)
+
+        m_max += m_max_step
+    return m_maxs, keygen_times, enc_times, dec_times, total_times, clengths
+
+def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
+    alphas = []
+    keygen_times = []
+    enc_times = []
+    dec_times = []
+    total_times = []
+    clengths = []
+    alpha = alpha_start
+    while l <= alpha_end:
+        keygen_time = []
+        enc_time = []
+        dec_time = []
+        clength = 0
+        alphas.append(l)
+        for i in range(rep):
+            keygen_tik = time.time()
+            k, ek, dk = keygen1(l, m_max, alpha)
+            keygen_tok = time.time()
+            keygen_time.append(keygen_tok - keygen_tik)
+            enc_tik = time.time()
+            c = enc1(ek, m)
+            clength += c.bit_length()
+            enc_tok = time.time()
+            enc_time.append(enc_tok - enc_tik)
+            dec_tik = time.time()
+            m_outcome = dec1(dk, c)
+            dec_tok = time.time()
+            dec_time.append(dec_tok - dec_tik)
+
+        average_keygen_time = sum(keygen_time)/rep
+        keygen_times.append(average_keygen_time)
+        average_enc_time = sum(enc_time)/rep
+        enc_times.append(average_enc_time)
+        average_dec_time = sum(dec_time)/rep
+        dec_times.append(average_dec_time)
+        total_time = average_keygen_time + average_enc_time + average_dec_time
+        total_times.append(total_time)
+        clengths.append(clength/rep)
+
+        alpha += alpha_step
+    return alphas, keygen_times, enc_times, dec_times, total_times, clengths
