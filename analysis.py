@@ -35,4 +35,7 @@ def run_analysis_fahe2():
     alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths = alpha_performance_2(5, 35, 5, rep, 256, 64, m)
     output_csv_9(alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths, 'alpha', 'rho', 'eta', 'gamma', 'keygen time/s', 'encryption time/s', 'decryption time/s', 'total time/s', 'ciphertext length in bits', file_name='fahe2_alpha_performance_4')
     
+# uncomment this to run FAHE1 analysis
+# run_analysis_fahe1() 
+
 run_analysis_fahe2()
