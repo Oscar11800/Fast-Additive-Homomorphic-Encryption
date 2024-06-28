@@ -421,6 +421,8 @@ def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
     dec_times = []
     total_times = []
     clengths = []
+    lambdas = []
+    m_maxes = []
     alpha = alpha_start
     while alpha <= alpha_end:
         print('alpha = {}'.format(alpha))
@@ -459,9 +461,11 @@ def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
         total_time = average_keygen_time + average_enc_time + average_dec_time
         total_times.append(total_time)
         clengths.append(clength/rep)
+        lambdas.append(l)
+        m_maxes.append(m_max)
 
         alpha += alpha_step
-    return alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths
+    return alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths, lambdas, m_maxes
 
 def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
     alphas = []
@@ -473,6 +477,8 @@ def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
     dec_times = []
     total_times = []
     clengths = []
+    lambdas = []
+    m_maxes = []
     alpha = alpha_start
     while alpha <= alpha_end:
         print('alpha = {}'.format(alpha))
@@ -511,6 +517,8 @@ def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
         total_time = average_keygen_time + average_enc_time + average_dec_time
         total_times.append(total_time)
         clengths.append(clength/rep)
+        lambdas.append(l)
+        m_maxes.append(m_max)
 
         alpha += alpha_step
-    return alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths
+    return alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths, lambdas, m_maxes

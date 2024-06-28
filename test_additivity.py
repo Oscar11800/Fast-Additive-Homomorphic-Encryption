@@ -2,9 +2,9 @@ from fahe1 import keygen1, enc1, dec1
 from fahe2 import keygen2, enc2, dec2
 import secrets
 
-def additivity1(l, m_max, alpha, addition):
+def additivity_fahe1(l, m_max, alpha, num_additions):
     m_list = []
-    for i in range(addition):
+    for i in range(num_additions):
         m = secrets.randbelow(2**m_max - 1)
         m_list.append(m)
 
@@ -21,9 +21,9 @@ def additivity1(l, m_max, alpha, addition):
         passed = 'Passed'
     else:
         passed = 'Failed'
-    print('Testing fahe1.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\n'.format(alpha, 2**(alpha-1), addition, m_total, m_outcome, passed))
+    print('Testing fahe1.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\n'.format(alpha, 2**(alpha-1), num_additions, m_total, m_outcome, passed))
     
-def additivity2(l, m_max, alpha, addition):
+def additivity_fahe2(l, m_max, alpha, addition):
     m_list = []
     for i in range(addition):
         m = secrets.randbelow(2**m_max - 1)
@@ -42,13 +42,20 @@ def additivity2(l, m_max, alpha, addition):
         passed = 'Passed'
     else:
         passed = 'Failed'
+        exit(1)
     print('Testing fahe2.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\n'.format(alpha, 2**(alpha-1), addition, m_total, m_outcome, passed))
 
 
-additivity1(32, 16, 8, 2)
-additivity1(32, 16, 8, 3)
-additivity1(32, 16, 8, 4)
+for i in range(100):
+    (additivity_fahe1(128, 32, 6, 32))
+# additivity_fahe1(128, 32, 6, 32)
+# additivity_fahe1(128, 32, 6, 32)
+# additivity_fahe1(128, 32, 6, 32)
+# additivity_fahe1(128, 32, 6, 32)
 
-additivity2(32, 16, 8, 2)
-additivity2(32, 16, 8, 3)
-additivity2(32, 16, 8, 4)
+# additivity_fahe1(128, 64, 22, 64)
+# additivity_fahe1(256, 64, 32, 100)
+
+# additivity_fahe2(32, 16, 8, 2)
+# additivity_fahe2(32, 16, 8, 3)
+# additivity_fahe2(32, 16, 8, 4)
