@@ -18,18 +18,19 @@ This project attempts to replicate Cominetti's experiments on FAHE1 and FAHE2 wi
 - **Note: FAHE is unable to provide IND-CCA2 security.**
 
 ### Assumptions and Variables
-- \( p \): prime number of size \(\eta\) bits.
-- \( q \): integer in interval \([0, 2^{\gamma} / p]\).
-- \(\gamma\): ciphertext's final size.
-- \(\rho\): noise size.
-- \(\eta\): secret key size.
-- \( r \): random noise defined by \(\rho\).
-- Total number of additions supported: \(2^{\alpha - 1}\).
+| Symbol | Description                       |
+| :----- | :-------------------------------- |
+| $\(p\)$   | prime number of size $\(\eta\)$ bits. |
+| \(q\)   | integer in interval $\([0, 2^{\gamma} / p]\)$. |
+| $\(\gamma\)$ | ciphertext's final size.         |
+| $\(\rho\)$  | noise size.                       |
+| $\(\eta\)$  | secret key size.                  |
+| $\(r\)$   | random noise defined by $\(\rho\)$.    |
 
 If the desired security level against classical computers is \(\lambda\) bits, we must have:
-- \(\rho \geq \lambda\)
-- \(\eta > \rho\)
-- \(\gamma \geq \Omega\left( \frac{\rho}{\log_2(\rho)} \cdot (\eta - \rho)^2 \right)\)
+- $\(\rho \geq \lambda\)$
+- $\(\eta > \rho\)$
+- $\(\gamma \geq \Omega\left( \frac{\rho}{\log_2(\rho)} \cdot (\eta - \rho)^2 \right)\)$
 
 ### FAHE1 Key Generation
 
@@ -40,21 +41,22 @@ If the desired security level against classical computers is \(\lambda\) bits, w
 ### FAHE1 Decryption
 
 ### FAHE Suggested Values
-- \(\frac{\gamma - \rho}{\eta - \rho} \geq 800\) is sufficient to prevent any practical lattice attack (this is achievable with a minimum \(\alpha\) value).
-- For FAHE1, consider a desired security level of \(\lambda = 128\) against classical computers, \(m_{max}\) of 32 and 64 bits. For this scenario, the author claims that \(\alpha \geq 32\) for \(\lambda = 128\) and \(m_{max} = 32\).
-- For FAHE2, when \(\lambda = 128\), he recommends setting \(\alpha \geq 32\) for \(m_{max} = 64\).
+- $\(\frac{\gamma - \rho}{\eta - \rho} \geq 800\)$ is sufficient to prevent any practical lattice attack (this is achievable with a minimum $\(\alpha\)$ value).
+- For FAHE1, consider a desired security level of $\(\lambda = 128\)$ against classical computers, $\(m_{max}\)$ of 32 and 64 bits. For this scenario, the author claims that $\(\alpha \geq 32\)$ for $\(\lambda = 128\)$ and $\(m_{max} = 32\)$.
+- For FAHE2, when $\(\lambda = 128\)$, he recommends setting $\(\alpha \geq 32\)$ for $\(m_{max} = 64\)$.
 - For FAHE1, when \(\lambda = 256\), \(\alpha \geq 6\).
-- For FAHE2, when \(\lambda = 256\), \(\alpha \geq 22\) for \(m_{max} = 32\) and \(\alpha \geq 21\) for \(m_{max} = 64\).
-- Some scenarios may desire a larger \(\alpha\).
-- Set \(\lambda\) to 256 for post-quantum secure implementation and 128 for classical computers.
+- For FAHE2, when $\(\lambda = 256\)$, $\(\alpha \geq 22\)$ for $\(m_{max} = 32\)$ and $\(\alpha \geq 21\)$ for $\(m_{max} = 64\)$.
+- Some scenarios may desire a larger $\(\alpha\)$ ie. more data to add.
+- Set $\(\lambda\)$ to 256 for post-quantum secure implementation and 128 for classical computers.
 
 ### How to Replicate the Experiment and Test Your Own Values
 Suggested Experiments:
-- Start with \(\lambda = 128\), \(\rho = 128\), and \(\eta = 172\) (FAHE1) or \(\eta = 150\) (FAHE2).
-- Test with \(|m_{max}| = 32\) and \(\alpha = 6\).
-- Increase \(|m_{max}|\) to 64 and observe the impact.
-- Increment \(\alpha\) gradually (e.g., \(\alpha = 10, 15, 20, 25, 30\)) and evaluate performance.
-- If higher security is needed, test with \(\lambda = 256\) and appropriately larger \(\rho\) and \(\eta\).
+- Start with $\(\lambda = 128\)$, $\(\rho = 128\)$, and $\(\eta = 172\)$ (FAHE1) or $\(\eta = 150\)$ (FAHE2).
+- Test with $\(|m_{max}| = 32\)$ and $\(\alpha = 6\)$.
+- Increase $\(|m_{max}|\)$ to 64 and observe the impact.
+- Increment $\(\alpha\)$ gradually (e.g., $\(\alpha = 10, 15, 20, 25, 30\)$) and evaluate performance.
+- If higher security is needed, test with $\(\lambda = 256\)$ and appropriately larger $\(\rho\)$ and $\(\eta\)$.
+- **NOTE:  $\(\rho\)$ and $\(\eta\)$ and $\gamma\$ are calculated, not set.
 
 ## How to Use This Project
 Clone this repository using:
