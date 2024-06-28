@@ -7,48 +7,6 @@ This project attempts to replicate Cominetti's experiments on FAHE1 and FAHE2 wi
 
 *Disclaimer: The FAHE1 & 2 processes described below are merely summarized in importance of our analysis from Cominetti's research and do not explain some of the math involved.*
 
-## FAHE 1 & 2 Experimentation
-### FAHE 1 & FAHE 2 Facts and Intuitions
-- FAHE relies on symmetric keys for both encryption and decryption.
-- FAHE is additively homomorphic, so addition can be performed by any entity.
-- FAHE is partially and somewhat homomorphic; i.e., they only support addition a limited number of times.
-- Cominetti states that with a suitable choice of parameters, the total number of additions can be "practically unlimited."
-- FAHE relies on the Approximate Common Divisor (ACD) as its security problem.
-- FAHE1 uses distribution of positive noise to encrypt messages.
-- **Note: FAHE is unable to provide IND-CCA2 security.**
-
-### Assumptions and Variables
-| Symbol | Description                       |
-| :----- | :-------------------------------- |
-| $\(p\)$   | prime number of size $\(\eta\)$ bits. |
-| \(q\)   | integer in interval $\([0, 2^{\gamma} / p]\)$. |
-| $\(\gamma\)$ | ciphertext's final size.         |
-| $\(\rho\)$  | noise size.                       |
-| $\(\eta\)$  | secret key size.                  |
-| $\(r\)$   | random noise defined by $\(\rho\)$.    |
-
-If the desired security level against classical computers is \(\lambda\) bits, we must have:
-- $\(\rho \geq \lambda\)$
-- $\(\eta > \rho\)$
-- $\(\gamma \geq \Omega\left( \frac{\rho}{\log_2(\rho)} \cdot (\eta - \rho)^2 \right)\)$
-
-### FAHE1 Key Generation
-
-### FAHE1 Encryption
-
-### FAHE1 Addition
-
-### FAHE1 Decryption
-
-### FAHE Suggested Values
-- $\(\frac{\gamma - \rho}{\eta - \rho} \geq 800\)$ is sufficient to prevent any practical lattice attack (this is achievable with a minimum $\(\alpha\)$ value).
-- For FAHE1, consider a desired security level of $\(\lambda = 128\)$ against classical computers, $\(m_{max}\)$ of 32 and 64 bits. For this scenario, the author claims that $\(\alpha \geq 32\)$ for $\(\lambda = 128\)$ and $\(m_{max} = 32\)$.
-- For FAHE2, when $\(\lambda = 128\)$, he recommends setting $\(\alpha \geq 32\)$ for $\(m_{max} = 64\)$.
-- For FAHE1, when \(\lambda = 256\), \(\alpha \geq 6\).
-- For FAHE2, when $\(\lambda = 256\)$, $\(\alpha \geq 22\)$ for $\(m_{max} = 32\)$ and $\(\alpha \geq 21\)$ for $\(m_{max} = 64\)$.
-- Some scenarios may desire a larger $\(\alpha\)$ ie. more data to add.
-- Set $\(\lambda\)$ to 256 for post-quantum secure implementation and 128 for classical computers.
-
 ### How to Replicate the Experiment and Test Your Own Values
 Suggested Experiments:
 - Start with $\(\lambda = 128\)$, $\(\rho = 128\)$, and $\(\eta = 172\)$ (FAHE1) or $\(\eta = 150\)$ (FAHE2).
@@ -56,7 +14,7 @@ Suggested Experiments:
 - Increase $\(|m_{max}|\)$ to 64 and observe the impact.
 - Increment $\(\alpha\)$ gradually (e.g., $\(\alpha = 10, 15, 20, 25, 30\)$) and evaluate performance.
 - If higher security is needed, test with $\(\lambda = 256\)$ and appropriately larger $\(\rho\)$ and $\(\eta\)$.
-- **NOTE:  $\(\rho\)$ and $\(\eta\)$ and $\gamma\$ are calculated, not set.
+- **NOTE:  $\(\rho\)$ and $\(\eta\)$ and $\gamma\$ are calculated, not set. Take a look at the suggest values section for more information.
 
 ## How to Use This Project
 Clone this repository using:
@@ -94,7 +52,92 @@ python3 analysis.py
 | `plotting.py`       | Helper class for matplotlib in `test.py`.                                                                                                 |
 | `test.py`           | Unit tests for FAHE1/FAHE2 functions, benchmark tests, and plotting.                                                                      |
 | `analysis.py`       | CSV writing code. Edit to run csv benchmark tests with different values.                                                                 |
-| `csv files`         | Results of experiments.           
+| `csv files`         | Results of experiments.   
+
+## FAHE 1 & 2 Experimentation
+### FAHE 1 & FAHE 2 Facts and Intuitions
+- FAHE relies on symmetric keys for both encryption and decryption.
+- FAHE is additively homomorphic, so addition can be performed by any entity.
+- FAHE is partially and somewhat homomorphic; i.e., they only support addition a limited number of times.
+- Cominetti states that with a suitable choice of parameters, the total number of additions can be "practically unlimited."
+- FAHE relies on the Approximate Common Divisor (ACD) as its security problem.
+- FAHE1 uses distribution of positive noise to encrypt messages.
+- **Note: FAHE is unable to provide IND-CCA2 security.**
+
+### Assumptions and Variables
+| Symbol | Description                       |
+| :----- | :-------------------------------- |
+| $\(p\)$   | prime number of size $\(\eta\)$ bits. |
+| \(q\)   | integer in interval $\([0, 2^{\gamma} / p]\)$. |
+| $\(\gamma\)$ | ciphertext's final size.         |
+| $\(\rho\)$  | noise size.                       |
+| $\(\eta\)$  | secret key size.                  |
+| $\(r\)$   | random noise defined by $\(\rho\)$.    |
+
+If the desired security level against classical computers is \(\lambda\) bits, we must have:
+- $\(\rho \geq \lambda\)$
+- $\(\eta > \rho\)$
+- $\(\gamma \geq \Omega\left( \frac{\rho}{\log_2(\rho)} \cdot (\eta - \rho)^2 \right)\)$
+
+### FAHE1.Keygen($\lambda$, $|m_{max}|$, $\alpha$)
+1. Choose a suitable security parameter $\lambda$, the maximum message size $|m_{max}|$, and the parameter $\alpha$ that defines the total number of supported additions.
+2. Compute the set of parameters $(\rho, \eta, \gamma)$:
+   - $\rho = \lambda$
+   - $\eta = \rho + 2\alpha + |m_{max}|$
+   - $\gamma = \left(\frac{\rho}{\log \rho}\right) \cdot (\eta - \rho)^2$
+3. Pick a prime $p$ of size $\eta$ and set $X = 2^{\gamma} / p$.
+
+Set the scheme's key to $k = (\rho, |m_{max}|, X, p, \alpha)$.
+
+- **Encryption Key (ek):** $(p, X, \rho, \alpha)$
+- **Decryption Key (dk):** $(p, |m_{max}|, \rho, \alpha)$
+
+### FAHE1.Encr($m$)
+1. Given a message $m$, sample $q \leftarrow [0, X]$.
+2. Generate noise $\text{noise} \leftarrow \{0, 1\}^\rho$ and compute $M = (m \ll (\rho + \alpha)) + \text{noise}$.
+3. Compute $n = p \cdot q$ and output $c = n + M$.
+
+### FAHE1.Add($c1$, $c2$)
+1. Given two ciphertexts $c1$ and $c2$, output $c_{\text{add}} = c1 + c2$.
+
+### FAHE1.Decr($c$)
+1. Given the ciphertext $c$, output the least significant $|m_{max}|$ bits of:
+   - $m = (c \mod p) \gg (\rho + \alpha)$
+
+### FAHE2.Keygen($\lambda$, $|m_{max}|$, $\alpha$)
+1. Choose a suitable security parameter $\lambda$, the maximum message size $|m_{max}|$, and the parameter $\alpha$ that defines the total number of supported additions.
+2. Compute the set of parameters $(\rho, \eta, \gamma, p, X, \text{pos})$, given by:
+   - $\rho = \lambda + \alpha + |m_{max}|$
+   - $\eta = \rho + \alpha$
+   - $\gamma = \left(\frac{\rho}{\log \rho}\right) \cdot (\eta - \rho)^2$
+3. Pick a prime $p$ of size $\eta$ and set $X = 2^{\gamma} / p$ and $\text{pos} \leftarrow [0, \lambda]$.
+
+Set the scheme's key to $k = (p, X, \text{pos}, |m_{max}|, \lambda, \alpha)$.
+
+- **Encryption Key (ek):** $(p, X, \text{pos}, \rho, |m_{max}|, \lambda, \alpha)$
+- **Decryption Key (dk):** $(p, \text{pos}, |m_{max}|, \alpha)$
+
+### FAHE2.Encr($m$)
+1. Given a message $m$, sample $q \leftarrow [0, X]$.
+2. Generate $\text{noise1} \leftarrow \{0, 1\}^{\text{pos}}$, $\text{noise2} \leftarrow \{0, 1\}^{\lambda - \text{pos}}$, and make
+   - $M = (\text{noise2} \ll (\text{pos} + |m_{max}| + \alpha)) + (m \ll (\text{pos} + \alpha)) + \text{noise1}$.
+3. Compute $n = p \cdot q$ and output $c = n + M$.
+
+### FAHE2.Add($c1$, $c2$)
+1. Given two ciphertexts $c1$ and $c2$, output $c_{\text{add}} = c1 + c2$. Note that, like in FAHE1, the ciphertext size can increase during this operation due to carries.
+
+### FAHE2.Decr($c$)
+1. Given the ciphertext $c$, output the least significant $|m_{max}|$ bits of:
+   - $m = (c \mod p) \gg (\text{pos} + \alpha)$
+
+### FAHE Suggested Values
+- $\(\frac{\gamma - \rho}{\eta - \rho} \geq 800\)$ is sufficient to prevent any practical lattice attack (this is achievable with a minimum $\(\alpha\)$ value).
+- For FAHE1, consider a desired security level of $\(\lambda = 128\)$ against classical computers, $\(m_{max}\)$ of 32 and 64 bits. For this scenario, the author claims that $\(\alpha \geq 32\)$ for $\(\lambda = 128\)$ and $\(m_{max} = 32\)$.
+- For FAHE2, when $\(\lambda = 128\)$, he recommends setting $\(\alpha \geq 32\)$ for $\(m_{max} = 64\)$.
+- For FAHE1, when \(\lambda = 256\), \(\alpha \geq 6\).
+- For FAHE2, when $\(\lambda = 256\)$, $\(\alpha \geq 22\)$ for $\(m_{max} = 32\)$ and $\(\alpha \geq 21\)$ for $\(m_{max} = 64\)$.
+- Some scenarios may desire a larger $\(\alpha\)$ ie. more data to add.
+- Set $\(\lambda\)$ to 256 for post-quantum secure implementation and 128 for classical computers.        
 
 ## FAQ
 - What are homomorphic encryption schemes? Privacy homomorphisms are encryption methods that allow operations on encrypted data without decryption
