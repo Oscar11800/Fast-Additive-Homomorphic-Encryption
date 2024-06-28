@@ -3,6 +3,99 @@
 ## Overview
 This repository contains the implementation of the FAHE1 and FAHE2 encryption schemes, based on the Fast Additive Partially Homomorphic Encryption from the Approximate Common Divisor Problem. These schemes enable the execution of addition operations directly on encrypted data.
 
+This project attempts to replicate Cominetti's experiments on FAHE1 and FAHE2 with variable security parameters, message lengths, and maximum number of additions.
+
+*Disclaimer: The FAHE1 & 2 processes described below are merely summarized in importance of our analysis from Cominetti's research and do not explain some of the math involved.*
+
+## FAHE 1 & 2 Experimentation
+### FAHE 1 & FAHE 2 Facts and Intuitions
+- FAHE relies on symmetric keys for both encryption and decryption.
+- FAHE is additively homomorphic, so addition can be performed by any entity.
+- FAHE is partially and somewhat homomorphic; i.e., they only support addition a limited number of times.
+- Cominetti states that with a suitable choice of parameters, the total number of additions can be "practically unlimited."
+- FAHE relies on the Approximate Common Divisor (ACD) as its security problem.
+- FAHE1 uses distribution of positive noise to encrypt messages.
+- **Note: FAHE is unable to provide IND-CCA2 security.**
+
+### Assumptions and Variables
+| Symbol | Description                       |
+| :----- | :-------------------------------- |
+| $\(p\)$   | prime number of size $\(\eta\)$ bits. |
+| \(q\)   | integer in interval $\([0, 2^{\gamma} / p]\)$. |
+| $\(\gamma\)$ | ciphertext's final size.         |
+| $\(\rho\)$  | noise size.                       |
+| $\(\eta\)$  | secret key size.                  |
+| $\(r\)$   | random noise defined by $\(\rho\)$.    |
+
+If the desired security level against classical computers is \(\lambda\) bits, we must have:
+- $\(\rho \geq \lambda\)$
+- $\(\eta > \rho\)$
+- $\(\gamma \geq \Omega\left( \frac{\rho}{\log_2(\rho)} \cdot (\eta - \rho)^2 \right)\)$
+
+### FAHE1 Key Generation
+
+### FAHE1 Encryption
+
+### FAHE1 Addition
+
+### FAHE1 Decryption
+
+### FAHE Suggested Values
+- $\(\frac{\gamma - \rho}{\eta - \rho} \geq 800\)$ is sufficient to prevent any practical lattice attack (this is achievable with a minimum $\(\alpha\)$ value).
+- For FAHE1, consider a desired security level of $\(\lambda = 128\)$ against classical computers, $\(m_{max}\)$ of 32 and 64 bits. For this scenario, the author claims that $\(\alpha \geq 32\)$ for $\(\lambda = 128\)$ and $\(m_{max} = 32\)$.
+- For FAHE2, when $\(\lambda = 128\)$, he recommends setting $\(\alpha \geq 32\)$ for $\(m_{max} = 64\)$.
+- For FAHE1, when \(\lambda = 256\), \(\alpha \geq 6\).
+- For FAHE2, when $\(\lambda = 256\)$, $\(\alpha \geq 22\)$ for $\(m_{max} = 32\)$ and $\(\alpha \geq 21\)$ for $\(m_{max} = 64\)$.
+- Some scenarios may desire a larger $\(\alpha\)$ ie. more data to add.
+- Set $\(\lambda\)$ to 256 for post-quantum secure implementation and 128 for classical computers.
+
+### How to Replicate the Experiment and Test Your Own Values
+Suggested Experiments:
+- Start with $\(\lambda = 128\)$, $\(\rho = 128\)$, and $\(\eta = 172\)$ (FAHE1) or $\(\eta = 150\)$ (FAHE2).
+- Test with $\(|m_{max}| = 32\)$ and $\(\alpha = 6\)$.
+- Increase $\(|m_{max}|\)$ to 64 and observe the impact.
+- Increment $\(\alpha\)$ gradually (e.g., $\(\alpha = 10, 15, 20, 25, 30\)$) and evaluate performance.
+- If higher security is needed, test with $\(\lambda = 256\)$ and appropriately larger $\(\rho\)$ and $\(\eta\)$.
+- **NOTE:  $\(\rho\)$ and $\(\eta\)$ and $\gamma\$ are calculated, not set.
+
+## How to Use This Project
+Clone this repository using:
+```bash
+git clone https://github.com/Oscar11800/Fast-Additive-Homomorphic-Encryption.git
+```
+
+Make sure to have the current requirements by installing requirements: 
+```bash
+pip install -r requirements.txt
+```
+
+To run the current tests in test.py or to run your own tests in test.py :
+```bash
+python3 test.py
+```
+To run the ipynb graphing file:
+```bash
+jupyter notebook plot_performance.ipynb
+```
+
+To run csv benchmark tests, edit ```bash analysis.py``` with desired values and run:
+```bash
+python3 analysis.py
+```
+
+### File Structure (Find what you need)
+| File Name           | Description                                                                                                                               |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `fahe1.py`          | FAHE1 key generation, encryption, and decryption calculations. Used in `plot_performance.ipynb`, `data_collection.py`, and `test.py`.     |
+| `fahe2.py`          | Same as `fahe1.py` but for FAHE2.                                                                                                          |
+| `helper.py`         | Helper functions (e.g., prime number calculation). Credit: Oded Leiba.                                                                     |
+| `plot_performance.ipynb` | Matplotlib graphs of FAHE1 benchmark tests vs. λ, α, and m_max variables.                                                              |
+| `data_collection.py` | Similar to `plot_performance.ipynb` but creates dictionaries for benchmark testing.                                                       |
+| `plotting.py`       | Helper class for matplotlib in `test.py`.                                                                                                 |
+| `test.py`           | Unit tests for FAHE1/FAHE2 functions, benchmark tests, and plotting.                                                                      |
+| `analysis.py`       | CSV writing code. Edit to run csv benchmark tests with different values.                                                                 |
+| `csv files`         | Results of experiments.           
+
 ## FAQ
 - What are homomorphic encryption schemes? Privacy homomorphisms are encryption methods that allow operations on encrypted data without decryption
 	"This homomorphism property is remarkably valuable when the computation is performed by a third party that 
@@ -40,23 +133,6 @@ thus it can take advantage of the performance gains of FAHE 1 & 2
 	The encryption is homomorphic for multiple operations an unlimited # of times
 	Any alg. can be executed without breaking privacy breach
 	Downside: it's more computationally intensive than partially or somewhat homomorphic
-
-
-## Features
-- **FAHE1 and FAHE2**: Two distinct homomorphic encryption schemes.
-- **Optimized Performance**: Faster than traditional systems like Paillier for certain operations.
-- **Quantum Resistance**: Designed to be secure against potential quantum computer attacks.
-
-## Installation
-Clone this repository using:
-```bash
-git clone https://github.com/Oscar11800/Fast-Additive-Homomorphic-Encryption.git
-cd Fast-Additive-Homomorphic-Encryption
-```
-
-   FAHE1 and FAHE2 Implementation: Provides two distinct encryption schemes built on the Approximate Common Divisor problem, noted for its resistance to quantum computer attacks.
-   Performance Optimization: Both schemes are optimized for fast encryption, decryption, and additive operations compared to traditional systems like Paillier.
-   Security: Leverages properties that are believed to be secure against both classical and quantum computational attacks.
 
 References:
 Cominetti, Eduardo & Simplicio, Marcos. (2020). Fast Additive Partially Homomorphic Encryption From the Approximate Common Divisor Problem. IEEE Transactions on Information Forensics and Security. DOI: 10.1109/TIFS.2020.2981239.
