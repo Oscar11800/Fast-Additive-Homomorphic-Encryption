@@ -318,13 +318,13 @@ def output_csv_6(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, x_name=Non
             writer.writerow([x, y1, y2, y3, y4, y5])
     print(f"CSV file '{output_file}' created successfully.")
 
-def output_csv_9(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, y6_list, y7_list, y8_list, x_name=None, y1_name=None, y2_name=None, y3_name=None, y4_name=None, y5_name=None, y6_name=None, y7_name=None, y8_name=None, file_name='output_data'):
+def output_csv_11(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, y6_list, y7_list, y8_list, y9_list, y10_list, x_name=None, y1_name=None, y2_name=None, y3_name=None, y4_name=None, y5_name=None, y6_name=None, y7_name=None, y8_name=None, y9_name=None, y10_name=None, file_name='output_data'):
     output_file = "{}.csv".format(file_name)
     with open(output_file, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([x_name, y1_name, y2_name, y3_name, y4_name, y5_name, y6_name, y7_name, y8_name])  # Write header
-        for x, y1, y2, y3, y4, y5, y6, y7, y8 in zip(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, y6_list, y7_list, y8_list):
-            writer.writerow([x, y1, y2, y3, y4, y5, y6, y7, y8])
+        writer.writerow([x_name, y1_name, y2_name, y3_name, y4_name, y5_name, y6_name, y7_name, y8_name, y9_name, y10_name])  # Write header
+        for x, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10 in zip(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, y6_list, y7_list, y8_list, y9_list, y10_list):
+            writer.writerow([x, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10])
     print(f"CSV file '{output_file}' created successfully.")
 
 def lambda_performance_1(lambda_start, lambda_end, lambda_step, rep, m_max, alpha, m):
