@@ -52,7 +52,7 @@ python3 analysis.py
 | `plotting.py`       | Helper class for matplotlib in `test.py`.                                                                                                 |
 | `test.py`           | Unit tests for FAHE1/FAHE2 functions, benchmark tests, and plotting.                                                                      |
 | `analysis.py`       | USE THIS TO RUN EXPERIMENTS! CSV writing code. Edit to run csv benchmark tests with different values.                                                                 |
-| `old_csv folder`         | Past (outdated_ results of experiments.   |
+| `old_csv folder`         | Past (outdated) results of experiments.   |
 | `experiment_params.txt`       | Contains information on parameters and machine info of the latest experiment run                                                             |
 | `analysis_tests folder`       | USE THIS AFTER ANALYZING. Contains latest csvs from experiments                                                           |
 
