@@ -50,7 +50,7 @@ def run_analysis_fahe1():
         "ciphertext length in bits",
         "lambda",
         "m_max",
-        file_name=os.path.join(output_dir, "fahe1_alpha_performance_1.csv"),
+        file_name=os.path.join(output_dir, "fahe1_alpha_performance_1"),
     )
 
     (
