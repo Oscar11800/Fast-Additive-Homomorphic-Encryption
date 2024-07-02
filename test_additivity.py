@@ -8,6 +8,19 @@ from helper import max_num_for_bit_len
 
 
 def additivity_fahe1(l, m_max, alpha, num_additions):
+    """
+    Test the additivity property of FAHE1.
+
+    Args:
+        l (int): Security parameter (lambda).
+        m_max (int): Maximum message size (in bits).
+        alpha (int): Total number of supported additions.
+        num_additions (int): Number of additions to test.
+
+    Returns:
+        tuple: Contains totals of plain messages, decrypted message from ciphertexts,
+               total ciphertext, type of total ciphertext, and pass/fail status.
+    """
     m_list = []
     for i in range(num_additions):
         m = secrets.randbelow(max_num_for_bit_len(m_max))
@@ -82,7 +95,7 @@ pass_indices = []
 fail_indices = []
 pass_number = 0
 for i in range(100):
-    m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 16, 32)
+    m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 6, 16)
     if passed == "Passed":
         pass_indices.append(i)
         pass_number += 1
@@ -103,6 +116,7 @@ plt.scatter(fail_indices, m_totals, c="blue")
 plt.scatter(fail_indices, m_outcomes, c="red")
 plt.grid()
 plt.show()
+plt.savefig('fahe1add.png')
 
 # additivity_fahe1(128, 32, 6, 32)
 # additivity_fahe1(128, 32, 6, 32)
