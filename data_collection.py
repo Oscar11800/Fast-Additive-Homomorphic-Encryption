@@ -601,8 +601,8 @@ def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
     alpha = alpha_start
     while alpha <= alpha_end:
         print("alpha = {}".format(alpha))
-        rho = l
-        eta = rho + 2 * alpha + m_max
+        rho = l + alpha + m_max
+        eta = rho + alpha
         gamma = math.ceil(rho / math.log2(rho) * ((eta - rho) ** 2))
         keygen_time = []
         enc_time = []
