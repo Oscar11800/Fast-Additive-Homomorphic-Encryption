@@ -51,8 +51,10 @@ python3 analysis.py
 | `data_collection.py` | Similar to `plot_performance.ipynb` but creates dictionaries for benchmark testing.                                                       |
 | `plotting.py`       | Helper class for matplotlib in `test.py`.                                                                                                 |
 | `test.py`           | Unit tests for FAHE1/FAHE2 functions, benchmark tests, and plotting.                                                                      |
-| `analysis.py`       | CSV writing code. Edit to run csv benchmark tests with different values.                                                                 |
-| `csv files`         | Results of experiments.   
+| `analysis.py`       | USE THIS TO RUN EXPERIMENTS! CSV writing code. Edit to run csv benchmark tests with different values.                                                                 |
+| `old_csv folder`         | Past (outdated_ results of experiments.   |
+| `experiment_params.txt`       | Contains information on parameters and machine info of the latest experiment run                                                             |
+| `analysis_tests folder`       | USE THIS AFTER ANALYZING. Contains latest csvs from experiments                                                           |
 
 ## FAHE 1 & 2 Experimentation
 ### FAHE 1 & FAHE 2 Facts and Intuitions
@@ -68,13 +70,13 @@ python3 analysis.py
 | Symbol | Description                       |
 | :----- | :-------------------------------- |
 | $\(p\)$   | prime number of size $\(\eta\)$ bits. |
-| \(q\)   | integer in interval $\([0, 2^{\gamma} / p]\)$. |
+| $\(q\)$   | integer in interval $\([0, 2^{\gamma} / p]\)$. |
 | $\(\gamma\)$ | ciphertext's final size.         |
 | $\(\rho\)$  | noise size, determines $\(r)\$                       |
 | $\(\eta\)$  | secret key size, determines size of $\(p\)$                   |
 | $\(r\)$   | random noise defined by $\(\rho\)$, determines ciphertext's final size    |
-| $\(alpha\)$| determines total number of supported additions|
-| $\(lambda\)$| security parameter (commonly 128 or 256 bits)|
+| $\(&alpha\)$| determines total number of supported additions|
+| $\(&lambda\)$| security parameter (commonly 128 or 256 bits)|
 
 If the desired security level against classical computers is $\(\lambda\)$ bits, we must have:
 - $\(\rho \geq \lambda\)$
