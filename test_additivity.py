@@ -45,8 +45,8 @@ def additivity_fahe2(l, m_max, alpha, addition):
         passed = 'Passed'
     else:
         passed = 'Failed'
-        exit(1)
-    print('Testing fahe2.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\ntype of variable c_total = {}\n'.format(alpha, 2**(alpha-1), addition, m_total, m_outcome, passed, type(c_total)))
+    print('Testing fahe2.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\nbit length of c = {}, type of variable c_total = {}\n'.format(alpha, 2**(alpha-1), num_additions, m_total, m_outcome, passed, c_total.bit_length(), type(c_total)))
+    return m_total, m_outcome, c_total, type(c_total), passed
 
 m_totals = []
 m_outcomes = []
