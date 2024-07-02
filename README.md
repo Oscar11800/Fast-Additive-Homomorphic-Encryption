@@ -75,8 +75,8 @@ python3 analysis.py
 | $\(\rho\)$  | noise size, determines $\(r)\$                       |
 | $\(\eta\)$  | secret key size, determines size of $\(p\)$                   |
 | $\(r\)$   | random noise defined by $\(\rho\)$, determines ciphertext's final size    |
-| &alpha; | determines total number of supported additions |
-| &lambda; | security parameter (commonly 128 or 256 bits) |
+| (&alpha;) | determines total number of supported additions |
+| (&lambda;) | security parameter (commonly 128 or 256 bits) |
 
 If the desired security level against classical computers is $\(\lambda\)$ bits, we must have:
 - $\(\rho \geq \lambda\)$
