@@ -134,7 +134,7 @@ Set the scheme's key to $k = (p, X, \text{pos}, |m_{max}|, \lambda, \alpha)$.
 - $\(\frac{\gamma - \rho}{\eta - \rho} \geq 800\)$ is sufficient to prevent any practical lattice attack (this is achievable with a minimum $\(\alpha\)$ value).
 - For FAHE1, consider a desired security level of $\(\lambda = 128\)$ against classical computers, $\(m_{max}\)$ of 32 and 64 bits. For this scenario, the author claims that $\(\alpha \geq 32\)$ for $\(\lambda = 128\)$ and $\(m_{max} = 32\)$.
 - For FAHE2, when $\(\lambda = 128\)$, he recommends setting $\(\alpha \geq 32\)$ for $\(m_{max} = 64\)$.
-- For FAHE1, when \(\lambda = 256\), \(\alpha \geq 6\).
+- For FAHE1, when $\(\lambda = 256\)$, $\(\alpha \geq 6\)$.
 - For FAHE2, when $\(\lambda = 256\)$, $\(\alpha \geq 22\)$ for $\(m_{max} = 32\)$ and $\(\alpha \geq 21\)$ for $\(m_{max} = 64\)$.
 - Some scenarios may desire a larger $\(\alpha\)$ ie. more data to add.
 - Set $\(\lambda\)$ to 256 for post-quantum secure implementation and 128 for classical computers.        
