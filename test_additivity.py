@@ -82,7 +82,7 @@ pass_indices = []
 fail_indices = []
 pass_number = 0
 for i in range(100):
-    m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 8, 64)
+    m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 16, 32)
     if passed == "Passed":
         pass_indices.append(i)
         pass_number += 1
@@ -93,6 +93,10 @@ for i in range(100):
         m_outcomes.append(m_outcome)
 
 print("Pass rate = {}%".format(pass_number))
+
+print("Failing pairs:")
+for i in range(len(fail_indices)):
+    print("index = {}, m_total = {}, m_outcome = {}".format(fail_indices[i], m_totals[i], m_outcomes[i]))
 
 plt.scatter(pass_indices, m_pass, c="green")
 plt.scatter(fail_indices, m_totals, c="blue")

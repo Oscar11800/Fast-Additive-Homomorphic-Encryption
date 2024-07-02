@@ -53,7 +53,7 @@ def timed_keygen1(l, m_max, alpha) -> float:
     eta = rho + 2 * alpha + m_max
     gamma = rho / math.log2(rho) * ((eta - rho) ** 2)
     p = helper.generate_large_prime(eta)
-    X = (Decimal(2) ** Decimal(gamma)) / p
+    X = math.ceil((Decimal(2) ** Decimal(gamma)) / p)
 
     k = (p, m_max, X, rho, alpha)
     ek = (p, X, rho, alpha)
@@ -143,5 +143,5 @@ def dec1(dk, c):
         m (float): decrypted message (least significant bits)
     """
     m_full = (c % dk[0]) >> (dk[2] + dk[3])
-    m = m_full & ((1 << dk[2]) - 1)
-    return m
+    # m = m_full & ((1 << dk[1]) - 1)
+    return m_full
