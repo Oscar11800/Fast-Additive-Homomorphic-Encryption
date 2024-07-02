@@ -77,19 +77,26 @@ def additivity_fahe2(l, m_max, alpha, addition):
 
 m_totals = []
 m_outcomes = []
-indices = []
+m_pass = []
+pass_indices = []
+fail_indices = []
 pass_number = 0
 for i in range(100):
     m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 8, 128)
     if passed == "Passed":
+        pass_indices.append(i)
         pass_number += 1
-    m_totals.append(m_total)
-    m_outcomes.append(m_outcome)
-    indices.append(i)
+        m_pass.append(m_outcome)
+    else:
+        fail_indices.append(i)
+        m_totals.append(m_total)
+        m_outcomes.append(m_outcome)
+
 print("Pass rate = {}%".format(pass_number))
 
-plt.scatter(indices, m_totals, c="blue")
-plt.scatter(indices, m_outcomes, c="red")
+plt.scatter(pass_indices, m_pass, c="green")
+plt.scatter(fail_indices, m_totals, c="blue")
+plt.scatter(fail_indices, m_outcomes, c="red")
 plt.grid()
 plt.show()
 
