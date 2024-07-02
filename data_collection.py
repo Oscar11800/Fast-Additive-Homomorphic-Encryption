@@ -5,7 +5,6 @@ import csv
 import time
 from fahe1 import keygen1, enc1, dec1
 import math
-
 from fahe2 import dec2, enc2, keygen2
 
 
@@ -208,6 +207,7 @@ def collect_alpha_performance(
 
     return data_points
 
+
 def collect_m_max_performance(
     start_m_max: int, end_m_max: int, step: int, op: Operation, func_map, params
 ) -> dict[int, float]:
@@ -251,7 +251,6 @@ def collect_m_max_performance(
                 params.get("lambda", 32),
                 cur_m_max,
                 params.get("alha", 32),
-                
                 params.get("m", secrets.randbelow(2**32 - 1)),
             )
         else:
@@ -289,9 +288,9 @@ def collect_security_param_ciphertext(
 
     for cur_lambda in range(start_lambda, end_lambda + 1, step):
         args = {name: params.get(name) for name in param_names}
-        if 'm' in args and args['m'] is None:
-            args['m'] = secrets.randbelow(2**params.get("m_max", 32) - 1)
-        args['l'] = cur_lambda
+        if "m" in args and args["m"] is None:
+            args["m"] = secrets.randbelow(2 ** params.get("m_max", 32) - 1)
+        args["l"] = cur_lambda
         cipher_text_size = func(**args)
 
         data_points[cur_lambda] = cipher_text_size
@@ -304,28 +303,99 @@ def print_data_points(data_points: dict[int, float]):
     for key, value in data_points.items():
         print(f"{key} : {value:.8f}")
 
-def output_csv_6(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, x_name=None, y1_name=None, y2_name=None, y3_name=None, y4_name=None, y5_name=None, file_name='output_data'):
+
+def output_csv_6(
+    x_list,
+    y1_list,
+    y2_list,
+    y3_list,
+    y4_list,
+    y5_list,
+    x_name=None,
+    y1_name=None,
+    y2_name=None,
+    y3_name=None,
+    y4_name=None,
+    y5_name=None,
+    file_name="output_data",
+):
     """
     x_list, y1_list, y2_list: list of independent and dependent variables
     x_name, y1_name, y2_name: string of headers
     file_name: string of filename, not including the ".csv"
     """
     output_file = "{}.csv".format(file_name)
-    with open(output_file, mode='w', newline='') as file:
+    with open(output_file, mode="w", newline="") as file:
         writer = csv.writer(file)
-        writer.writerow([x_name, y1_name, y2_name, y3_name, y4_name, y5_name])  # Write header
-        for x, y1, y2, y3, y4, y5 in zip(x_list, y1_list, y2_list, y3_list, y4_list, y5_list):
+        writer.writerow(
+            [x_name, y1_name, y2_name, y3_name, y4_name, y5_name]
+        )  # Write header
+        for x, y1, y2, y3, y4, y5 in zip(
+            x_list, y1_list, y2_list, y3_list, y4_list, y5_list
+        ):
             writer.writerow([x, y1, y2, y3, y4, y5])
     print(f"CSV file '{output_file}' created successfully.")
 
-def output_csv_11(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, y6_list, y7_list, y8_list, y9_list, y10_list, x_name=None, y1_name=None, y2_name=None, y3_name=None, y4_name=None, y5_name=None, y6_name=None, y7_name=None, y8_name=None, y9_name=None, y10_name=None, file_name='output_data'):
+
+def output_csv_11(
+    x_list,
+    y1_list,
+    y2_list,
+    y3_list,
+    y4_list,
+    y5_list,
+    y6_list,
+    y7_list,
+    y8_list,
+    y9_list,
+    y10_list,
+    x_name=None,
+    y1_name=None,
+    y2_name=None,
+    y3_name=None,
+    y4_name=None,
+    y5_name=None,
+    y6_name=None,
+    y7_name=None,
+    y8_name=None,
+    y9_name=None,
+    y10_name=None,
+    file_name="output_data",
+):
     output_file = "{}.csv".format(file_name)
-    with open(output_file, mode='w', newline='') as file:
+    with open(output_file, mode="w", newline="") as file:
         writer = csv.writer(file)
-        writer.writerow([x_name, y1_name, y2_name, y3_name, y4_name, y5_name, y6_name, y7_name, y8_name, y9_name, y10_name])  # Write header
-        for x, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10 in zip(x_list, y1_list, y2_list, y3_list, y4_list, y5_list, y6_list, y7_list, y8_list, y9_list, y10_list):
+        writer.writerow(
+            [
+                x_name,
+                y1_name,
+                y2_name,
+                y3_name,
+                y4_name,
+                y5_name,
+                y6_name,
+                y7_name,
+                y8_name,
+                y9_name,
+                y10_name,
+            ]
+        )  # Write header
+        for x, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10 in zip(
+            x_list,
+            y1_list,
+            y2_list,
+            y3_list,
+            y4_list,
+            y5_list,
+            y6_list,
+            y7_list,
+            y8_list,
+            y9_list,
+            y10_list,
+        ):
             writer.writerow([x, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10])
     print(f"CSV file '{output_file}' created successfully.")
+
 
 def lambda_performance_1(lambda_start, lambda_end, lambda_step, rep, m_max, alpha, m):
     lambdas = []
@@ -356,18 +426,19 @@ def lambda_performance_1(lambda_start, lambda_end, lambda_step, rep, m_max, alph
             dec_tok = time.time()
             dec_time.append(dec_tok - dec_tik)
 
-        average_keygen_time = sum(keygen_time)/rep
+        average_keygen_time = sum(keygen_time) / rep
         keygen_times.append(average_keygen_time)
-        average_enc_time = sum(enc_time)/rep
+        average_enc_time = sum(enc_time) / rep
         enc_times.append(average_enc_time)
-        average_dec_time = sum(dec_time)/rep
+        average_dec_time = sum(dec_time) / rep
         dec_times.append(average_dec_time)
         total_time = average_keygen_time + average_enc_time + average_dec_time
         total_times.append(total_time)
-        clengths.append(clength/rep)
+        clengths.append(clength / rep)
 
         l += lambda_step
     return lambdas, keygen_times, enc_times, dec_times, total_times, clengths
+
 
 def m_max_performance_1(m_max_start, m_max_end, m_max_step, rep, l, alpha, m):
     m_maxs = []
@@ -398,20 +469,38 @@ def m_max_performance_1(m_max_start, m_max_end, m_max_step, rep, l, alpha, m):
             dec_tok = time.time()
             dec_time.append(dec_tok - dec_tik)
 
-        average_keygen_time = sum(keygen_time)/rep
+        average_keygen_time = sum(keygen_time) / rep
         keygen_times.append(average_keygen_time)
-        average_enc_time = sum(enc_time)/rep
+        average_enc_time = sum(enc_time) / rep
         enc_times.append(average_enc_time)
-        average_dec_time = sum(dec_time)/rep
+        average_dec_time = sum(dec_time) / rep
         dec_times.append(average_dec_time)
         total_time = average_keygen_time + average_enc_time + average_dec_time
         total_times.append(total_time)
-        clengths.append(clength/rep)
+        clengths.append(clength / rep)
 
         m_max += m_max_step
     return m_maxs, keygen_times, enc_times, dec_times, total_times, clengths
 
+
 def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
+    """
+    Measures the performance of the FAHE2 scheme for various alpha values.
+
+    Parameters:
+    alpha_start (int): Starting value of alpha.
+    alpha_end (int): Ending value of alpha.
+    alpha_step (int): Step value to increment alpha.
+    rep (int): Number of repetitions for averaging.
+    l (int): Security parameter lambda.
+    m_max (int): Maximum message size.
+    m (int): Message to be encrypted.
+
+    Returns:
+    tuple: Contains lists of alphas, rhos, etas, gammas, keygen times, 
+           encryption times, decryption times, total times, ciphertext lengths, 
+           lambdas, and m_max values.
+    """
     alphas = []
     rhos = []
     etas = []
@@ -425,7 +514,7 @@ def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
     m_maxes = []
     alpha = alpha_start
     while alpha <= alpha_end:
-        print('alpha = {}'.format(alpha))
+        print("alpha = {}".format(alpha))
         rho = l
         eta = rho + 2 * alpha + m_max
         gamma = math.ceil(rho / math.log2(rho) * ((eta - rho) ** 2))
@@ -438,36 +527,66 @@ def alpha_performance_1(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
             keygen_tik = time.time()
             k, ek, dk = keygen1(l, m_max, alpha)
             keygen_tok = time.time()
-            keygen_time.append(keygen_tok - keygen_tik)
+            keygen_time.append((keygen_tok - keygen_tik) * 1000)
             enc_tik = time.time()
             c = enc1(ek, m)
             clength += c.bit_length()
             enc_tok = time.time()
-            enc_time.append(enc_tok - enc_tik)
+            enc_time.append(((enc_tok - enc_tik) * 1000))
             dec_tik = time.time()
-            m_outcome = dec1(dk, c)
+            m_outcome = dec1(dk, c) #run decrypt to time it, no verification
             dec_tok = time.time()
-            dec_time.append(dec_tok - dec_tik)
+            dec_time.append(((dec_tok - dec_tik) * 1000))
 
         rhos.append(rho)
         etas.append(eta)
         gammas.append(gamma)
-        average_keygen_time = sum(keygen_time)/rep
-        keygen_times.append(average_keygen_time)
-        average_enc_time = sum(enc_time)/rep
-        enc_times.append(average_enc_time)
-        average_dec_time = sum(dec_time)/rep
-        dec_times.append(average_dec_time)
+        average_keygen_time = sum(keygen_time) / rep
+        keygen_times.append(round(float(average_keygen_time), 4))
+        average_enc_time = sum(enc_time) / rep
+        enc_times.append(round(float(average_enc_time), 4))
+        average_dec_time = sum(dec_time) / rep
+        dec_times.append(round(float(average_dec_time), 4))
         total_time = average_keygen_time + average_enc_time + average_dec_time
-        total_times.append(total_time)
-        clengths.append(clength/rep)
+        total_times.append(round(float(total_time), 4))
+        clengths.append(round(clength / rep))
         lambdas.append(l)
         m_maxes.append(m_max)
 
         alpha += alpha_step
-    return alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths, lambdas, m_maxes
+    return (
+        alphas,
+        rhos,
+        etas,
+        gammas,
+        keygen_times,
+        enc_times,
+        dec_times,
+        total_times,
+        clengths,
+        lambdas,
+        m_maxes,
+    )
+
 
 def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
+    """
+    Measures the performance of the FAHE2 scheme for various alpha values.
+
+    Parameters:
+    alpha_start (int): Starting value of alpha.
+    alpha_end (int): Ending value of alpha.
+    alpha_step (int): Step value to increment alpha.
+    rep (int): Number of repetitions for averaging.
+    l (int): Security parameter lambda.
+    m_max (int): Maximum message size.
+    m (int): Message to be encrypted.
+
+    Returns:
+    tuple: Contains lists of alphas, rhos, etas, gammas, keygen times, 
+           encryption times, decryption times, total times, ciphertext lengths, 
+           lambdas, and m_max values.
+    """
     alphas = []
     rhos = []
     etas = []
@@ -481,7 +600,7 @@ def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
     m_maxes = []
     alpha = alpha_start
     while alpha <= alpha_end:
-        print('alpha = {}'.format(alpha))
+        print("alpha = {}".format(alpha))
         rho = l
         eta = rho + 2 * alpha + m_max
         gamma = math.ceil(rho / math.log2(rho) * ((eta - rho) ** 2))
@@ -494,31 +613,43 @@ def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
             keygen_tik = time.time()
             k, ek, dk = keygen2(l, m_max, alpha)
             keygen_tok = time.time()
-            keygen_time.append(keygen_tok - keygen_tik)
+            keygen_time.append((keygen_tok - keygen_tik) * 1000)
             enc_tik = time.time()
             c = enc2(ek, m)
             clength += c.bit_length()
             enc_tok = time.time()
-            enc_time.append(enc_tok - enc_tik)
+            enc_time.append(((enc_tok - enc_tik) * 1000))
             dec_tik = time.time()
             m_outcome = dec2(dk, c)
             dec_tok = time.time()
-            dec_time.append(dec_tok - dec_tik)
+            dec_time.append(((dec_tok - dec_tik) * 1000))
 
         rhos.append(rho)
         etas.append(eta)
         gammas.append(gamma)
-        average_keygen_time = sum(keygen_time)/rep
-        keygen_times.append(average_keygen_time)
-        average_enc_time = sum(enc_time)/rep
-        enc_times.append(average_enc_time)
-        average_dec_time = sum(dec_time)/rep
-        dec_times.append(average_dec_time)
+        average_keygen_time = sum(keygen_time) / rep
+        keygen_times.append(round(float(average_keygen_time), 4))
+        average_enc_time = sum(enc_time) / rep
+        enc_times.append(round(float(average_enc_time), 4))
+        average_dec_time = sum(dec_time) / rep
+        dec_times.append(round(float(average_dec_time), 4))
         total_time = average_keygen_time + average_enc_time + average_dec_time
-        total_times.append(total_time)
-        clengths.append(clength/rep)
+        total_times.append(round(float(total_time), 4))
+        clengths.append(round(clength / rep))
         lambdas.append(l)
         m_maxes.append(m_max)
 
         alpha += alpha_step
-    return alphas, rhos, etas, gammas, keygen_times, enc_times, dec_times, total_times, clengths, lambdas, m_maxes
+    return (
+        alphas,
+        rhos,
+        etas,
+        gammas,
+        keygen_times,
+        enc_times,
+        dec_times,
+        total_times,
+        clengths,
+        lambdas,
+        m_maxes,
+    )

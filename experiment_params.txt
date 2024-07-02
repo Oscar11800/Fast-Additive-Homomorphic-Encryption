@@ -1,0 +1,9 @@
+Last time experiments ran: 10:30 AM on 02-07-24
+
+The last experiments ran on: 
+AMD Ryzen 9 6900HS          3.30 GHz
+Windows 11 Home WSL (Ubuntu 22.04.3 LTS)
+
+The time performance was measured with python's time library
+
+Number of data points per average (reps): 100
