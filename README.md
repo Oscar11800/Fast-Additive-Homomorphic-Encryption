@@ -1,3 +1,26 @@
+# Table of Contents
+
+- [Fast Additive Homomorphic Encryption (FAHE) Implementation](#fast-additive-homomorphic-encryption-fahe-implementation)
+  - [Overview](#overview)
+    - [How to Replicate the Experiment and Test Your Own Values](#how-to-replicate-the-experiment-and-test-your-own-values)
+  - [How to Use This Project](#how-to-use-this-project)
+    - [File Structure (Find what you need)](#file-structure-find-what-you-need)
+  - [FAHE 1 & 2 Experimentation](#fahe-1--2-experimentation)
+    - [FAHE 1 & FAHE 2 Facts and Intuitions](#fahe-1--fahe-2-facts-and-intuitions)
+    - [Assumptions and Variables](#assumptions-and-variables)
+    - [FAHE1.Keygen(λ, |m_{max}|, α)](#fahe1keygenλ--m_max--α)
+    - [FAHE1.Encr(m)](#fahe1encrm)
+    - [FAHE1.Add(c1, c2)](#fahe1addc1-c2)
+    - [FAHE1.Decr(c)](#fahe1decrc)
+    - [FAHE2.Keygen(λ, |m_{max}|, α)](#fahe2keygenλ--m_max--α)
+    - [FAHE2.Encr(m)](#fahe2encrm)
+    - [FAHE2.Add(c1, c2)](#fahe2addc1-c2)
+    - [FAHE2.Decr(c)](#fahe2decrc)
+    - [FAHE Suggested Values](#fahe-suggested-values)
+  - [FAQ](#faq)
+  - [References](#references)
+
+
 # Fast Additive Homomorphic Encryption (FAHE) Implementation
 
 ## Overview
