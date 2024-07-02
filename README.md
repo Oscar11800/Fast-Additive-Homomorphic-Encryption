@@ -74,7 +74,7 @@ python3 analysis.py
 | $\(\eta\)$  | secret key size.                  |
 | $\(r\)$   | random noise defined by $\(\rho\)$.    |
 
-If the desired security level against classical computers is \(\lambda\) bits, we must have:
+If the desired security level against classical computers is $\(\lambda\)$ bits, we must have:
 - $\(\rho \geq \lambda\)$
 - $\(\eta > \rho\)$
 - $\(\gamma \geq \Omega\left( \frac{\rho}{\log_2(\rho)} \cdot (\eta - \rho)^2 \right)\)$
