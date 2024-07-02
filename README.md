@@ -71,12 +71,12 @@ python3 analysis.py
 | :----- | :-------------------------------- |
 | $\(p\)$   | prime number of size $\(\eta\)$ bits. |
 | $\(q\)$   | integer in interval $\([0, 2^{\gamma} / p]\)$. |
-| $\(\gamma\)$ | ciphertext's final size.         |
-| $\(\rho\)$  | noise size, determines $\(r)\$                       |
-| $\(\eta\)$  | secret key size, determines size of $\(p\)$                   |
+| $\(\gamma\)$: gamma | ciphertext's final size.         |
+| $\(\rho\)$: rho  | noise size, determines $\(r)\$                       |
+| $\(\eta\)$: eta  | secret key size, determines size of $\(p\)$                   |
 | $\(r\)$   | random noise defined by $\(\rho\)$, determines ciphertext's final size    |
-| (&alpha;) | determines total number of supported additions |
-| (&lambda;) | security parameter (commonly 128 or 256 bits) |
+| (&alpha;): alpha | determines total number of supported additions |
+| (&lambda;): lambda | security parameter (commonly 128 or 256 bits) |
 
 If the desired security level against classical computers is $\(\lambda\)$ bits, we must have:
 - $\(\rho \geq \lambda\)$
