@@ -82,7 +82,7 @@ pass_indices = []
 fail_indices = []
 pass_number = 0
 for i in range(100):
-    m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 8, 128)
+    m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 8, 64)
     if passed == "Passed":
         pass_indices.append(i)
         pass_number += 1

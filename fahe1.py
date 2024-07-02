@@ -142,5 +142,6 @@ def dec1(dk, c):
     Returns:
         m (float): decrypted message (least significant bits)
     """
-    m = (c % dk[0]) >> (dk[2] + dk[3])
+    m_full = (c % dk[0]) >> (dk[2] + dk[3])
+    m = m_full & ((1 << dk[2]) - 1)
     return m
