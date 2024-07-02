@@ -4,10 +4,13 @@ import secrets
 import matplotlib.pyplot as plt
 import sys
 
+from helper import max_num_for_bit_len
+
+
 def additivity_fahe1(l, m_max, alpha, num_additions):
     m_list = []
     for i in range(num_additions):
-        m = secrets.randbelow(2**m_max - 1)
+        m = secrets.randbelow(max_num_for_bit_len(m_max))
         m_list.append(m)
 
     c_list = []
@@ -20,12 +23,24 @@ def additivity_fahe1(l, m_max, alpha, num_additions):
     m_total = sum(m_list)
     m_outcome = dec1(dk, c_total)
     if m_total == m_outcome:
-        passed = 'Passed'
+        passed = "Passed"
     else:
-        passed = 'Failed'
-    print('Testing fahe1.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\nbit length of c = {}, type of variable c_total = {}\n'.format(alpha, 2**(alpha-1), num_additions, m_total, m_outcome, passed, c_total.bit_length(), type(c_total)))
+        passed = "Failed"
+    print(
+        "Testing fahe1.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\nbit length of c = {}, type of variable c_total = {}\n".format(
+            alpha,
+            2 ** (alpha - 1),
+            num_additions,
+            m_total,
+            m_outcome,
+            passed,
+            c_total.bit_length(),
+            type(c_total),
+        )
+    )
     return m_total, m_outcome, c_total, type(c_total), passed
-    
+
+
 def additivity_fahe2(l, m_max, alpha, addition):
     m_list = []
     for i in range(addition):
@@ -42,11 +57,23 @@ def additivity_fahe2(l, m_max, alpha, addition):
     m_total = sum(m_list)
     m_outcome = dec2(dk, c_total)
     if m_total == m_outcome:
-        passed = 'Passed'
+        passed = "Passed"
     else:
-        passed = 'Failed'
-    print('Testing fahe2.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\nbit length of c = {}, type of variable c_total = {}\n'.format(alpha, 2**(alpha-1), num_additions, m_total, m_outcome, passed, c_total.bit_length(), type(c_total)))
+        passed = "Failed"
+    print(
+        "Testing fahe2.\nalpha = {}, therefore number of additions allowed = {}; number of additions done = {};\nTotal m directly added = {}; total m from c added = {}; {}\nbit length of c = {}, type of variable c_total = {}\n".format(
+            alpha,
+            2 ** (alpha - 1),
+            num_additions,
+            m_total,
+            m_outcome,
+            passed,
+            c_total.bit_length(),
+            type(c_total),
+        )
+    )
     return m_total, m_outcome, c_total, type(c_total), passed
+
 
 m_totals = []
 m_outcomes = []
@@ -54,15 +81,15 @@ indices = []
 pass_number = 0
 for i in range(100):
     m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 8, 128)
-    if passed == 'Passed':
+    if passed == "Passed":
         pass_number += 1
     m_totals.append(m_total)
     m_outcomes.append(m_outcome)
     indices.append(i)
-print('Pass rate = {}%'.format(pass_number))
+print("Pass rate = {}%".format(pass_number))
 
-plt.scatter(indices, m_totals, c='blue')
-plt.scatter(indices, m_outcomes, c='red')
+plt.scatter(indices, m_totals, c="blue")
+plt.scatter(indices, m_outcomes, c="red")
 plt.grid()
 plt.show()
 

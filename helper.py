@@ -60,3 +60,18 @@ def generate_large_prime(num_of_bits):
         num = secrets.randbelow(pow(2, num_of_bits))
         if is_prime(num):
             return num  
+        
+def max_num_for_bit_len(bit_length: int) -> int:
+    """
+    Calculates the maximum number that can be represented with the given bit length.
+
+    Args:
+        bit_length: The bit length (int).
+    
+    Return:
+        The maximum number that can be represented with the given bit length (int).
+    """
+    if bit_length < 1:
+        raise ValueError("Bit length must be at least 1")
+    
+    return (1 << bit_length) - 1
