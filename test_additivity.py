@@ -41,9 +41,9 @@ def additivity_fahe1(l, m_max, alpha, num_additions):
     return m_total, m_outcome, c_total, type(c_total), passed
 
 
-def additivity_fahe2(l, m_max, alpha, addition):
+def additivity_fahe2(l, m_max, alpha, num_additions):
     m_list = []
-    for i in range(addition):
+    for i in range(num_additions):
         m = secrets.randbelow(2**m_max - 1)
         m_list.append(m)
 
