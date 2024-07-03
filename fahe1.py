@@ -35,6 +35,48 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     dk = (p, m_max, rho, alpha)
     return k, ek, dk
 
+def enc1(ek, m) -> float:
+    """
+    Encrypts a messsage using FAHE1 scheme.
+
+    Args:
+        ek (float): subset of scheme key 'k'
+        m (str): given message to encrypt
+
+    Returns:
+        c (float): ciphertext
+    """
+    q = secrets.randbelow(int(ek[1]) + 1)
+    noise = secrets.randbits(ek[2])  # Correct noise generation
+    M = (m << (int(ek[2]) + int(ek[3]))) + noise
+    n = ek[0] * q
+    c = n + M
+    return c
+
+def dec1(dk, c):
+    """
+    Decrypts a messsage using FAHE1 scheme.
+
+    Args:
+        dk (float): subset of scheme key 'k'
+        c (float): ciphertext
+
+    Returns:
+        m (float): decrypted message (least significant bits)
+    """
+    p, m_max, rho, alpha = dk
+
+    # Step 1: Compute c % p
+    m_full = c % p
+
+    # Step 2: Right shift by (rho + alpha)
+    m_shifted = m_full >> (rho + alpha)
+
+    # Step 3: Extract the least significant |m_max| bits
+    m = m_shifted & ((1 << m_max) - 1)
+
+    return m_shifted
+
 
 def timed_keygen1(l, m_max, alpha) -> float:
     """
@@ -63,24 +105,6 @@ def timed_keygen1(l, m_max, alpha) -> float:
     performance_time = (end_time - start_time) * 1000
     return performance_time
 
-
-def enc1(ek, m) -> float:
-    """
-    Encrypts a messsage using FAHE1 scheme.
-
-    Args:
-        ek (float): subset of scheme key 'k'
-        m (str): given message to encrypt
-
-    Returns:
-        c (float): ciphertext
-    """
-    q = secrets.randbelow(int(ek[1]) + 1)
-    noise = secrets.randbelow(2 ** ek[2] - 1)
-    M = (m << (ek[2] + ek[3])) + noise
-    n = ek[0] * q
-    c = n + M
-    return c
 
 
 def length_enc1(l, m_max, alpha, m) -> float:
@@ -131,17 +155,3 @@ def timed_enc1(l, m_max, alpha, m) -> float:
     return performance_time
 
 
-def dec1(dk, c):
-    """
-    Decrypts a messsage using FAHE1 scheme.
-
-    Args:
-        dk (float): subset of scheme key 'k'
-        c (float): ciphertext
-
-    Returns:
-        m (float): decrypted message (least significant bits)
-    """
-    m_full = (c % dk[0]) >> (dk[2] + dk[3])
-    # m = m_full & ((1 << dk[1]) - 1)
-    return m_full
