@@ -13,6 +13,7 @@ from typing import Tuple
 def keygen1(l, m_max, alpha) -> tuple[float]:
     """
     Generates a FAHE1 key.
+    There is random process within this function (large prime p is random)
 
     Args:
         l: security parameter (lambda)
@@ -38,6 +39,7 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
 def enc1(ek, m) -> float:
     """
     Encrypts a messsage using FAHE1 scheme.
+    There is 
 
     Args:
         ek (float): subset of scheme key 'k'
@@ -53,7 +55,7 @@ def enc1(ek, m) -> float:
     c = n + M
     return c
 
-def dec1(dk, c):
+def dec1(dk, c, num_additions):
     """
     Decrypts a messsage using FAHE1 scheme.
 
@@ -66,6 +68,8 @@ def dec1(dk, c):
     """
     p, m_max, rho, alpha = dk
 
+    m_max_outcome = math.ceil(math.log2(num_additions * (2**dk[1])))
+
     # Step 1: Compute c % p
     m_full = c % p
 
@@ -73,7 +77,7 @@ def dec1(dk, c):
     m_shifted = m_full >> (rho + alpha)
 
     # Step 3: Extract the least significant |m_max| bits
-    m = m_shifted & ((1 << m_max) - 1)
+    m = m_shifted & ((1 << m_max_outcome) - 1)
 
     return m
 
