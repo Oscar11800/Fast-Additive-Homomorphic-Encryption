@@ -82,9 +82,9 @@ def dec2(dk, c):
     m_masked = m_shifted & ((1 << m_max) - 1)
     
     # Debug statements
-    print(f"Decryption parameters: p={p}, pos={pos}, m_max={m_max}, alpha={alpha}")
-    print(f"Intermediate values: c % p = {c % p}, pos + alpha = {pos_alpha}")
-    print(f"m_full (before masking): {m_shifted}")
-    print(f"Decrypted message (m): {m_masked}")
+    # print(f"Decryption parameters: p={p}, pos={pos}, m_max={m_max}, alpha={alpha}")
+    # print(f"Intermediate values: c % p = {c % p}, pos + alpha = {pos_alpha}")
+    # print(f"m_full (before masking): {m_shifted}")
+    # print(f"Decrypted message (m): {m_masked}")
 
-    return m_shifted
+    return m_masked

@@ -21,6 +21,7 @@ NUM_ADDITIONS = 1000  # normally max is 2**(ALPHA-1)
 NUM_TRIALS = 51  # how many times you want to test (-1)
 MSG_SIZE = 32  # optional, normally same as M_MAX
 ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
+SET_MSG = random.getrandbits(MSG_SIZE)  # only in use when populate bool is True
 
 
 # NOT SO HARD VALUES, DON'T TOUCH
@@ -192,7 +193,7 @@ def add_fahe2(index: int) -> bool:
     """
 
     # NOTE: You can change msg list params below
-    msg_list = populate_message_list(NUM_ADDITIONS)
+    msg_list = populate_message_list(NUM_ADDITIONS, True, SET_MSG)
     print("Compiled messages...")
     # print(len(msg_list))
     # time.sleep(1000)
