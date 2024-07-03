@@ -10,9 +10,14 @@ from typing import Tuple
 def keygen2(l, m_max, alpha) -> tuple[float]:
     """
     Generates a FAHE2 key.
+    There is random process within this function (large prime p is random)
+
+    rho: noise parameter
+    eta: secret key size
+    gamma: final ciphertext max size
 
     Args:
-        lambda: security parameter
+        l: security parameter
         m_max: maximum message size
         alpha: total number of supported additions
         p: a prime number of eta size bits
@@ -23,14 +28,15 @@ def keygen2(l, m_max, alpha) -> tuple[float]:
 
     rho = l + alpha + m_max
     eta = rho + alpha
-    gamma = (rho / math.log2(rho)) * ((eta - rho)**2)
+    gamma = int(rho / math.log2(rho) * ((eta - rho) ** 2))
     p = helper.generate_large_prime(eta)
-    X = math.ceil((Decimal(2) ** Decimal(gamma)) / p)
-    pos = secrets.randbelow(l+1)
+    X = (Decimal(2) ** Decimal(gamma)) / p
+    pos = secrets.randbelow(l + 2)  # +2 because lambda is inclusive
 
     k = (p, X, pos, m_max, l, alpha)
     ek = (p, X, pos, m_max, l, alpha)
     dk = (p, pos, m_max, alpha)
+    print("Generated FAHE2 KEY!")
     return k, ek, dk
 
 
@@ -45,12 +51,15 @@ def enc2(ek, m):
     Returns:
         c (float): ciphertext
     """
-    q = secrets.randbelow(int(ek[1]) + 1)
-    noise1 = secrets.randbelow(2 ** ek[2])
-    noise2 = secrets.randbelow(2 ** (ek[4] - ek[2]))
-    M = (noise2 << (ek[2] + ek[3] + ek[5])) + (m << (ek[2] + ek[5])) + noise1
-    n = ek[0] * q
+    p, X, pos, m_max, l, alpha = ek
+    q = secrets.randbelow(int(X) + 1)
+    noise1 = secrets.randbits(pos)
+    noise2 = secrets.randbits(l - pos)
+    # print("Generated noise!")
+    M = (noise2 << (pos + m_max + alpha)) + (m << (pos + alpha)) + noise1
+    n = p * q
     c = n + M
+    # print("Encrypted!")
     return c
 
 
@@ -65,7 +74,17 @@ def dec2(dk, c):
     Returns:
         m (float): decrypted message (least significant bits)
     """
-    m_full = (c % dk[0]) >> (dk[1] + dk[3])
-    m = m_full & ((1 << dk[2]) - 1)
-    return m
+    p, pos, m_max, alpha = dk
 
+    pos_alpha = int(pos + alpha)
+    m_first = (c % p)
+    m_shifted = m_first >> pos_alpha
+    m_masked = m_shifted & ((1 << m_max) - 1)
+    
+    # Debug statements
+    print(f"Decryption parameters: p={p}, pos={pos}, m_max={m_max}, alpha={alpha}")
+    print(f"Intermediate values: c % p = {c % p}, pos + alpha = {pos_alpha}")
+    print(f"m_full (before masking): {m_shifted}")
+    print(f"Decrypted message (m): {m_masked}")
+
+    return m_shifted

@@ -14,6 +14,7 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     """
     Generates a FAHE1 key.
     There is random process within this function (large prime p is random)
+    
     rho: noise parameter
     eta: secret key size
     gamma: final ciphertext max size

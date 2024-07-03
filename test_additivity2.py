@@ -1,8 +1,9 @@
 import random
+import time
 from fahe1 import keygen1, enc1, dec1
 import matplotlib.pyplot as plt
 
-from fahe2 import dec2, enc2
+from fahe2 import dec2, enc2, keygen2
 
 # Printing values
 RED = "\033[91m"
@@ -11,12 +12,13 @@ RESET = "\033[0m"
 
 # HOW TO USE: CHANGE THE HARD VALUES AND RUN: `python3 test_additivity2.py`
 
-# HARD VALUES; Make changes here, code will take care of the rest
+# HARD VALUES
+# NOTE: Change these values to test. The code will take care of the rest
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
 M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
-ALPHA = 6  # determines num_additions
-NUM_ADDITIONS = 2 ** (ALPHA - 1)  # normally max is 2**(ALPHA-1)
-NUM_TRIALS = 25  # how many times you want to test -1
+ALPHA = 22  # determines num_additions
+NUM_ADDITIONS = 1000  # normally max is 2**(ALPHA-1)
+NUM_TRIALS = 51  # how many times you want to test (-1)
 MSG_SIZE = 32  # optional, normally same as M_MAX
 ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 
@@ -30,9 +32,15 @@ failed_msg_sums = []  # stores failed msg totals
 failed_decrypted_ciph_sums = []  # stores failed decryp ciphtext totals
 
 # KEYGEN
-key = keygen1(LAMBDA_PARAM, M_MAX, ALPHA)
-encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3])
-decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
+if ENCRYPTION_SCHEME == 1:
+    key = keygen1(LAMBDA_PARAM, M_MAX, ALPHA)
+    encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3])
+    decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
+
+if ENCRYPTION_SCHEME == 2:
+    key = keygen2(LAMBDA_PARAM, M_MAX, ALPHA)
+    encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3], key[1][4], key[1][5])
+    decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
 
 
 # NOTE: If you want to generate a single preset message, go to the add_fahe1() method and change: is_single_msg = True , msg = whateveryouwanttohardset
@@ -102,9 +110,6 @@ def analyze_add(
         was_successful (bool): Whether the addition was successful.
         msg_sum (int): Sum of messages.
         ciph_sum (int): Sum of ciphertexts.
-
-    Returns:
-        None
     """
     global success_number
     if was_successful:
@@ -119,7 +124,7 @@ def analyze_add(
     ciph_length = ciph_sum.bit_length()
 
     print(
-        "\nFAHE1 TEST {}\n"
+        "\nFAHE{} Test {}\n"
         "==================\n"
         "alpha                      : {}\n"
         "NUM of additions           : {}\n"
@@ -129,12 +134,17 @@ def analyze_add(
         "Ciphertext DECRYPT SUM     : {}\n"
         "Was this successful        : {}\n"
         "DECRYPT Ciphertext LENGTH  : {}\n".format(
+            ENCRYPTION_SCHEME,
             index,
             ALPHA,
             NUM_ADDITIONS,
             M_MAX,
             msg_sum,
-            fahe1_get_decrypted_sum(ciph_sum),
+            (
+                fahe1_get_decrypted_sum(ciph_sum)
+                if ENCRYPTION_SCHEME == 1
+                else fahe2_get_decrypted_sum(ciph_sum)
+            ),
             was_successful,
             ciph_length,
         )
@@ -154,12 +164,18 @@ def add_fahe1(index: int) -> bool:
 
     # NOTE: You can change msg list params below
     msg_list = populate_message_list(NUM_ADDITIONS)
+    print("Compiled messages...")
     ciph_list = fahe1_populate_ciph_list(msg_list)
+    print("Encrypted messages...")
     msg_sum = get_msg_sum(msg_list)
+    print("Summed Messages...")
     ciph_sum = get_ciph_sum(ciph_list)
+    print("Summed ciphertext...")
     de_ciph_sum = fahe1_get_decrypted_sum(ciph_sum)
+    print("Deciphered ciphertext...")
 
     was_successful = verify_add(msg_sum, de_ciph_sum)
+    print("Analyzing!")
     analyze_add(index, was_successful, msg_sum, ciph_sum, de_ciph_sum)
     return was_successful
 
@@ -177,12 +193,21 @@ def add_fahe2(index: int) -> bool:
 
     # NOTE: You can change msg list params below
     msg_list = populate_message_list(NUM_ADDITIONS)
+    print("Compiled messages...")
+    # print(len(msg_list))
+    # time.sleep(1000)
+
     ciph_list = fahe2_populate_ciph_list(msg_list)
+    print("Encrypted messages...")
     msg_sum = get_msg_sum(msg_list)
+    print("Summed Messages...")
     ciph_sum = get_ciph_sum(ciph_list)
+    print(f"Summed ciphertext...")
     de_ciph_sum = fahe2_get_decrypted_sum(ciph_sum)
+    print(f"Deciphered ciphertext... {de_ciph_sum}")
 
     was_successful = verify_add(msg_sum, de_ciph_sum)
+    print("Analyzing!")
     analyze_add(index, was_successful, msg_sum, ciph_sum, de_ciph_sum)
     return was_successful
 
@@ -193,7 +218,7 @@ def final_analysis():
     print(f"{RED}Failing pairs:{RESET}")
     for i in range(len(fail_indices)):
         print(
-            "index = {}, m_total = {}, m_outcome = {}".format(
+            "index = {}, msg_sum = {}, decrypted_sum = {}".format(
                 fail_indices[i], failed_msg_sums[i], failed_decrypted_ciph_sums[i]
             )
         )
