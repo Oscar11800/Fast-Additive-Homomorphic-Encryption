@@ -1,13 +1,11 @@
-import math
 import random
 from fahe1 import keygen1, enc1, dec1
-from fahe2 import keygen2, enc2, dec2
-import secrets
 import matplotlib.pyplot as plt
-import sys
-import warnings
 
-from helper import max_num_for_bit_len
+# Printing values
+RED = '\033[91m'
+GREEN = '\033[92m'
+RESET = '\033[0m'
 
 # HOW TO USE: CHANGE THE HARD VALUES AND RUN: `python3 test_additivity2.py`
 
@@ -15,9 +13,10 @@ from helper import max_num_for_bit_len
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
 M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
 ALPHA = 6  # determines num_additions
-NUM_ADDITIONS = 32  # normally max is 2**(ALPHA-1)
-NUM_TRIALS = 101  # how many times you want to test -1
+NUM_ADDITIONS = 2**(ALPHA-1)  # normally max is 2**(ALPHA-1)
+NUM_TRIALS = 100  # how many times you want to test -1
 MSG_SIZE = 32  # optional, normally same as M_MAX
+
 
 # NOT SO HARD VALUES, DON'T TOUCH
 success_number = 0  # number of successful tests
@@ -155,7 +154,7 @@ def add_fahe1(index: int):
 def final_analysis():
     """Perform final analysis and display and plot results."""
 
-    print("Failing pairs:")
+    print(f"{RED}Failing pairs:{RESET}")
     for i in range(len(fail_indices)):
         print(
             "index = {}, m_total = {}, m_outcome = {}".format(
@@ -163,19 +162,19 @@ def final_analysis():
             )
         )
 
-    print("Successes:")
+    print(f"\n{GREEN}Successes:{RESET}")
     for i in range(len(passed_equal_sums)):
         print(
             "index = {}, equal_outcome= {}".format(
                 pass_indices[i], passed_equal_sums[i]
             )
         )
-    print("Pass rate = {:.2f}%".format((success_number) / (NUM_TRIALS) * 100))
+    print("\nPass rate = {:.2f}%\n".format((success_number) / (NUM_TRIALS) * 100))
 
     if not fail_indices:
-        print("COMPLETE SUCCESS! GOOD JOB!\nฅ ^ ≧∇≦^  ฅ\n")
+        print(f"{GREEN}COMPLETE SUCCESS! GOOD JOB!\nฅ ^ ≧∇≦^  ฅ\n{RESET}")
     if len(passed_equal_sums) == 0:
-        print("COMPLETE FAIL! NO TESTS PASSED\n≽^╥⩊╥^≼")
+        print(f"{RED}COMPLETE FAIL! NO TESTS PASSED\n≽^╥⩊╥^≼\n{RESET}")
     plt.scatter(pass_indices, passed_equal_sums, c="green")
     plt.scatter(fail_indices, failed_msg_sums, c="blue")
     plt.scatter(fail_indices, failed_decrypted_ciph_sums, c="red")
