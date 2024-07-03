@@ -57,13 +57,15 @@ def additivity_fahe1(m_list, num_additions, k):
         decrypted_sum_previous = decrypted_sum
         decrypted_sum = dec1(dk, homomorphic_sum, i)
         if not file_exist:
-            file.write("Current sum of m = {}, but current m_outcome from sum of c = {}\nPrevious sum of m = {}, previous m_outcome from sum of c = {}, m added this time = {};\nThis happens after {} additions; This happens after {} carries\n\n".format(bin(direct_sum), bin(decrypted_sum), bin(direct_sum_previous), bin(decrypted_sum_previous), bin(m), i, num_carries))
+            file.write("Current sum of m = {}, current m_outcome from sum of c = {}\nPrevious sum of m = {}, previous m_outcome from sum of c = {}, m added this time = {};\nbit_length of current sum of c = {}, bit_length of previous sum of c = {}\nThis happens after {} additions; This happens after {} carries\n".format(bin(direct_sum), bin(decrypted_sum), bin(direct_sum_previous), bin(decrypted_sum_previous), bin(m), homomorphic_sum.bit_length(), homomorphic_sum_previous.bit_length(), i, num_carries))
         if direct_sum != decrypted_sum:
             if not error_occur:
                 print("Error occurs.\nCurrent sum of m = {}, but current m_outcome from sum of c = {}\nPrevious sum of m = {}, previous m_outcome from sum of c = {}, m added this time = {};\nThis happens after {} additions; This happens after {} carries".format(bin(direct_sum), bin(decrypted_sum), bin(direct_sum_previous), bin(decrypted_sum_previous), bin(m), i, num_carries))
                 if not file_exist:
-                    file.write("Current sum of c = {}\nPrevious sum of c = {}\nc added this time = {}\n\n\n".format(bin(homomorphic_sum), bin(homomorphic_sum_previous), bin(c)))
+                    file.write("Error occurs at this step.\nCurrent sum of c = {}\nPrevious sum of c = {}\nc added this time = {}\n".format(bin(homomorphic_sum), bin(homomorphic_sum_previous), bin(c)))
             error_occur = True
+        if not file_exist:
+            file.write("\n\n")
     if not file_exist:
         file.close()
     # Decrypt the homomorphic sum
