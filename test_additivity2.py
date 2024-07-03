@@ -2,20 +2,23 @@ import random
 from fahe1 import keygen1, enc1, dec1
 import matplotlib.pyplot as plt
 
+from fahe2 import dec2, enc2
+
 # Printing values
-RED = '\033[91m'
-GREEN = '\033[92m'
-RESET = '\033[0m'
+RED = "\033[91m"
+GREEN = "\033[92m"
+RESET = "\033[0m"
 
 # HOW TO USE: CHANGE THE HARD VALUES AND RUN: `python3 test_additivity2.py`
 
-# HARD VALUES, CHANGE HERE
+# HARD VALUES; Make changes here, code will take care of the rest
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
 M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
 ALPHA = 6  # determines num_additions
-NUM_ADDITIONS = 2**(ALPHA-1)  # normally max is 2**(ALPHA-1)
-NUM_TRIALS = 100  # how many times you want to test -1
+NUM_ADDITIONS = 2 ** (ALPHA - 1)  # normally max is 2**(ALPHA-1)
+NUM_TRIALS = 25  # how many times you want to test -1
 MSG_SIZE = 32  # optional, normally same as M_MAX
+ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 
 
 # NOT SO HARD VALUES, DON'T TOUCH
@@ -53,9 +56,14 @@ def populate_message_list(
         return [random.getrandbits(MSG_SIZE) for _ in range(num_msgs)]
 
 
-def populate_ciph_list(msg_list: list[int]):
-    """Encrypt a list of messages."""
+def fahe1_populate_ciph_list(msg_list: list[int]):
+    """Encrypt a list of messages with fahe1 encryption scheme."""
     return [enc1(encrypt_key, m) for m in msg_list]
+
+
+def fahe2_populate_ciph_list(msg_list: list[int]):
+    """Encrypt a list of messages with fahe1 encryption scheme."""
+    return [enc2(encrypt_key, m) for m in msg_list]
 
 
 def get_msg_sum(msg_list: list[int]):
@@ -68,9 +76,14 @@ def get_ciph_sum(c_list: list[int]):
     return sum(c_list)
 
 
-def get_decrypted_sum(ciph_sum: int):
-    """Decrypt a summed ciphertext."""
+def fahe1_get_decrypted_sum(ciph_sum: int):
+    """Decrypt a summed ciphertext with fahe1 decryption scheme."""
     return dec1(decrypt_key, ciph_sum)
+
+
+def fahe2_get_decrypted_sum(ciph_sum: int):
+    """Decrypt a summed ciphertext with fahe2 decryption scheme."""
+    return dec2(decrypt_key, ciph_sum)
 
 
 def verify_add(msg_sum: int, decrypted_ciph_sum: int):
@@ -121,14 +134,14 @@ def analyze_add(
             NUM_ADDITIONS,
             M_MAX,
             msg_sum,
-            get_decrypted_sum(ciph_sum),
+            fahe1_get_decrypted_sum(ciph_sum),
             was_successful,
             ciph_length,
         )
     )
 
 
-def add_fahe1(index: int):
+def add_fahe1(index: int) -> bool:
     """
     Perform the addition test for FAHE1 scheme.
 
@@ -136,15 +149,38 @@ def add_fahe1(index: int):
         index (int): Index of the current trial.
 
     Returns:
-        bool: Whether the addition was successful.
+        was_succesful(bool): Whether the addition was successful.
     """
 
     # NOTE: You can change msg list params below
     msg_list = populate_message_list(NUM_ADDITIONS)
-    ciph_list = populate_ciph_list(msg_list)
+    ciph_list = fahe1_populate_ciph_list(msg_list)
     msg_sum = get_msg_sum(msg_list)
     ciph_sum = get_ciph_sum(ciph_list)
-    de_ciph_sum = get_decrypted_sum(ciph_sum)
+    de_ciph_sum = fahe1_get_decrypted_sum(ciph_sum)
+
+    was_successful = verify_add(msg_sum, de_ciph_sum)
+    analyze_add(index, was_successful, msg_sum, ciph_sum, de_ciph_sum)
+    return was_successful
+
+
+def add_fahe2(index: int) -> bool:
+    """
+    Perform the addition test for FAHE2 scheme.
+
+    Args:
+        index (int): Index of the current trial.
+
+    Returns:
+        was_succesful(bool): Whether the addition was successful.
+    """
+
+    # NOTE: You can change msg list params below
+    msg_list = populate_message_list(NUM_ADDITIONS)
+    ciph_list = fahe2_populate_ciph_list(msg_list)
+    msg_sum = get_msg_sum(msg_list)
+    ciph_sum = get_ciph_sum(ciph_list)
+    de_ciph_sum = fahe2_get_decrypted_sum(ciph_sum)
 
     was_successful = verify_add(msg_sum, de_ciph_sum)
     analyze_add(index, was_successful, msg_sum, ciph_sum, de_ciph_sum)
@@ -179,16 +215,32 @@ def final_analysis():
     plt.scatter(fail_indices, failed_msg_sums, c="blue")
     plt.scatter(fail_indices, failed_decrypted_ciph_sums, c="red")
     plt.grid()
-    plt.savefig("fahe1add.png")
+
+    if ENCRYPTION_SCHEME == 1:
+        plt.savefig("fahe1add.png")
+    else:
+        plt.savefig("fahe2add.png")
+
     plt.show()
 
 
-def run_add():
-    """Run the addition test for multiple trials."""
-    print("FAHE1 TEST:")
+def run_add(func):
+    """
+    Run the addition test for multiple trials.
+
+    Args:
+        func: Function argument that determines which encryption scheme to add.
+    """
     for trial in range(NUM_TRIALS):
-        add_fahe1(trial)
+        func(trial)
     final_analysis()
 
 
-run_add()
+if ENCRYPTION_SCHEME == 1:
+    run_add(add_fahe1)
+elif ENCRYPTION_SCHEME == 2:
+    run_add(add_fahe2)
+else:
+    print(
+        f"\n{RED}Invalid ENCRYPTION_SCHEME value. Please set the value in the code to be either 1 or 2 for FAHE1 or FAHE2 respectively.{RESET}"
+    )
