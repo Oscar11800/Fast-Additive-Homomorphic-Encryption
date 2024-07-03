@@ -33,6 +33,7 @@ encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3])
 decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
 
 
+# NOTE: If you want to generate a single preset message, go to the add_fahe1() method and change: is_single_msg = True , msg = whateveryouwanttohardset
 def populate_message_list(
     num_msgs: int, is_single_msg: bool = False, msg: int = random.getrandbits(MSG_SIZE)
 ):
@@ -138,9 +139,9 @@ def add_fahe1(index: int):
     Returns:
         bool: Whether the addition was successful.
     """
-    msg_list = populate_message_list(
-        NUM_ADDITIONS
-    )  # add bool parameter to only run a single message or change # of runs
+
+    # NOTE: You can change msg list params below
+    msg_list = populate_message_list(NUM_ADDITIONS)
     ciph_list = populate_ciph_list(msg_list)
     msg_sum = get_msg_sum(msg_list)
     ciph_sum = get_ciph_sum(ciph_list)
