@@ -20,13 +20,12 @@ NUM_TRIALS = 101  # how many times you want to test -1
 MSG_SIZE = 32  # optional, normally same as M_MAX
 
 # NOT SO HARD VALUES, DON'T TOUCH
-was_successful = False
-success_number = 0
-pass_indices = []  # stores ciphertext that passed addition
-fail_indices = []  # stores ciphertext that failed addition
-passed_equal_sums = []
-failed_msg_sums = []
-failed_decrypted_ciph_sums = []
+success_number = 0  # number of successful tests
+pass_indices = []  # stores test indices that passed addition
+fail_indices = []  # stores test indices that failed addition
+passed_equal_sums = []  # stores ciphertext = msg equalities
+failed_msg_sums = []  # stores failed msg totals
+failed_decrypted_ciph_sums = []  # stores failed decryp ciphtext totals
 
 # KEYGEN
 key = keygen1(LAMBDA_PARAM, M_MAX, ALPHA)
@@ -155,8 +154,6 @@ def add_fahe1(index: int):
 def final_analysis():
     """Perform final analysis and display and plot results."""
 
-    print("Pass rate = {:.2f}%".format((success_number) / (NUM_TRIALS) * 100))
-
     print("Failing pairs:")
     for i in range(len(fail_indices)):
         print(
@@ -172,6 +169,7 @@ def final_analysis():
                 pass_indices[i], passed_equal_sums[i]
             )
         )
+    print("Pass rate = {:.2f}%".format((success_number) / (NUM_TRIALS) * 100))
 
     if not fail_indices:
         print("COMPLETE SUCCESS! GOOD JOB!\nฅ ^ ≧∇≦^  ฅ\n")
