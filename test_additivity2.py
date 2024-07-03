@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import sys
 import warnings
 
-warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
 from helper import max_num_for_bit_len
 
 # HOW TO USE: CHANGE THE HARD VALUES AND RUN: `python3 test_additivity2.py`
@@ -16,11 +15,11 @@ from helper import max_num_for_bit_len
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
 M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
 ALPHA = 6  # determines num_additions
-NUM_ADDITIONS = int(math.log2(ALPHA - 1))  # normally max is 2**(ALPHA-1)
+NUM_ADDITIONS = 32  # normally max is 2**(ALPHA-1)
 NUM_TRIALS = 101  # how many times you want to test -1
 MSG_SIZE = 32  # optional, normally same as M_MAX
 
-# NOT SO HARD VALUES, DON'T TOCUH
+# NOT SO HARD VALUES, DON'T TOUCH
 was_successful = False
 success_number = 0
 pass_indices = []  # stores ciphertext that passed addition
@@ -130,16 +129,15 @@ def analyze_add(
     )
 
 
-def add_fahe1(index: int, was_successful: bool):
+def add_fahe1(index: int):
     """
     Perform the addition test for FAHE1 scheme.
 
     Args:
         index (int): Index of the current trial.
-        was_successful (bool): Initial success status.
 
     Returns:
-        None
+        bool: Whether the addition was successful.
     """
     msg_list = populate_message_list(
         NUM_ADDITIONS
@@ -151,12 +149,13 @@ def add_fahe1(index: int, was_successful: bool):
 
     was_successful = verify_add(msg_sum, de_ciph_sum)
     analyze_add(index, was_successful, msg_sum, ciph_sum, de_ciph_sum)
+    return was_successful
 
 
 def final_analysis():
     """Perform final analysis and display and plot results."""
 
-    print("Pass rate = {}%".format((float(success_number) / float(NUM_TRIALS)) * 100))
+    print("Pass rate = {:.2f}%".format((success_number) / (NUM_TRIALS) * 100))
 
     print("Failing pairs:")
     for i in range(len(fail_indices)):
@@ -165,8 +164,19 @@ def final_analysis():
                 fail_indices[i], failed_msg_sums[i], failed_decrypted_ciph_sums[i]
             )
         )
+
+    print("Successes:")
+    for i in range(len(passed_equal_sums)):
+        print(
+            "index = {}, equal_outcome= {}".format(
+                pass_indices[i], passed_equal_sums[i]
+            )
+        )
+
     if not fail_indices:
-        print("NONE! GOOD JOB!\n(  = o w o = )\n")
+        print("COMPLETE SUCCESS! GOOD JOB!\nฅ ^ ≧∇≦^  ฅ\n")
+    if len(passed_equal_sums) == 0:
+        print("COMPLETE FAIL! NO TESTS PASSED\n≽^╥⩊╥^≼")
     plt.scatter(pass_indices, passed_equal_sums, c="green")
     plt.scatter(fail_indices, failed_msg_sums, c="blue")
     plt.scatter(fail_indices, failed_decrypted_ciph_sums, c="red")
@@ -178,10 +188,8 @@ def final_analysis():
 def run_add():
     """Run the addition test for multiple trials."""
     print("FAHE1 TEST:")
-    global was_successful
     for trial in range(NUM_TRIALS):
-        add_fahe1(trial, was_successful)
-        was_successful = False  # reset
+        add_fahe1(trial)
     final_analysis()
 
 
