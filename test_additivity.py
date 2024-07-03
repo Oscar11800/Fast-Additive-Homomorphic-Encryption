@@ -1,3 +1,4 @@
+import random
 from fahe1 import keygen1, enc1, dec1
 from fahe2 import keygen2, enc2, dec2
 import secrets
@@ -21,21 +22,19 @@ def additivity_fahe1(l, m_max, alpha, num_additions):
         tuple: Contains totals of plain messages, decrypted message from ciphertexts,
                total ciphertext, type of total ciphertext, and pass/fail status.
     """
-    m_list = []
-    for i in range(num_additions):
-        m = secrets.randbelow(max_num_for_bit_len(m_max))
-        m_list.append(m)
-
-    c_list = []
     k, ek, dk = keygen1(l, m_max, alpha)
-    for m in m_list:
-        c = enc1(ek, m)
-        c_list.append(c)
+    m_list = [random.getrandbits(m_max-12) for _ in range(num_additions)]
+    c_list = [enc1(ek, m) for m in m_list]
 
-    c_total = sum(c_list)
-    m_total = sum(m_list)
-    m_outcome = dec1(dk, c_total)
-    if m_total == m_outcome:
+    homomorphic_sum = sum(c_list)
+    
+    # Direct sum of messages
+    direct_sum = sum(m_list)
+
+    # Decrypt the homomorphic sum
+    decrypted_sum = dec1(dk, homomorphic_sum)
+    
+    if direct_sum == decrypted_sum:
         passed = "Passed"
     else:
         passed = "Failed"
@@ -44,14 +43,14 @@ def additivity_fahe1(l, m_max, alpha, num_additions):
             alpha,
             2 ** (alpha - 1),
             num_additions,
-            m_total,
-            m_outcome,
+            direct_sum,
+            decrypted_sum,
             passed,
-            c_total.bit_length(),
-            type(c_total),
+            homomorphic_sum.bit_length(),
+            type(homomorphic_sum),
         )
     )
-    return m_total, m_outcome, c_total, type(c_total), passed
+    return direct_sum, decrypted_sum, homomorphic_sum, type(homomorphic_sum), passed
 
 
 def additivity_fahe2(l, m_max, alpha, num_additions):
@@ -95,7 +94,7 @@ pass_indices = []
 fail_indices = []
 pass_number = 0
 for i in range(100):
-    m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 32, 6, 16)
+    m_total, m_outcome, c_total, type_c, passed = additivity_fahe1(128, 64, 33, 2**32)
     if passed == "Passed":
         pass_indices.append(i)
         pass_number += 1

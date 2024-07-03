@@ -75,7 +75,7 @@ def dec1(dk, c):
     # Step 3: Extract the least significant |m_max| bits
     m = m_shifted & ((1 << m_max) - 1)
 
-    return m_shifted
+    return m
 
 
 def timed_keygen1(l, m_max, alpha) -> float:
