@@ -14,6 +14,9 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     """
     Generates a FAHE1 key.
     There is random process within this function (large prime p is random)
+    rho: noise parameter
+    eta: secret key size
+    gamma: final ciphertext max size
 
     Args:
         l: security parameter (lambda)
@@ -26,8 +29,8 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     """
 
     rho = l
-    eta = rho + 2 * alpha + m_max
-    gamma = math.ceil(rho / math.log2(rho) * ((eta - rho) ** 2))
+    eta = rho + (2 * alpha) + m_max
+    gamma = int(rho / math.log2(rho) * ((eta - rho) ** 2))
     p = helper.generate_large_prime(eta)
     X = (Decimal(2) ** Decimal(gamma)) / p
 
@@ -48,10 +51,11 @@ def enc1(ek, m) -> float:
     Returns:
         c (float): ciphertext
     """
-    q = secrets.randbelow(int(ek[1]) + 1)
-    noise = secrets.randbits(ek[2])  # Correct noise generation
-    M = (m << (int(ek[2]) + int(ek[3]))) + noise
-    n = ek[0] * q
+    p, X, rho, alpha = ek
+    q = secrets.randbelow(int(X) + 1)
+    noise = secrets.randbits(rho)  # Correct noise generation
+    M = (m << (int(rho) + int(alpha))) + noise
+    n = p * q
     c = n + M
     return c
 
@@ -72,14 +76,32 @@ def dec1(dk, c, num_additions):
 
     # Step 1: Compute c % p
     m_full = c % p
-
-    # Step 2: Right shift by (rho + alpha)
     m_shifted = m_full >> (rho + alpha)
+    m_masked = m_shifted & ((1 << m_max) - 1)
 
     # Step 3: Extract the least significant |m_max| bits
     m = m_shifted & ((1 << m_max_outcome) - 1)
 
     return m
+
+def dec1(dk, c):
+    """
+    Decrypts a messsage using FAHE1 scheme.
+
+    Args:
+        dk (float): subset of scheme key 'k'
+        c (float): ciphertext
+
+    Returns:
+        m (float): decrypted message (least significant bits)
+    """
+    p, m_max, rho, alpha = dk
+
+    m_full = c % p
+    m_shifted = m_full >> (rho + alpha)
+
+    m_masked = m_shifted & ((1 << m_max) - 1)
+    return m_shifted
 
 
 def timed_keygen1(l, m_max, alpha) -> float:
