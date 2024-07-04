@@ -5,7 +5,7 @@ import secrets
 import matplotlib.pyplot as plt
 import sys, os
 
-from helper import max_num_for_bit_len
+from data_collection import max_num_for_bit_len
 
 
 def additivity_fahe1(m_list, num_additions, k):

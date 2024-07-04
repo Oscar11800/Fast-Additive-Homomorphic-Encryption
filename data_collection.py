@@ -653,3 +653,18 @@ def alpha_performance_2(alpha_start, alpha_end, alpha_step, rep, l, m_max, m):
         lambdas,
         m_maxes,
     )
+
+def max_num_for_bit_len(bit_length: int) -> int:
+    """
+    Calculates the maximum number that can be represented with the given bit length.
+
+    Args:
+        bit_length: The bit length (int).
+    
+    Return:
+        The maximum number that can be represented with the given bit length (int).
+    """
+    if bit_length < 1:
+        raise ValueError("Bit length must be at least 1")
+    
+    return (1 << bit_length) - 1

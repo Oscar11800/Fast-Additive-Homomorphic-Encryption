@@ -20,11 +20,12 @@ RESET = "\033[0m"
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
 M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
 ALPHA = 6  # determines num_additions
-NUM_ADDITIONS = 2**(ALPHA-1)# normally max is usually 2**(ALPHA-1)
+NUM_ADDITIONS = 1# normally max is usually 2**(ALPHA-1)
 NUM_TRIALS = 21  # how many times you want to test (-1)
-MSG_SIZE = 32  # optional, normally same as M_MAX
-ENCRYPTION_SCHEME = 1  # 1 for FAHE1, 2 for FAHE2, else error
-SET_MSG = 2364110189  # only in use when populate bool is True
+MSG_SIZE = 28  # optional, normally same as M_MAX
+ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
+SET_MSG = 2364110189  # this sets all messages in a message_list to SET_MSG when IS_RAND_MSG == False
+IS_RAND_MSG = False  # setting to True will generate random messages at each trial and disregard the SET_MSG
 
 
 # NOT SO HARD VALUES, DON'T TOUCH
@@ -49,20 +50,23 @@ if ENCRYPTION_SCHEME == 2:
 
 # NOTE: If you want to generate a single preset message, go to the add_fahe1() method and change: is_single_msg = True , msg = whateveryouwanttohardset
 def populate_message_list(
-    num_msgs: int, is_single_msg: bool = False, msg: int = random.getrandbits(MSG_SIZE)
+    num_msgs: int, msg: int = random.getrandbits(MSG_SIZE)
 ):
     """
     Populate a list of random messages.
 
     Args:
         num_msgs (int): Number of messages to generate.
-        is_single_msg (bool): Whether to use a single message for all entries.
+        # is_single_msg (bool): Whether to use a single message for all entries.
         msg (int): A specific message to use if is_single_msg is True.
 
     Returns:
         list[int]: List of generated messages.
     """
-    return [msg] * num_msgs if is_single_msg else [random.getrandbits(MSG_SIZE) for _ in range(num_msgs)]
+    if IS_RAND_MSG:
+        return [random.getrandbits(MSG_SIZE) for _ in range(num_msgs)]
+    else:
+        return [msg] * num_msgs
 
 
 def fahe1_populate_ciph_list(msg_list: list[int]):
@@ -175,7 +179,7 @@ def add_fahe1(index: int) -> bool:
     """
 
     # NOTE: You can change msg list params below
-    msg_list = populate_message_list(NUM_ADDITIONS, False, SET_MSG)
+    msg_list = populate_message_list(NUM_ADDITIONS, SET_MSG)
     ciph_list = fahe1_populate_ciph_list(msg_list)
     msg_sum = get_msg_sum(msg_list)
     masked_msg_sum = get_masked_msg_sum(msg_sum)
@@ -199,7 +203,7 @@ def add_fahe2(index: int) -> bool:
     """
 
     # NOTE: You can change msg list params below
-    msg_list = populate_message_list(NUM_ADDITIONS, False, SET_MSG)
+    msg_list = populate_message_list(NUM_ADDITIONS, SET_MSG)
     ciph_list = fahe2_populate_ciph_list(msg_list)
     msg_sum = get_msg_sum(msg_list)
     masked_msg_sum = get_masked_msg_sum(msg_sum)
@@ -245,9 +249,9 @@ def final_analysis():
     else:
         plt.savefig("graphs/fahe2add.png")
         
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", category=UserWarning)
-        plt.show()
+    # with warnings.catch_warnings():
+    #     warnings.simplefilter("ignore", category=UserWarning)
+    #     plt.show()
 
 
 def run_add(func):
