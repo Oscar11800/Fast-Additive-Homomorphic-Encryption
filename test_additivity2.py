@@ -17,11 +17,11 @@ RESET = "\033[0m"
 # HARD VALUES
 # NOTE: Change these values to test. The code will take care of the rest
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
-M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
-ALPHA = 22  # determines num_additions
-NUM_ADDITIONS = 2**(ALPHA-1)  # normally max is 2**(ALPHA-1)
-NUM_TRIALS = 6  # how many times you want to test (-1)
-MSG_SIZE = 32  # optional, normally same as M_MAX
+M_MAX = 64  # max size of msgs in bits (normally 32 or 64)
+ALPHA = 29  # determines num_additions
+NUM_ADDITIONS = 1000 # normally max is 2**(ALPHA-1)
+NUM_TRIALS = 100  # how many times you want to test (-1)
+MSG_SIZE = 64  # optional, normally same as M_MAX
 ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 SET_MSG = random.getrandbits(MSG_SIZE)  # only in use when populate bool is True
 
