@@ -23,7 +23,7 @@ ALPHA = 6  # determines num_additions
 NUM_ADDITIONS = 2**(ALPHA-1)# normally max is usually 2**(ALPHA-1)
 NUM_TRIALS = 21  # how many times you want to test (-1)
 MSG_SIZE = 32  # optional, normally same as M_MAX
-ENCRYPTION_SCHEME = 1  # 1 for FAHE1, 2 for FAHE2, else error
+ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 SET_MSG = 2364110189  # only in use when populate bool is True
 print(bin(SET_MSG))
 
