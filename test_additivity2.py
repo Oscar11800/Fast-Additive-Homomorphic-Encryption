@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 
 from fahe2 import dec2, enc2, keygen2
 
+import math
+
 # Printing values
 RED = "\033[91m"
 GREEN = "\033[92m"
@@ -18,8 +20,8 @@ LAMBDA_PARAM = 128  # security param (normally 128 or 256)
 M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
 ALPHA = 22  # determines num_additions
 NUM_ADDITIONS = 1000  # normally max is 2**(ALPHA-1)
-NUM_TRIALS = 51  # how many times you want to test (-1)
-MSG_SIZE = 32  # optional, normally same as M_MAX
+NUM_TRIALS = 6  # how many times you want to test (-1)
+MSG_SIZE = 23  # optional, normally same as M_MAX
 ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 SET_MSG = random.getrandbits(MSG_SIZE)  # only in use when populate bool is True
 
@@ -132,7 +134,9 @@ def analyze_add(
         "M_MAX                      : {}\n"
         "------------------\n"
         "M SUM                      : {}\n"
+        "Bit length of M SUM        : {}\n"
         "Ciphertext DECRYPT SUM     : {}\n"
+        "Bit length of Decrypted sum: {}\n"
         "Was this successful        : {}\n"
         "DECRYPT Ciphertext LENGTH  : {}\n".format(
             ENCRYPTION_SCHEME,
@@ -140,11 +144,17 @@ def analyze_add(
             ALPHA,
             NUM_ADDITIONS,
             M_MAX,
-            msg_sum,
+            bin(msg_sum),
+            msg_sum.bit_length(),
             (
-                fahe1_get_decrypted_sum(ciph_sum)
+                bin(fahe1_get_decrypted_sum(ciph_sum))
                 if ENCRYPTION_SCHEME == 1
-                else fahe2_get_decrypted_sum(ciph_sum)
+                else bin(fahe2_get_decrypted_sum(ciph_sum))
+            ),
+            (
+                fahe1_get_decrypted_sum(ciph_sum).bit_length()
+                if ENCRYPTION_SCHEME == 1
+                else fahe2_get_decrypted_sum(ciph_sum).bit_length()
             ),
             was_successful,
             ciph_length,
@@ -197,6 +207,11 @@ def add_fahe2(index: int) -> bool:
     print("Compiled messages...")
     # print(len(msg_list))
     # time.sleep(1000)
+
+    if math.ceil(math.log2(MSG_SIZE * (2**NUM_ADDITIONS - 1))) <= M_MAX:
+        print("It's likely to work.")
+    else:
+        print("It's not likely to work.")
 
     ciph_list = fahe2_populate_ciph_list(msg_list)
     print("Encrypted messages...")
