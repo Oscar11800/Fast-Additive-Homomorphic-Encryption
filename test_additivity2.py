@@ -19,9 +19,9 @@ RESET = "\033[0m"
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
 M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
 ALPHA = 22  # determines num_additions
-NUM_ADDITIONS = 1000  # normally max is 2**(ALPHA-1)
+NUM_ADDITIONS = 2**(ALPHA-1)  # normally max is 2**(ALPHA-1)
 NUM_TRIALS = 6  # how many times you want to test (-1)
-MSG_SIZE = 23  # optional, normally same as M_MAX
+MSG_SIZE = 32  # optional, normally same as M_MAX
 ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 SET_MSG = random.getrandbits(MSG_SIZE)  # only in use when populate bool is True
 
@@ -61,10 +61,7 @@ def populate_message_list(
     Returns:
         list[int]: List of generated messages.
     """
-    if is_single_msg:
-        return [msg] * num_msgs
-    else:
-        return [random.getrandbits(MSG_SIZE) for _ in range(num_msgs)]
+    return [msg] * num_msgs if is_single_msg else [random.getrandbits(MSG_SIZE) for _ in range(num_msgs)]
 
 
 def fahe1_populate_ciph_list(msg_list: list[int]):
@@ -81,6 +78,9 @@ def get_msg_sum(msg_list: list[int]):
     """Calculate the direct sum of a list of messages."""
     return sum(msg_list)
 
+def get_masked_msg_sum(msg_sum: int):
+    return msg_sum & ((1 << M_MAX) - 1)
+    
 
 def get_ciph_sum(c_list: list[int]):
     """Calculate the sum of a list of ciphertexts."""
@@ -97,9 +97,9 @@ def fahe2_get_decrypted_sum(ciph_sum: int):
     return dec2(decrypt_key, ciph_sum)
 
 
-def verify_add(msg_sum: int, decrypted_ciph_sum: int):
+def verify_add(masked_msg_sum: int, decrypted_ciph_sum: int):
     """Verify if the decrypted sum of ciphertexts matches the sum of msgs."""
-    return msg_sum == decrypted_ciph_sum
+    return masked_msg_sum == decrypted_ciph_sum
 
 
 def analyze_add(
@@ -203,28 +203,24 @@ def add_fahe2(index: int) -> bool:
     """
 
     # NOTE: You can change msg list params below
-    msg_list = populate_message_list(NUM_ADDITIONS, True, SET_MSG)
+    msg_list = populate_message_list(NUM_ADDITIONS, False, SET_MSG)
     print("Compiled messages...")
     # print(len(msg_list))
     # time.sleep(1000)
 
-    if math.ceil(math.log2(MSG_SIZE * (2**NUM_ADDITIONS - 1))) <= M_MAX:
-        print("It's likely to work.")
-    else:
-        print("It's not likely to work.")
-
     ciph_list = fahe2_populate_ciph_list(msg_list)
     print("Encrypted messages...")
     msg_sum = get_msg_sum(msg_list)
+    masked_msg_sum = get_masked_msg_sum(msg_sum)
     print("Summed Messages...")
     ciph_sum = get_ciph_sum(ciph_list)
     print(f"Summed ciphertext...")
     de_ciph_sum = fahe2_get_decrypted_sum(ciph_sum)
     print(f"Deciphered ciphertext... {de_ciph_sum}")
 
-    was_successful = verify_add(msg_sum, de_ciph_sum)
+    was_successful = verify_add(masked_msg_sum, de_ciph_sum)
     print("Analyzing!")
-    analyze_add(index, was_successful, msg_sum, ciph_sum, de_ciph_sum)
+    analyze_add(index, was_successful, masked_msg_sum, ciph_sum, de_ciph_sum)
     return was_successful
 
 
