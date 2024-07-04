@@ -37,7 +37,6 @@ def keygen2(l, m_max, alpha) -> tuple[float]:
     k = (p, X, pos, m_max, l, alpha)
     ek = (p, X, pos, m_max, l, alpha)
     dk = (p, pos, m_max, alpha)
-    print("Generated FAHE2 KEY!")
     return k, ek, dk
 
 
@@ -56,11 +55,9 @@ def enc2(ek, m):
     q = secrets.randbelow(int(X) + 1)
     noise1 = secrets.randbits(pos)
     noise2 = secrets.randbits(l - pos)
-    # print("Generated noise!")
     M = (noise2 << (pos + m_max + alpha)) + (m << (pos + alpha)) + noise1
     n = p * q
     c = n + M
-    # print("Encrypted!")
     return c
 
 
@@ -83,9 +80,5 @@ def dec2(dk, c):
     m_masked = m_shifted & ((1 << m_max) - 1)
     
     # Debug statements
-    print(f"Decryption parameters: p={p}, pos={pos}, m_max={m_max}, alpha={alpha}")
-    print(f"Intermediate values: c % p = {c % p}, pos + alpha = {pos_alpha}")
-    print(f"m_full (before masking): {m_shifted}")
-    print(f"Decrypted message (m): {m_masked}")
 
     return m_masked

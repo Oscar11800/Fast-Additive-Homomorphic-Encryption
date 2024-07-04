@@ -30,10 +30,7 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     eta = rho + (2 * alpha) + m_max
     gamma = int(rho / math.log2(rho) * ((eta - rho) ** 2))
     p = number.getPrime(eta)
-    # p = 5268609364791481114846546704586448408294284429689377
     X = (Decimal(2) ** Decimal(gamma)) / p
-    print('P', p)
-    print('X', X)
     k = (p, m_max, X, rho, alpha)
     ek = (p, X, rho, alpha)
     dk = (p, m_max, rho, alpha)
