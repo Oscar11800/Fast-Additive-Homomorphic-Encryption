@@ -57,7 +57,7 @@ def is_prime(num):
 
 def generate_large_prime(num_of_bits):
     while True:
-        num = secrets.randbelow(pow(2, num_of_bits))
+        num = secrets.randbits(num_of_bits)
         if is_prime(num):
             return num  
         
