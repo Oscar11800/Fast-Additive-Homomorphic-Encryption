@@ -33,6 +33,7 @@ def keygen1(l, m_max, alpha) -> tuple[float]:
     eta = rho + (2 * alpha) + m_max
     gamma = int(rho / math.log2(rho) * ((eta - rho) ** 2))
     p = helper.generate_large_prime(eta)
+    # p = 5268609364791481114846546704586448408294284429689377
     X = (Decimal(2) ** Decimal(gamma)) / p
 
     k = (p, m_max, X, rho, alpha)
@@ -53,7 +54,7 @@ def enc1(ek, m) -> float:
         c (float): ciphertext
     """
     p, X, rho, alpha = ek
-    q = secrets.randbelow(int(X) + 1)
+    q = secrets.randbelow(int(X + 1))
     noise = secrets.randbits(rho)  # Correct noise generation
     M = (m << (int(rho) + int(alpha))) + noise
     n = p * q
@@ -102,7 +103,7 @@ def dec1(dk, c):
     m_shifted = m_full >> (rho + alpha)
 
     m_masked = m_shifted & ((1 << m_max) - 1)
-    return m_shifted
+    return m_masked
 
 
 def timed_keygen1(l, m_max, alpha) -> float:

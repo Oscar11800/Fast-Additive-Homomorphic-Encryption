@@ -1,5 +1,6 @@
 import random
 import time
+import warnings
 from fahe1 import keygen1, enc1, dec1
 import matplotlib.pyplot as plt
 
@@ -17,13 +18,14 @@ RESET = "\033[0m"
 # HARD VALUES
 # NOTE: Change these values to test. The code will take care of the rest
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
-M_MAX = 64  # max size of msgs in bits (normally 32 or 64)
-ALPHA = 29  # determines num_additions
-NUM_ADDITIONS = 1000 # normally max is 2**(ALPHA-1)
-NUM_TRIALS = 100  # how many times you want to test (-1)
-MSG_SIZE = 64  # optional, normally same as M_MAX
-ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
-SET_MSG = random.getrandbits(MSG_SIZE)  # only in use when populate bool is True
+M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
+ALPHA = 6  # determines num_additions
+NUM_ADDITIONS = 2**(ALPHA-1) # normally max is usually 2**(ALPHA-1)
+NUM_TRIALS = 2  # how many times you want to test (-1)
+MSG_SIZE = 32  # optional, normally same as M_MAX
+ENCRYPTION_SCHEME = 1  # 1 for FAHE1, 2 for FAHE2, else error
+SET_MSG = 2364110189  # only in use when populate bool is True
+print(bin(SET_MSG))
 
 
 # NOT SO HARD VALUES, DON'T TOUCH
@@ -61,6 +63,7 @@ def populate_message_list(
     Returns:
         list[int]: List of generated messages.
     """
+    print(msg)
     return [msg] * num_msgs if is_single_msg else [random.getrandbits(MSG_SIZE) for _ in range(num_msgs)]
 
 
@@ -174,20 +177,21 @@ def add_fahe1(index: int) -> bool:
     """
 
     # NOTE: You can change msg list params below
-    msg_list = populate_message_list(NUM_ADDITIONS)
-    print("Compiled messages...")
+    msg_list = populate_message_list(NUM_ADDITIONS, True, SET_MSG)
+    # print("Compiled messages...")
     ciph_list = fahe1_populate_ciph_list(msg_list)
-    print("Encrypted messages...")
+    # print("Encrypted messages...")
     msg_sum = get_msg_sum(msg_list)
-    print("Summed Messages...")
+    masked_msg_sum = get_masked_msg_sum(msg_sum)
+    # print("Summed Messages...")
     ciph_sum = get_ciph_sum(ciph_list)
-    print("Summed ciphertext...")
+    # print("Summed ciphertext...")
     de_ciph_sum = fahe1_get_decrypted_sum(ciph_sum)
-    print("Deciphered ciphertext...")
+    # print("Deciphered ciphertext...")
 
-    was_successful = verify_add(msg_sum, de_ciph_sum)
-    print("Analyzing!")
-    analyze_add(index, was_successful, msg_sum, ciph_sum, de_ciph_sum)
+    was_successful = verify_add(masked_msg_sum, de_ciph_sum)
+    # print("Analyzing!")
+    analyze_add(index, was_successful, masked_msg_sum, ciph_sum, de_ciph_sum)
     return was_successful
 
 
@@ -203,23 +207,23 @@ def add_fahe2(index: int) -> bool:
     """
 
     # NOTE: You can change msg list params below
-    msg_list = populate_message_list(NUM_ADDITIONS, False, SET_MSG)
-    print("Compiled messages...")
+    msg_list = populate_message_list(NUM_ADDITIONS, True, SET_MSG)
+    # print("Compiled messages...")
     # print(len(msg_list))
     # time.sleep(1000)
 
     ciph_list = fahe2_populate_ciph_list(msg_list)
-    print("Encrypted messages...")
+    # print("Encrypted messages...")
     msg_sum = get_msg_sum(msg_list)
     masked_msg_sum = get_masked_msg_sum(msg_sum)
-    print("Summed Messages...")
+    # print("Summed Messages...")
     ciph_sum = get_ciph_sum(ciph_list)
-    print(f"Summed ciphertext...")
+    # print(f"Summed ciphertext...")
     de_ciph_sum = fahe2_get_decrypted_sum(ciph_sum)
-    print(f"Deciphered ciphertext... {de_ciph_sum}")
+    # print(f"Deciphered ciphertext... {de_ciph_sum}")
 
     was_successful = verify_add(masked_msg_sum, de_ciph_sum)
-    print("Analyzing!")
+    # print("Analyzing!")
     analyze_add(index, was_successful, masked_msg_sum, ciph_sum, de_ciph_sum)
     return was_successful
 
@@ -254,11 +258,13 @@ def final_analysis():
     plt.grid()
 
     if ENCRYPTION_SCHEME == 1:
-        plt.savefig("fahe1add.png")
+        plt.savefig("graphs/fahe1add.png")
     else:
-        plt.savefig("fahe2add.png")
-
-    plt.show()
+        plt.savefig("graphs/fahe2add.png")
+        
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        plt.show()
 
 
 def run_add(func):
