@@ -65,18 +65,17 @@ passed_equal_sums = []  # stores ciphertext = msg equalities
 failed_msg_sums = []  # stores failed msg totals
 failed_decrypted_ciph_sums = []  # stores failed decryp ciphtext totals
 
-# KEYGEN
-if ENCRYPTION_SCHEME == 1:
-    key = keygen1(LAMBDA_PARAM, M_MAX, ALPHA)
-    encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3])
-    decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
+
+def keygen(LAMBDA, PARAM, M_MAS, ALPHA):
+    if ENCRYPTION_SCHEME == 1:
+        key = keygen1(LAMBDA_PARAM, M_MAX, ALPHA)
+        encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3])
+        decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
 
 if ENCRYPTION_SCHEME == 2:
-    key = keygen2(LAMBDA_PARAM, M_MAX, ALPHA)
-    encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3], key[1][4], key[1][5])
-    decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
-
-
+        key = keygen2(LAMBDA_PARAM, M_MAX, ALPHA)
+        encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3], key[1][4], key[1][5])
+        decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
 # NOTE: If you want to generate a single preset message, go to the add_fahe1() method and change: is_single_msg = True , msg = whateveryouwanttohardset
 def populate_message_list(
     num_msgs: int, msg: int = random.getrandbits(MSG_SIZE)
@@ -293,17 +292,35 @@ def run_add(func):
     for trial in range(NUM_TRIALS):
         func(trial)
     final_analysis()
+    return success_number == NUM_TRIALS
+    success_number = 0  #reset global
 
 def run_preset(preset: PresetTests):
-    LAMBDA_PARAM,M_MAX,ALPHA,NUM_ADDITIONS,NUM_TRIALS,MSG_SIZE,ENCRYPTION_SCHEME,SET_MSG,IS_RAND_MSG = preset.value
-    return (preset.value)
+    LAMBDA_PARAM_p,M_MAX_p,ALPHA_p,NUM_ADDITIONS_p,NUM_TRIALS_p,MSG_SIZE_p,ENCRYPTION_SCHEME_p,SET_MSG_p,IS_RAND_MSG_p = preset.value
+    
+    LAMBDA_PARAM = LAMBDA_PARAM_p
+    M_MAX = M_MAX_p
+    ALPHA = ALPHA_p
+    NUM_ADDITIONS = NUM_ADDITIONS_p
+    NUM_TRIALS = NUM_TRIALS_p
+    MSG_SIZE = MSG_SIZE_p,
+    ENCRYPTION_SCHEME = ENCRYPTION_SCHEME_p
+    SET_MSG = SET_MSG_p
+    IS_RAND_MSG = IS_RAND_MSG_p
+    
+    
+    
+    if ENCRYPTION_SCHEME == 1:
+        run_add(add_fahe1)
+    elif ENCRYPTION_SCHEME == 2:
+        run_add(add_fahe2)
 
 
-if ENCRYPTION_SCHEME == 1:
-    run_add(add_fahe1)
-elif ENCRYPTION_SCHEME == 2:
-    run_add(add_fahe2)
-else:
-    print(
-        f"\n{RED}Invalid ENCRYPTION_SCHEME value. Please set the value in the code to be either 1 or 2 for FAHE1 or FAHE2 respectively.{RESET}"
-    )
+# if ENCRYPTION_SCHEME == 1:
+#     run_add(add_fahe1)
+# elif ENCRYPTION_SCHEME == 2:
+#     run_add(add_fahe2)
+# else:
+#     print(
+#         f"\n{RED}Invalid ENCRYPTION_SCHEME value. Please set the value in the code to be either 1 or 2 for FAHE1 or FAHE2 respectively.{RESET}"
+#     )
