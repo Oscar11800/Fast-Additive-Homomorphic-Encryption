@@ -20,9 +20,9 @@ RESET = "\033[0m"
 LAMBDA_PARAM = 128  # security param (normally 128 or 256)
 M_MAX = 32  # max size of msgs in bits (normally 32 or 64)
 ALPHA = 6  # determines num_additions
-NUM_ADDITIONS = 1# normally max is usually 2**(ALPHA-1)
+NUM_ADDITIONS = 2**(ALPHA-1) # normally max is usually 2**(ALPHA-1)
 NUM_TRIALS = 21  # how many times you want to test (-1)
-MSG_SIZE = 28  # optional, normally same as M_MAX
+MSG_SIZE = M_MAX  # optional, normally same as M_MAX
 ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 SET_MSG = 2364110189  # this sets all messages in a message_list to SET_MSG when IS_RAND_MSG == False
 IS_RAND_MSG = False  # setting to True will generate random messages at each trial and disregard the SET_MSG
