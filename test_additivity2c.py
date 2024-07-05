@@ -23,7 +23,7 @@ ALPHA = 6  # determines num_additions
 NUM_ADDITIONS = 1# normally max is usually 2**(ALPHA-1)
 NUM_TRIALS = 21  # how many times you want to test (-1)
 MSG_SIZE = 28  # optional, normally same as M_MAX
-# ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
+ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 SET_MSG = 2364110189  # this sets all messages in a message_list to SET_MSG when IS_RAND_MSG == False
 IS_RAND_MSG = False  # setting to True will generate random messages at each trial and disregard the SET_MSG
 
@@ -37,15 +37,15 @@ failed_msg_sums = []  # stores failed msg totals
 failed_decrypted_ciph_sums = []  # stores failed decryp ciphtext totals
 
 # KEYGEN
+if ENCRYPTION_SCHEME == 1:
+    key = keygen1(LAMBDA_PARAM, M_MAX, ALPHA)
+    encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3])
+    decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
 
-key1 = keygen1(LAMBDA_PARAM, M_MAX, ALPHA)
-encrypt_key1 = (key1[1][0], key1[1][1], key1[1][2], key1[1][3])
-decrypt_key1 = (key1[2][0], key1[2][1], key1[2][2], key1[2][3])
-
-key2 = keygen2(LAMBDA_PARAM, M_MAX, ALPHA)
-encrypt_key2 = (key2[1][0], key2[1][1], key2[1][2], key2[1][3], key2[1][4], key2[1][5])
-decrypt_key2 = (key2[2][0], key2[2][1], key2[2][2], key2[2][3])
-    
+if ENCRYPTION_SCHEME == 2:
+    key = keygen2(LAMBDA_PARAM, M_MAX, ALPHA)
+    encrypt_key = (key[1][0], key[1][1], key[1][2], key[1][3], key[1][4], key[1][5])
+    decrypt_key = (key[2][0], key[2][1], key[2][2], key[2][3])
 
 
 # NOTE: If you want to generate a single preset message, go to the add_fahe1() method and change: is_single_msg = True , msg = whateveryouwanttohardset
@@ -69,12 +69,12 @@ def populate_message_list(
         return [msg] * num_msgs
 
 
-def fahe1_populate_ciph_list(msg_list: list[int], encrypt_key):
+def fahe1_populate_ciph_list(msg_list: list[int]):
     """Encrypt a list of messages with fahe1 encryption scheme."""
     return [enc1(encrypt_key, m) for m in msg_list]
 
 
-def fahe2_populate_ciph_list(msg_list: list[int], encrypt_key):
+def fahe2_populate_ciph_list(msg_list: list[int]):
     """Encrypt a list of messages with fahe1 encryption scheme."""
     return [enc2(encrypt_key, m) for m in msg_list]
 
@@ -92,12 +92,12 @@ def get_ciph_sum(c_list: list[int]):
     return sum(c_list)
 
 
-def fahe1_get_decrypted_sum(ciph_sum: int, decrypt_key):
+def fahe1_get_decrypted_sum(ciph_sum: int):
     """Decrypt a summed ciphertext with fahe1 decryption scheme."""
     return dec1(decrypt_key, ciph_sum)
 
 
-def fahe2_get_decrypted_sum(ciph_sum: int, decrypt_key):
+def fahe2_get_decrypted_sum(ciph_sum: int):
     """Decrypt a summed ciphertext with fahe2 decryption scheme."""
     return dec2(decrypt_key, ciph_sum)
 
@@ -132,7 +132,7 @@ def analyze_add(
     ciph_length = ciph_sum.bit_length()
 
     print(
-        "\nFAHE Test {}\n"
+        "\nFAHE{} Test {}\n"
         "==================\n"
         "alpha                      : {}\n"
         "NUM of additions           : {}\n"
@@ -140,27 +140,27 @@ def analyze_add(
         "------------------\n"
         "M SUM                      : {}\n"
         "Bit length of M SUM        : {}\n"
-        # "Ciphertext DECRYPT SUM     : {}\n"
-        # "Bit length of Decrypted sum: {}\n"
+        "Ciphertext DECRYPT SUM     : {}\n"
+        "Bit length of Decrypted sum: {}\n"
         "Was this successful        : {}\n"
         "DECRYPT Ciphertext LENGTH  : {}\n".format(
-            # ENCRYPTION_SCHEME,
+            ENCRYPTION_SCHEME,
             index,
             ALPHA,
             NUM_ADDITIONS,
             M_MAX,
             bin(msg_sum),
             msg_sum.bit_length(),
-            # (
-            #     bin(fahe1_get_decrypted_sum(ciph_sum))
-            #     if ENCRYPTION_SCHEME == 1
-            #     else bin(fahe2_get_decrypted_sum(ciph_sum))
-            # ),
-            # (
-            #     fahe1_get_decrypted_sum(ciph_sum).bit_length()
-            #     if ENCRYPTION_SCHEME == 1
-            #     else fahe2_get_decrypted_sum(ciph_sum).bit_length()
-            # ),
+            (
+                bin(fahe1_get_decrypted_sum(ciph_sum))
+                if ENCRYPTION_SCHEME == 1
+                else bin(fahe2_get_decrypted_sum(ciph_sum))
+            ),
+            (
+                fahe1_get_decrypted_sum(ciph_sum).bit_length()
+                if ENCRYPTION_SCHEME == 1
+                else fahe2_get_decrypted_sum(ciph_sum).bit_length()
+            ),
             was_successful,
             ciph_length,
         )
@@ -179,13 +179,12 @@ def add_fahe1(index: int) -> bool:
     """
 
     # NOTE: You can change msg list params below
-    
     msg_list = populate_message_list(NUM_ADDITIONS, SET_MSG)
-    ciph_list = fahe1_populate_ciph_list(msg_list, encrypt_key1)
+    ciph_list = fahe1_populate_ciph_list(msg_list)
     msg_sum = get_msg_sum(msg_list)
     masked_msg_sum = get_masked_msg_sum(msg_sum)
     ciph_sum = get_ciph_sum(ciph_list)
-    de_ciph_sum = fahe1_get_decrypted_sum(ciph_sum, decrypt_key1)
+    de_ciph_sum = fahe1_get_decrypted_sum(ciph_sum)
 
     was_successful = verify_add(masked_msg_sum, de_ciph_sum)
     analyze_add(index, was_successful, masked_msg_sum, ciph_sum, de_ciph_sum)
@@ -204,14 +203,12 @@ def add_fahe2(index: int) -> bool:
     """
 
     # NOTE: You can change msg list params below
-    
-    
     msg_list = populate_message_list(NUM_ADDITIONS, SET_MSG)
-    ciph_list = fahe2_populate_ciph_list(msg_list, encrypt_key2)
+    ciph_list = fahe2_populate_ciph_list(msg_list)
     msg_sum = get_msg_sum(msg_list)
     masked_msg_sum = get_masked_msg_sum(msg_sum)
     ciph_sum = get_ciph_sum(ciph_list)
-    de_ciph_sum = fahe2_get_decrypted_sum(ciph_sum, decrypt_key2)
+    de_ciph_sum = fahe2_get_decrypted_sum(ciph_sum)
 
     was_successful = verify_add(masked_msg_sum, de_ciph_sum)
     analyze_add(index, was_successful, masked_msg_sum, ciph_sum, de_ciph_sum)
@@ -247,10 +244,10 @@ def final_analysis():
     plt.scatter(fail_indices, failed_decrypted_ciph_sums, c="red")
     plt.grid()
 
-    # if ENCRYPTION_SCHEME == 1:
-    #     plt.savefig("graphs/fahe1add.png")
-    # else:
-    #     plt.savefig("graphs/fahe2add.png")
+    if ENCRYPTION_SCHEME == 1:
+        plt.savefig("graphs/fahe1add.png")
+    else:
+        plt.savefig("graphs/fahe2add.png")
         
     # with warnings.catch_warnings():
     #     warnings.simplefilter("ignore", category=UserWarning)
@@ -269,12 +266,11 @@ def run_add(func):
     final_analysis()
 
 
-# if ENCRYPTION_SCHEME == 1:
-run_add(add_fahe1)
-success_number = 0
-# elif ENCRYPTION_SCHEME == 2:
-run_add(add_fahe2)
-# else:
-#     print(
-#         f"\n{RED}Invalid ENCRYPTION_SCHEME value. Please set the value in the code to be either 1 or 2 for FAHE1 or FAHE2 respectively.{RESET}"
-#     )
+if ENCRYPTION_SCHEME == 1:
+    run_add(add_fahe1)
+elif ENCRYPTION_SCHEME == 2:
+    run_add(add_fahe2)
+else:
+    print(
+        f"\n{RED}Invalid ENCRYPTION_SCHEME value. Please set the value in the code to be either 1 or 2 for FAHE1 or FAHE2 respectively.{RESET}"
+    )
