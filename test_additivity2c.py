@@ -1,3 +1,4 @@
+from enum import Enum
 import random
 import time
 import warnings
@@ -13,6 +14,22 @@ RED = "\033[91m"
 GREEN = "\033[92m"
 RESET = "\033[0m"
 
+class PresetTests(Enum):
+    # TESTx = (
+    #   LAMBDA_PARAM,
+    #   M_MAX,
+    #   ALPHA,
+    #   NUM_ADDITIONS,
+    #   NUM_TRIALS,
+    #   MSG_SIZE,
+    #   ENCRYPTION_SCHEME,
+    #   SET_MSG,
+    #   IS_RAND_MSG)
+    FAHE1_MINIMUM = (128, 32, 6, 10, 21, 28, 1, 2364110189, False)
+    TEST2 = (128, 64, 6, 1, 21, 28, 2, 2364110189, False)
+    TEST3 = (256, 32, 6, 1, 21, 28, 2, 2364110189, False)
+    TEST4 = (256, 64, 6, 1, 21, 28, 2, 2364110189, False)
+
 # HOW TO USE: CHANGE THE HARD VALUES AND RUN: `python3 test_additivity2.py`
 
 # HARD VALUES
@@ -25,7 +42,7 @@ NUM_TRIALS = 21  # how many times you want to test (-1)
 MSG_SIZE = M_MAX  # optional, normally same as M_MAX
 ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 SET_MSG = 2364110189  # this sets all messages in a message_list to SET_MSG when IS_RAND_MSG == False
-IS_RAND_MSG = False  # setting to True will generate random messages at each trial and disregard the SET_MSG
+IS_RAND_MSG = True  # setting to True will generate random messages at each trial and disregard the SET_MSG
 
 
 # NOT SO HARD VALUES, DON'T TOUCH
@@ -264,6 +281,10 @@ def run_add(func):
     for trial in range(NUM_TRIALS):
         func(trial)
     final_analysis()
+
+def run_preset(preset: PresetTests):
+    LAMBDA_PARAM,M_MAX,ALPHA,NUM_ADDITIONS,NUM_TRIALS,MSG_SIZE,ENCRYPTION_SCHEME,SET_MSG,IS_RAND_MSG = preset.value
+    return (preset.value)
 
 
 if ENCRYPTION_SCHEME == 1:

@@ -310,7 +310,10 @@ def run_add(func):
     for trial in range(NUM_TRIALS):
         func(trial)
     final_analysis()
-
+    
+def run_preset(preset: PresetTests):
+    LAMBDA_PARAM,M_MAX,ALPHA,NUM_ADDITIONS,NUM_TRIALS,MSG_SIZE,ENCRYPTION_SCHEME,SET_MSG,IS_RAND_MSG = preset
+    
 
 # if ENCRYPTION_SCHEME == 1:
 run_add(add_fahe1)
