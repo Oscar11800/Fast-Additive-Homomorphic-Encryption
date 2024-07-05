@@ -8,6 +8,8 @@ from fahe2 import dec2, enc2, keygen2
 
 import math
 
+import inspect
+
 # Printing values
 RED = "\033[91m"
 GREEN = "\033[92m"
@@ -25,7 +27,7 @@ NUM_TRIALS = 21  # how many times you want to test (-1)
 MSG_SIZE = 28  # optional, normally same as M_MAX
 # ENCRYPTION_SCHEME = 2  # 1 for FAHE1, 2 for FAHE2, else error
 SET_MSG = 2364110189  # this sets all messages in a message_list to SET_MSG when IS_RAND_MSG == False
-IS_RAND_MSG = False  # setting to True will generate random messages at each trial and disregard the SET_MSG
+IS_RAND_MSG = True  # setting to True will generate random messages at each trial and disregard the SET_MSG
 
 
 # NOT SO HARD VALUES, DON'T TOUCH
@@ -130,9 +132,12 @@ def analyze_add(
         failed_decrypted_ciph_sums.append(de_ciph_sum)
 
     ciph_length = ciph_sum.bit_length()
-
+    if inspect.currentframe().f_back.f_code.co_name == 'add_fahe1':
+        scheme = 1
+    else:
+        scheme = 2
     print(
-        "\nFAHE Test {}\n"
+        "\nFAHE{} Test {}\n"
         "==================\n"
         "alpha                      : {}\n"
         "NUM of additions           : {}\n"
@@ -144,7 +149,7 @@ def analyze_add(
         # "Bit length of Decrypted sum: {}\n"
         "Was this successful        : {}\n"
         "DECRYPT Ciphertext LENGTH  : {}\n".format(
-            # ENCRYPTION_SCHEME,
+            scheme,
             index,
             ALPHA,
             NUM_ADDITIONS,
