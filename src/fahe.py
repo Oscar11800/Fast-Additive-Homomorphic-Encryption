@@ -6,13 +6,12 @@ from Crypto.Util import number
 
 
 class FAHE(ABC):
-    def __init__(self, lambda_param, m_max, alpha, msg_size, fixed_msg, is_rand_msg):
+    def __init__(self, lambda_param, m_max, alpha, msg_size, num_additions):
         self._lambda_param = lambda_param
         self._m_max = m_max
         self._alpha = alpha
         self._msg_size = msg_size
-        self._fixed_msg = fixed_msg
-        self._is_rand_msg = is_rand_msg
+        self._num_additions = num_additions
 
     @property
     def lambda_param(self):
@@ -35,20 +34,12 @@ class FAHE(ABC):
         self._msg_size = value
 
     @property
-    def fixed_msg(self) -> int:
-        return self._fixed_msg
+    def num_additions(self) -> int:
+        return self._num_additions
 
-    @fixed_msg.setter
+    @num_additions.setter
     def fixed_msg(self, value: int):
-        self._fixed_msg = value
-
-    @property
-    def is_rand_msg(self):
-        return self._is_rand_msg
-
-    @is_rand_msg.setter
-    def is_rand_msg(self, value: bool):
-        self._is_rand_msg = value
+        self._num_additions = value
 
     @abstractmethod
     def keygen(self):
@@ -66,8 +57,8 @@ class FAHE(ABC):
 class FAHE1(FAHE):
     encryption_scheme = 1
 
-    def __init__(self, lambda_param, m_max, alpha, msg_size, fixed_msg, is_rand_msg):
-        super().__init__(lambda_param, m_max, alpha, msg_size, fixed_msg, is_rand_msg)
+    def __init__(self, lambda_param, m_max, alpha, msg_size, num_additions):
+        super().__init__(lambda_param, m_max, alpha, msg_size, num_additions)
         self._full_key = self.keygen()
         self._key = self.full_key[0]
         self._enc_key = self.full_key[1]
@@ -112,8 +103,8 @@ class FAHE1(FAHE):
 class FAHE2(FAHE):
     encryption_scheme = 2
 
-    def __init__(self, lambda_param, m_max, alpha, msg_size, fixed_msg, is_rand_msg):
-        super().__init__(lambda_param, m_max, alpha, msg_size, fixed_msg, is_rand_msg)
+    def __init__(self, lambda_param, m_max, alpha, msg_size, num_additions):
+        super().__init__(lambda_param, m_max, alpha, msg_size, num_additions)
         self._full_key = self.keygen()
         self._key = self.full_key[0]
         self._enc_key = self.full_key[1]
