@@ -31,7 +31,7 @@ def keygen2(l, m_max, alpha) -> tuple[float]:
     gamma = int(rho / math.log2(rho) * ((eta - rho) ** 2))
     p = number.getPrime(eta)
     X = (Decimal(2) ** Decimal(gamma)) / p
-    pos = secrets.randbelow(l + 2)  # +2 because lambda is inclusive
+    pos = secrets.randbelow(l + 1)
 
     k = (p, X, pos, m_max, l, alpha)
     ek = (p, X, pos, m_max, l, alpha)

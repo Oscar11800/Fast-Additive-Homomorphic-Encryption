@@ -252,13 +252,15 @@ class TestHelper:
         plt.scatter(fail_indices, failed_decrypted_ciph_sums, c="red")
         plt.grid()
 
-
-class TestFAHE1:
+@pytest.mark.add_tests
+@pytest.mark.fahe1
+class TestFAHE1Add:
     @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_MINIMUM], indirect=True)
     def test_fahe1_minimum(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
 
+    @pytest.mark.slow
     @pytest.mark.parametrize(
         "fahe1", [PresetTests.FAHE1_CLASSICAL_SMALL_MSG_HIGH_ALPHA], indirect=True
     )
@@ -273,6 +275,7 @@ class TestFAHE1:
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
 
+    @pytest.mark.slow
     @pytest.mark.parametrize(
         "fahe1", [PresetTests.FAHE1_CLASSICAL_LONG_MSG_HIGH_ALPHA], indirect=True
     )
@@ -287,6 +290,7 @@ class TestFAHE1:
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
 
+    @pytest.mark.slow
     @pytest.mark.parametrize(
         "fahe1", [PresetTests.FAHE1_QUANTUM_SMALL_MSG_HIGH_ALPHA], indirect=True
     )
@@ -301,6 +305,7 @@ class TestFAHE1:
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
 
+    @pytest.mark.slow
     @pytest.mark.parametrize(
         "fahe1", [PresetTests.FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True
     )
@@ -308,6 +313,9 @@ class TestFAHE1:
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
 
+@pytest.mark.fahe2
+@pytest.mark.add_tests
+class TestFAHE2Add:
     @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_MINIMUM], indirect=True)
     def test_fahe2_minimum(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
