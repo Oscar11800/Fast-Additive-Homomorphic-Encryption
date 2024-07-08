@@ -19,7 +19,7 @@ Running Preset Addition Tests:
 - You can run all addition tests by running `python3 -m pytest -s testfahe.py`
 - You can run only fahe1 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe1"`
 - You can run only fahe2 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe2"`
-- You can run only fast fahe1 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe1 and not slow`
+- You can run only fast fahe1 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe1 and not slow"`
 - You can run specific tests/functions by running `python3 -m pytest -s -m testfahe.py::[class name]::[test name]`
 
 Running Custom Tests:
