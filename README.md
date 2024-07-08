@@ -11,15 +11,15 @@ This project attempts to replicate Cominetti's experiments on FAHE1 and FAHE2 wi
 First, navigate to `/tests` folder
 
 Changing Constants:
-Change `NUM_TRIALS` to run each test a different number of times (*Note:* This may make tests slower).
-Change `TOGGLE_FIXED_MESSAGE` for debugging. This generates message lists with only a single unique message.
-Change `FIXED_MESSAGE` to change what unique message is generated.
+- Change `NUM_TRIALS` to run each test a different number of times (*Note:* This may make tests slower).
+- Change `TOGGLE_FIXED_MESSAGE` for debugging. This generates message lists with only a single unique message.
+- Change `FIXED_MESSAGE` to change what unique message is generated.
 
 Running Preset Addition Tests:
 - You can run all addition tests by running `python3 -m pytest -s testfahe.py`
 - You can run only fahe1 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe1"`
 - You can run only fahe2 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe2"`
-- You can run only fast fahe1 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe1 and not slow`
+- You can run only fast fahe1 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe1 and not slow"`
 - You can run specific tests/functions by running `python3 -m pytest -s -m testfahe.py::[class name]::[test name]`
 
 Running Custom Tests:
