@@ -36,11 +36,7 @@ class FAHE(ABC):
     @property
     def num_additions(self) -> int:
         return self._num_additions
-
-    @num_additions.setter
-    def fixed_msg(self, value: int):
-        self._num_additions = value
-
+    
     @abstractmethod
     def keygen(self):
         pass
@@ -64,9 +60,9 @@ class FAHE1(FAHE):
     def __init__(self, lambda_param, m_max, alpha, msg_size, num_additions):
         super().__init__(lambda_param, m_max, alpha, msg_size, num_additions)
         self._full_key = self.keygen()
-        self._key = self.full_key[0]
-        self._enc_key = self.full_key[1]
-        self._dec_key = self.full_key[2]
+        self._key = self._full_key[0]
+        self._enc_key = self._full_key[1]
+        self._dec_key = self._full_key[2]
 
     def keygen(self):
         rho = self.lambda_param
@@ -103,12 +99,6 @@ class FAHE1(FAHE):
 
         m_masked = m_shifted & ((1 << m_max) - 1)
         return m_masked
-    
-    def msg_list_to_ciph_sum(self, msg_list) -> list[int]:
-        ciph_list = []
-        for _ in msg_list:
-            ciph_list.append(self.enc(_))
-        return sum(ciph_list)
 
 
 class FAHE2(FAHE):
@@ -117,9 +107,9 @@ class FAHE2(FAHE):
     def __init__(self, lambda_param, m_max, alpha, msg_size, num_additions):
         super().__init__(lambda_param, m_max, alpha, msg_size, num_additions)
         self._full_key = self.keygen()
-        self._key = self.full_key[0]
-        self._enc_key = self.full_key[1]
-        self._dec_key = self.full_key[2]
+        self._key = self._full_key[0]
+        self._enc_key = self._full_key[1]
+        self._dec_key = self._full_key[2]
 
     def keygen(self):
         rho = self._lambda_param + self._alpha + self._m_max
@@ -161,9 +151,3 @@ class FAHE2(FAHE):
         m_masked = m_shifted & ((1 << m_max) - 1)
 
         return m_masked
-    
-    def msg_list_to_ciph_sum(self, msg_list) -> list[int]:
-        ciph_list = []
-        for _ in msg_list:
-            ciph_list.append(self.enc(_))
-        return sum(ciph_list)
