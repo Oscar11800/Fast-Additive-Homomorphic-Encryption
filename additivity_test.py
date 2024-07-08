@@ -5,6 +5,13 @@ from test_additivity2c import run_preset
 from test_additivity2c import PresetTests
 from fahe import FAHE, FAHE1
 from fahe import FAHE2
+import matplotlib.pyplot as plt
+
+# Printing values
+RED = "\033[91m"
+GREEN = "\033[92m"
+RESET = "\033[0m"
+
 
 GLOBAL_CUSTOM_PARAMS = False    # Runs all tests with custom params
 CUSTOM_PARAMS = (
@@ -198,7 +205,7 @@ class TestHelper:
         """
 
         # NOTE: You can change msg list params below
-        msg_list = TestHelper.generate_msg_list(NUM_TRIALS, fahe.msg_size)
+        msg_list = TestHelper.generate_msg_list(fahe.num_additions, fahe.msg_size)
         ciph_list = fahe.enc_list(msg_list)
         msg_sum = TestHelper.get_msg_sum(msg_list)
         masked_msg_sum = TestHelper.get_masked_msg_sum(msg_sum, fahe.m_max)
@@ -206,10 +213,128 @@ class TestHelper:
         de_ciph_sum = fahe.dec(ciph_sum)
 
         was_successful = TestHelper.verify_add(masked_msg_sum, de_ciph_sum)
-        return was_successful
+        return was_successful, masked_msg_sum, de_ciph_sum
+    
+    @staticmethod
+    def run_add(fahe: FAHE):
+        num_successes = 0 
+        pass_indices = []
+        fail_indices = []
+        pass_equal_sums = []
+        failed_msg_sums = []
+        failed_decrypted_ciph_sums = []
+
+
+        for trial in range(NUM_TRIALS):
+            msg_list = TestHelper.generate_msg_list(fahe.num_additions, fahe.msg_size)
+            ciph_list = fahe.enc_list(msg_list)
+            msg_sum = TestHelper.get_msg_sum(msg_list)
+            masked_msg_sum = TestHelper.get_masked_msg_sum(msg_sum, fahe.m_max)
+            ciph_sum = TestHelper.get_ciph_sum(ciph_list)
+            de_ciph_sum = fahe.dec(ciph_sum)
+            
+            was_successful = TestHelper.verify_add(masked_msg_sum, de_ciph_sum)
+            
+            if was_successful:
+                pass_indices.append(trial)
+                pass_equal_sums.append(msg_sum)
+                num_successes += 1
+            else:
+                fail_indices.append(trial)
+                failed_msg_sums.append(msg_sum)
+                failed_decrypted_ciph_sums.append(de_ciph_sum)
+
+            ciph_length = ciph_sum.bit_length()
+
+            print(
+            "\nFAHE Test {}\n"
+            "==================\n"
+            "alpha                      : {}\n"
+            "NUM of additions           : {}\n"
+            "M_MAX                      : {}\n"
+            "------------------\n"
+            "M SUM                      : {}\n"
+            "Bit length of M SUM        : {}\n"
+            # "Ciphertext DECRYPT SUM     : {}\n"
+            # "Bit length of Decrypted sum: {}\n"
+            "Was this successful        : {}\n"
+            "DECRYPT Ciphertext LENGTH  : {}\n".format(
+                # ENCRYPTION_SCHEME,
+                trial,
+                fahe.alpha,
+                fahe.num_additions,
+                fahe.m_max,
+                bin(msg_sum),
+                msg_sum.bit_length(),
+                # (
+                #     bin(fahe1_get_decrypted_sum(ciph_sum))
+                #     if ENCRYPTION_SCHEME == 1
+                #     else bin(fahe2_get_decrypted_sum(ciph_sum))
+                # ),
+                # (
+                #     fahe1_get_decrypted_sum(ciph_sum).bit_length()
+                #     if ENCRYPTION_SCHEME == 1
+                #     else fahe2_get_decrypted_sum(ciph_sum).bit_length()
+                # ),
+                was_successful,
+                ciph_length,
+                )
+            )
         
+        TestHelper.final_analysis(
+            (pass_indices, 
+             pass_equal_sums, 
+             fail_indices, 
+             failed_msg_sums, 
+             failed_decrypted_ciph_sums,
+             num_successes)
+        )
+        return num_successes == NUM_TRIALS
+
+    
+    @staticmethod
+    def final_analysis(tuple_of_lists_for_analysis):
+        pass_indices, pass_equal_sums, fail_indices, failed_msg_sums, failed_decrypted_ciph_sums, num_successes = tuple_of_lists_for_analysis
+        
+        """Perform final analysis and display and plot results."""
+
+        print(f"{RED}Failing pairs:{RESET}")
+        for i in range(len(fail_indices)):
+            print(
+                "index = {}, msg_sum = {}, decrypted_sum = {}".format(
+                    fail_indices[i], failed_msg_sums[i], failed_decrypted_ciph_sums[i]
+                )
+            )
+
+        print(f"\n{GREEN}Successes:{RESET}")
+        for i in range(len(pass_equal_sums)):
+            print(
+                "index = {}, equal_outcome= {}".format(
+                    pass_indices[i], pass_equal_sums[i]
+                )
+            )
+        print("\nPass rate = {:.2f}%\n".format((num_successes) / (NUM_TRIALS) * 100))
+
+        if not fail_indices:
+            print(f"{GREEN}COMPLETE SUCCESS! GOOD JOB!\nฅ ^ ≧∇≦^  ฅ\n{RESET}")
+        if len(pass_equal_sums) == 0:
+            print(f"{RED}COMPLETE FAIL! NO TESTS PASSED\n≽^╥⩊╥^≼\n{RESET}")
+        plt.scatter(pass_indices, pass_equal_sums, c="green")
+        plt.scatter(fail_indices, failed_msg_sums, c="blue")
+        plt.scatter(fail_indices, failed_decrypted_ciph_sums, c="red")
+        plt.grid()
+
+        # if ENCRYPTION_SCHEME == 1:
+        #     plt.savefig("graphs/fahe1add.png")
+        # else:
+        #     plt.savefig("graphs/fahe2add.png")
+            
+        # with warnings.catch_warnings():
+        #     warnings.simplefilter("ignore", category=UserWarning)
+        #     plt.show()
+
 class TestFAHE1:
     @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_MINIMUM], indirect=True)
     def test_fahe1_minimum(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
-        assert TestHelper.add_fahe(fahe1)
+        assert TestHelper.run_add(fahe1)
