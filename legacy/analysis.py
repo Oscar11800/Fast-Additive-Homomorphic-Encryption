@@ -1,5 +1,5 @@
 import os
-from legacy.data_collection import (
+from data_collection import (
     alpha_performance_2,
     output_csv_11,
     alpha_performance_1,

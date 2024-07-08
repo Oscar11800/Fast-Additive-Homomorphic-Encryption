@@ -13,11 +13,11 @@ RESET = "\033[0m"
 
 GLOBAL_CUSTOM_PARAMS = False  # Runs all tests with custom params
 CUSTOM_PARAMS = (
-    256,  # lambda
-    64,  # m_max
-    33,  # alpha
-    64,  # msg_size (usually m_max)
-    1000,  # num additions, usually 2**(alpha-1)
+    128,  # lambda
+    32,  # m_max
+    6,  # alpha
+    32,  # msg_size (usually m_max)
+    10,  # num additions, usually 2**(alpha-1)
 )
 
 # The following constants are for preset tests and custom tests
@@ -49,6 +49,7 @@ class PresetTests(Enum):
     FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA = (128, 64, 33, 64, 100)
     FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA = (256, 64, 33, 64, 100)
     FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA = (256, 64, 33, 64, 100)
+    CUSTOM = CUSTOM_PARAMS
 
 
 @pytest.fixture
@@ -305,6 +306,7 @@ class TestFAHE1Add:
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
 
+
     @pytest.mark.slow
     @pytest.mark.parametrize(
         "fahe1", [PresetTests.FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True
@@ -312,6 +314,16 @@ class TestFAHE1Add:
     def test_fahe1_quantum_long_msg_high_alpha(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
+
+    @pytest.mark.custom
+    @pytest.mark.parametrize(
+        "fahe1", [PresetTests.CUSTOM], indirect=True
+    )
+    def test_fahe1_custom(self, fahe1: "FAHE1"):
+        TestHelper.fahe_debug(fahe1)
+        assert TestHelper.run_add(fahe1)
+
+    
 
 @pytest.mark.fahe2
 @pytest.mark.add_tests
@@ -367,5 +379,13 @@ class TestFAHE2Add:
         "fahe2", [PresetTests.FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True
     )
     def test_fahe2_quantum_long_msg_high_alpha(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+
+    @pytest.mark.custom
+    @pytest.mark.parametrize(
+        "fahe2", [PresetTests.CUSTOM], indirect=True
+    )
+    def test_fahe2_custom(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
