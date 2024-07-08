@@ -1,8 +1,6 @@
 from enum import Enum
 import random
 import pytest
-from test_additivity2c import run_preset
-from test_additivity2c import PresetTests
 from fahe import FAHE, FAHE1
 from fahe import FAHE2
 import matplotlib.pyplot as plt
@@ -191,27 +189,14 @@ class TestHelper:
             "------------------\n"
             "M SUM                      : {}\n"
             "Bit length of M SUM        : {}\n"
-            # "Ciphertext DECRYPT SUM     : {}\n"
-            # "Bit length of Decrypted sum: {}\n"
             "Was this successful        : {}\n"
             "DECRYPT Ciphertext LENGTH  : {}\n".format(
-                # ENCRYPTION_SCHEME,
                 trial,
                 fahe.alpha,
                 fahe.num_additions,
                 fahe.m_max,
                 bin(msg_sum),
                 msg_sum.bit_length(),
-                # (
-                #     bin(fahe1_get_decrypted_sum(ciph_sum))
-                #     if ENCRYPTION_SCHEME == 1
-                #     else bin(fahe2_get_decrypted_sum(ciph_sum))
-                # ),
-                # (
-                #     fahe1_get_decrypted_sum(ciph_sum).bit_length()
-                #     if ENCRYPTION_SCHEME == 1
-                #     else fahe2_get_decrypted_sum(ciph_sum).bit_length()
-                # ),
                 was_successful,
                 ciph_length,
                 )
@@ -259,15 +244,6 @@ class TestHelper:
         plt.scatter(fail_indices, failed_msg_sums, c="blue")
         plt.scatter(fail_indices, failed_decrypted_ciph_sums, c="red")
         plt.grid()
-
-        # if ENCRYPTION_SCHEME == 1:
-        #     plt.savefig("graphs/fahe1add.png")
-        # else:
-        #     plt.savefig("graphs/fahe2add.png")
-            
-        # with warnings.catch_warnings():
-        #     warnings.simplefilter("ignore", category=UserWarning)
-        #     plt.show()
 
 class TestFAHE1:
     @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_MINIMUM], indirect=True)
