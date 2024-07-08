@@ -46,11 +46,15 @@ class FAHE(ABC):
         pass
 
     @abstractmethod
-    def enc(self, enc_key, message):
+    def enc(self, message):
+        pass
+    
+    @abstractmethod
+    def enc_list(self, message_list):
         pass
 
     @abstractmethod
-    def dec(self, dec_key, ciphertext):
+    def dec(self, ciphertext):
         pass
 
 
@@ -83,6 +87,13 @@ class FAHE1(FAHE):
         n = p * q
         c = n + M
         return c
+    
+    def enc_list(self, message_list):
+        c_list = []
+        for _ in message_list:
+            c_list.append(self.enc(_))
+        return c_list
+            
 
     def dec(self, ciphertext) -> int:
         p, m_max, rho, alpha = self._dec_key
@@ -135,6 +146,12 @@ class FAHE2(FAHE):
         c = n + M
         return c
     
+    def enc_list(self, message_list):
+        c_list = []
+        for _ in message_list:
+            c_list.append(self.enc(_))
+        return c_list
+            
     def dec(self, ciphertext):
         p, pos, m_max, alpha = self._dec_key
 

@@ -137,29 +137,36 @@ class TestHelper:
     def get_masked_msg_sum(self, msg_sum: int, m_max:int) -> int:
         return msg_sum & ((1 << m_max) - 1)
     
-    # TODO: FIX THIS METHOD (add_fahe) SO THAT ALL TESTS CAN LOOK LIKE test_fahe1_minimum
-    # def add_fahe(self, index: int, fahe: FAHE) -> bool:
-    #     """
-    #     Perform the addition test for FAHE scheme.
+    def get_ciph_sum(c_list: list[int]):
+        """Calculate the sum of a list of ciphertexts."""
+        return sum(c_list)
+    
+    def verify_add(masked_msg_sum: int, decrypted_ciph_sum: int):
+        """Verify if the decrypted sum of ciphertexts matches the sum of msgs."""
+        return masked_msg_sum == decrypted_ciph_sum
+        
 
-    #     Args:
-    #         index (int): Index of the current trial.
+    def add_fahe(self, index: int, fahe: FAHE) -> bool:
+        """
+        Perform the addition test for FAHE scheme.
 
-    #     Returns:
-    #         was_succesful(bool): Whether the addition was successful.
-    #     """
+        Args:
+            index (int): Index of the current trial.
 
-    #     # NOTE: You can change msg list params below
-    #     msg_list = self.generate_msg_list()
-    #     ciph_list = fahe2_populate_ciph_list(msg_list)
-    #     msg_sum = get_msg_sum(msg_list)
-    #     masked_msg_sum = get_masked_msg_sum(msg_sum)
-    #     ciph_sum = get_ciph_sum(ciph_list)
-    #     de_ciph_sum = fahe2_get_decrypted_sum(ciph_sum)
+        Returns:
+            was_succesful(bool): Whether the addition was successful.
+        """
 
-    #     was_successful = verify_add(masked_msg_sum, de_ciph_sum)
-    #     analyze_add(index, was_successful, masked_msg_sum, ciph_sum, de_ciph_sum)
-    #     return was_successful
+        # NOTE: You can change msg list params below
+        msg_list = self.generate_msg_list()
+        ciph_list = fahe.enc_list(msg_list)
+        msg_sum = self.get_msg_sum(msg_list)
+        masked_msg_sum = self.get_masked_msg_sum(msg_sum)
+        ciph_sum = self.get_ciph_sum(ciph_list)
+        de_ciph_sum = fahe.dec(ciph_sum)
+
+        was_successful = self.verify_add(masked_msg_sum, de_ciph_sum)
+        return was_successful
         
 class TestFAHE1:
     @pytest.mark.parametrize(
