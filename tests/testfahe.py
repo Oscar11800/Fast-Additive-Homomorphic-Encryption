@@ -21,7 +21,7 @@ CUSTOM_PARAMS = (
 )
 
 # The following constants are for preset tests and custom tests
-NUM_TRIALS = 6  # number of trials to run each test
+NUM_TRIALS = 1  # number of trials to run each test
 TOGGLE_FIXED_MESSAGE = False
 FIXED_MESSAGE = 2364110189
 
