@@ -33,7 +33,7 @@ class PresetTests(Enum):
     #   ENCRYPTION_SCHEME,
     #   SET_MSG,
     #   IS_RAND_MSG)
-    FAHE1_MINIMUM = (128, 32, 6, 10, 21, 28, 1, 2364110189)
+    FAHE1_MINIMUM = (128, 32, 6, 32, 2**5)
     FAHE2_MINIMUM = (128, 32, 29, 10, 21, 28, 2, 2364110189)
     FAHE1_QUANTUM_SMALL_MSG_SMALL_ALPHA = (256, 32, 6, 10, 21, 28, 1, 2364110189)
     FAHE2_QUANTUM_SMALL_MSG_SMALL_ALPHA = (256, 32, 22, 10, 21, 28, 2, 2364110189)
@@ -49,70 +49,7 @@ class PresetTests(Enum):
     FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA = (128, 64, 33, 10, 21, 28, 2, 2364110189)
     FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA = (256, 64, 33, 10, 21, 28, 1, 2364110189)
     FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA = (256, 64, 33, 10, 21, 28, 2, 2364110189)
-
-
-# @pytest.fixture
-# def fahe1(request) -> "FAHE1":
-#     """Fixture to initialize FAHE1 with dynamic parameters."""
-#     if GLOBAL_CUSTOM_PARAMS:
-#         lambda_param, m_max, alpha, msg_size, num_additions = request
-#     else:
-#         if len(request.param) == 5:
-#             lambda_param, m_max, alpha, msg_size, num_additions = request
-#         else:
-#             match(request[0]):
-#                 case PresetTests.FAHE1_MINIMUM:
-#                     lambda_param, m_max, alpha, msg_size = PresetTests.FAHE1_MINIMUM
-#                 case PresetTests.FAHE1_QUANTUM_SMALL_MSG_SMALL_ALPHA:
-#                     lambda_param, m_max, alpha, msg_size = PresetTests.FAHE1_QUANTUM_SMALL_MSG_SMALL_ALPHA
-#                 case PresetTests.FAHE1_CLASSICAL_LONG_MSG_SMALL_ALPHA:
-#                     lambda_param, m_max, alpha, msg_size = PresetTests.FAHE1_CLASSICAL_LONG_MSG_SMALL_ALPHA
-#                 case PresetTests.FAHE1_QUANTUM_LONG_MSG_SMALL_ALPHA:
-#                     lambda_param, m_max, alpha, msg_size = PresetTests.FAHE1_QUANTUM_LONG_MSG_SMALL_ALPHA
-#                 case PresetTests.FAHE1_CLASSICAL_SMALL_MSG_HIGH_ALPHA:
-#                     lambda_param, m_max, alpha, msg_size = PresetTests.FAHE1_CLASSICAL_SMALL_MSG_HIGH_ALPHA
-#                 case PresetTests.FAHE1_QUANTUM_SMALL_MSG_HIGH_ALPHA:
-#                     lambda_param, m_max, alpha, msg_size = PresetTests.FAHE1_QUANTUM_SMALL_MSG_HIGH_ALPHA
-#                 case PresetTests.FAHE1_CLASSICAL_LONG_MSG_HIGH_ALPHA:
-#                     lambda_param, m_max, alpha, msg_size = PresetTests.FAHE1_CLASSICAL_LONG_MSG_HIGH_ALPHA
-#                 case PresetTests.FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA:
-#                     lambda_param, m_max, alpha, msg_size = PresetTests.FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA
-#                 case _:
-#                     lambda_param, m_max, alpha, msg_size, num_additions = request
-#         num_additions = alpha
-        
-        
-#     return FAHE1(lambda_param, m_max, alpha, msg_size, num_additions)
-
-# @pytest.fixture
-# def fahe2(request) -> "FAHE2":
-#     """Fixture to initialize FAHE2 with dynamic parameters."""
-#     if GLOBAL_CUSTOM_PARAMS:
-#         lambda_param, m_max, alpha, msg_size, num_additions = request
-#     else:
-#         match(request[0]):
-#             case PresetTests.FAHE2_MINIMUM:
-#                 lambda_param, m_max, alpha, msg_size = PresetTests.FAHE2_MINIMUM
-#             case PresetTests.FAHE2_QUANTUM_SMALL_MSG_SMALL_ALPHA:
-#                 lambda_param, m_max, alpha, msg_size = PresetTests.FAHE2_QUANTUM_SMALL_MSG_SMALL_ALPHA
-#             case PresetTests.FAHE2_CLASSICAL_LONG_MSG_SMALL_ALPHA:
-#                 lambda_param, m_max, alpha, msg_size = PresetTests.FAHE2_CLASSICAL_LONG_MSG_SMALL_ALPHA
-#             case PresetTests.FAHE2_QUANTUM_LONG_MSG_SMALL_ALPHA:
-#                 lambda_param, m_max, alpha, msg_size = PresetTests.FAHE2_QUANTUM_LONG_MSG_SMALL_ALPHA
-#             case PresetTests.FAHE2_CLASSICAL_SMALL_MSG_HIGH_ALPHA:
-#                 lambda_param, m_max, alpha, msg_size = PresetTests.FAHE2_CLASSICAL_SMALL_MSG_HIGH_ALPHA
-#             case PresetTests.FAHE2_QUANTUM_SMALL_MSG_HIGH_ALPHA:
-#                 lambda_param, m_max, alpha, msg_size = PresetTests.FAHE2_QUANTUM_SMALL_MSG_HIGH_ALPHA
-#             case PresetTests.FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA:
-#                 lambda_param, m_max, alpha, msg_size = PresetTests.FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA
-#             case PresetTests.FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA:
-#                 lambda_param, m_max, alpha, msg_size = PresetTests.FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA
-#             case _:
-#                     lambda_param, m_max, alpha, msg_size, num_additions = request
-#         num_additions = alpha
-        
-#     return FAHE2(lambda_param, m_max, alpha, msg_size, num_additions)
-
+    
 @pytest.fixture
 def fahe1(request) -> "FAHE1":
     """Fixture to initialize FAHE1 with dynamic parameters."""
