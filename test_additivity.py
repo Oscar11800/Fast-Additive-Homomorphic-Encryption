@@ -33,10 +33,10 @@ def additivity_fahe1(m_list, num_additions, k):
     # homomorphic_sum = sum(c_list)
     
     # Direct sum of messages
-    if os.path.isfile("output_failing_step.txt"):
+    if os.path.isfile("analysis_tests/isoutput_failing_step.txt"):
         file_exist = True
     if not file_exist:
-        file = open('output_failing_step.txt','w')
+        file = open('analysis_tests/output_failing_step.txt','w')
     direct_sum = 0
     num_carries = 0
     homomorphic_sum = 0

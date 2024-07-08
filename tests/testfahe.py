@@ -148,16 +148,15 @@ class TestHelper:
 
         was_successful = TestHelper.verify_add(masked_msg_sum, de_ciph_sum)
         return was_successful, masked_msg_sum, de_ciph_sum
-    
+
     @staticmethod
     def run_add(fahe: FAHE):
-        num_successes = 0 
+        num_successes = 0
         pass_indices = []
         fail_indices = []
         pass_equal_sums = []
         failed_msg_sums = []
         failed_decrypted_ciph_sums = []
-
 
         for trial in range(NUM_TRIALS):
             msg_list = TestHelper.generate_msg_list(fahe.num_additions, fahe.msg_size)
@@ -166,9 +165,9 @@ class TestHelper:
             masked_msg_sum = TestHelper.get_masked_msg_sum(msg_sum, fahe.m_max)
             ciph_sum = TestHelper.get_ciph_sum(ciph_list)
             de_ciph_sum = fahe.dec(ciph_sum)
-            
+
             was_successful = TestHelper.verify_add(masked_msg_sum, de_ciph_sum)
-            
+
             if was_successful:
                 pass_indices.append(trial)
                 pass_equal_sums.append(msg_sum)
@@ -181,42 +180,50 @@ class TestHelper:
             ciph_length = ciph_sum.bit_length()
 
             print(
-            "\nFAHE Test {}\n"
-            "==================\n"
-            "alpha                      : {}\n"
-            "NUM of additions           : {}\n"
-            "M_MAX                      : {}\n"
-            "------------------\n"
-            "M SUM                      : {}\n"
-            "Bit length of M SUM        : {}\n"
-            "Was this successful        : {}\n"
-            "DECRYPT Ciphertext LENGTH  : {}\n".format(
-                trial,
-                fahe.alpha,
-                fahe.num_additions,
-                fahe.m_max,
-                bin(msg_sum),
-                msg_sum.bit_length(),
-                was_successful,
-                ciph_length,
+                "\nFAHE Test {}\n"
+                "==================\n"
+                "alpha                      : {}\n"
+                "NUM of additions           : {}\n"
+                "M_MAX                      : {}\n"
+                "------------------\n"
+                "M SUM                      : {}\n"
+                "Bit length of M SUM        : {}\n"
+                "Was this successful        : {}\n"
+                "DECRYPT Ciphertext LENGTH  : {}\n".format(
+                    trial,
+                    fahe.alpha,
+                    fahe.num_additions,
+                    fahe.m_max,
+                    bin(msg_sum),
+                    msg_sum.bit_length(),
+                    was_successful,
+                    ciph_length,
                 )
             )
-        
+
         TestHelper.final_analysis(
-            (pass_indices, 
-             pass_equal_sums, 
-             fail_indices, 
-             failed_msg_sums, 
-             failed_decrypted_ciph_sums,
-             num_successes)
+            (
+                pass_indices,
+                pass_equal_sums,
+                fail_indices,
+                failed_msg_sums,
+                failed_decrypted_ciph_sums,
+                num_successes,
+            )
         )
         return num_successes == NUM_TRIALS
 
-    
     @staticmethod
     def final_analysis(tuple_of_lists_for_analysis):
-        pass_indices, pass_equal_sums, fail_indices, failed_msg_sums, failed_decrypted_ciph_sums, num_successes = tuple_of_lists_for_analysis
-        
+        (
+            pass_indices,
+            pass_equal_sums,
+            fail_indices,
+            failed_msg_sums,
+            failed_decrypted_ciph_sums,
+            num_successes,
+        ) = tuple_of_lists_for_analysis
+
         """Perform final analysis and display and plot results."""
 
         print(f"{RED}Failing pairs:{RESET}")
@@ -245,70 +252,112 @@ class TestHelper:
         plt.scatter(fail_indices, failed_decrypted_ciph_sums, c="red")
         plt.grid()
 
+
 class TestFAHE1:
     @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_MINIMUM], indirect=True)
     def test_fahe1_minimum(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
-    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_CLASSICAL_SMALL_MSG_HIGH_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe1", [PresetTests.FAHE1_CLASSICAL_SMALL_MSG_HIGH_ALPHA], indirect=True
+    )
     def test_fahe1_classical_small_msg_high_alpha(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
-    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_CLASSICAL_LONG_MSG_SMALL_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe1", [PresetTests.FAHE1_CLASSICAL_LONG_MSG_SMALL_ALPHA], indirect=True
+    )
     def test_fahe1_classical_long_msg_small_alpha(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
-    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_CLASSICAL_LONG_MSG_HIGH_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe1", [PresetTests.FAHE1_CLASSICAL_LONG_MSG_HIGH_ALPHA], indirect=True
+    )
     def test_fahe1_classical_long_msg_high_alpha(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
-    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_QUANTUM_SMALL_MSG_SMALL_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe1", [PresetTests.FAHE1_QUANTUM_SMALL_MSG_SMALL_ALPHA], indirect=True
+    )
     def test_fahe1_quantum_small_msg_small_alpha(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
-    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_QUANTUM_SMALL_MSG_HIGH_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe1", [PresetTests.FAHE1_QUANTUM_SMALL_MSG_HIGH_ALPHA], indirect=True
+    )
     def test_fahe1_quantum_small_msg_high_alpha(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
-    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_QUANTUM_LONG_MSG_SMALL_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe1", [PresetTests.FAHE1_QUANTUM_LONG_MSG_SMALL_ALPHA], indirect=True
+    )
     def test_fahe1_quantum_long_msg_small_alpha(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
-    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe1", [PresetTests.FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True
+    )
     def test_fahe1_quantum_long_msg_high_alpha(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
+
     @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_MINIMUM], indirect=True)
     def test_fahe2_minimum(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
-    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_CLASSICAL_SMALL_MSG_HIGH_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe2", [PresetTests.FAHE2_CLASSICAL_SMALL_MSG_HIGH_ALPHA], indirect=True
+    )
     def test_fahe2_classical_small_msg_high_alpha(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
-    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_CLASSICAL_LONG_MSG_SMALL_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe2", [PresetTests.FAHE2_CLASSICAL_LONG_MSG_SMALL_ALPHA], indirect=True
+    )
     def test_fahe2_classical_long_msg_small_alpha(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
-    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe2", [PresetTests.FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA], indirect=True
+    )
     def test_fahe2_classical_long_msg_high_alpha(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
-    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_QUANTUM_SMALL_MSG_SMALL_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe2", [PresetTests.FAHE2_QUANTUM_SMALL_MSG_SMALL_ALPHA], indirect=True
+    )
     def test_fahe2_quantum_small_msg_small_alpha(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
-    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_QUANTUM_SMALL_MSG_HIGH_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe2", [PresetTests.FAHE2_QUANTUM_SMALL_MSG_HIGH_ALPHA], indirect=True
+    )
     def test_fahe2_quantum_small_msg_high_alpha(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
-    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_QUANTUM_LONG_MSG_SMALL_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe2", [PresetTests.FAHE2_QUANTUM_LONG_MSG_SMALL_ALPHA], indirect=True
+    )
     def test_fahe2_quantum_long_msg_small_alpha(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
-    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True)
+
+    @pytest.mark.parametrize(
+        "fahe2", [PresetTests.FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True
+    )
     def test_fahe2_quantum_long_msg_high_alpha(self, fahe2: "FAHE2"):
         TestHelper.fahe_debug(fahe2)
         assert TestHelper.run_add(fahe2)
-    
-    
