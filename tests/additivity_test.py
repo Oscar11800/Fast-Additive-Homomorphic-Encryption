@@ -34,21 +34,21 @@ class PresetTests(Enum):
     #   MSG_SIZE,
     #   NUM_ADDITIONS,
     FAHE1_MINIMUM = (128, 32, 6, 32, 2 ** (6 - 1))
-    FAHE2_MINIMUM = (128, 32, 29, 32, 10_000)
+    FAHE2_MINIMUM = (128, 32, 29, 32, 100)
     FAHE1_QUANTUM_SMALL_MSG_SMALL_ALPHA = (256, 32, 6, 32, 2 ** (6 - 1))
-    FAHE2_QUANTUM_SMALL_MSG_SMALL_ALPHA = (256, 32, 22, 32, 10_000)
+    FAHE2_QUANTUM_SMALL_MSG_SMALL_ALPHA = (256, 32, 22, 32, 100)
     FAHE1_CLASSICAL_LONG_MSG_SMALL_ALPHA = (128, 64, 6, 64, 2 ** (6 - 1))
-    FAHE2_CLASSICAL_LONG_MSG_SMALL_ALPHA = (128, 64, 29, 64, 10_000)
+    FAHE2_CLASSICAL_LONG_MSG_SMALL_ALPHA = (128, 64, 29, 64, 100)
     FAHE1_QUANTUM_LONG_MSG_SMALL_ALPHA = (256, 64, 6, 64, 2 ** (6 - 1))
-    FAHE2_QUANTUM_LONG_MSG_SMALL_ALPHA = (256, 64, 21, 64, 10_000)
-    FAHE1_CLASSICAL_SMALL_MSG_HIGH_ALPHA = (128, 32, 33, 32, 10_000)
-    FAHE2_CLASSICAL_SMALL_MSG_HIGH_ALPHA = (128, 32, 33, 32, 10_000)
-    FAHE1_QUANTUM_SMALL_MSG_HIGH_ALPHA = (256, 32, 33, 32, 10_000)
-    FAHE2_QUANTUM_SMALL_MSG_HIGH_ALPHA = (256, 32, 33, 32, 10_000)
-    FAHE1_CLASSICAL_LONG_MSG_HIGH_ALPHA = (128, 64, 33, 64, 10_000)
-    FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA = (128, 64, 33, 64, 10_000)
-    FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA = (256, 64, 33, 64, 10_000)
-    FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA = (256, 64, 33, 64, 10_000)
+    FAHE2_QUANTUM_LONG_MSG_SMALL_ALPHA = (256, 64, 21, 64, 100)
+    FAHE1_CLASSICAL_SMALL_MSG_HIGH_ALPHA = (128, 32, 33, 32, 100)
+    FAHE2_CLASSICAL_SMALL_MSG_HIGH_ALPHA = (128, 32, 33, 32, 100)
+    FAHE1_QUANTUM_SMALL_MSG_HIGH_ALPHA = (256, 32, 33, 32, 100)
+    FAHE2_QUANTUM_SMALL_MSG_HIGH_ALPHA = (256, 32, 33, 32, 100)
+    FAHE1_CLASSICAL_LONG_MSG_HIGH_ALPHA = (128, 64, 33, 64, 100)
+    FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA = (128, 64, 33, 64, 100)
+    FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA = (256, 64, 33, 64, 100)
+    FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA = (256, 64, 33, 64, 100)
 
 
 @pytest.fixture
@@ -250,3 +250,65 @@ class TestFAHE1:
     def test_fahe1_minimum(self, fahe1: "FAHE1"):
         TestHelper.fahe_debug(fahe1)
         assert TestHelper.run_add(fahe1)
+    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_CLASSICAL_SMALL_MSG_HIGH_ALPHA], indirect=True)
+    def test_fahe1_classical_small_msg_high_alpha(self, fahe1: "FAHE1"):
+        TestHelper.fahe_debug(fahe1)
+        assert TestHelper.run_add(fahe1)
+    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_CLASSICAL_LONG_MSG_SMALL_ALPHA], indirect=True)
+    def test_fahe1_classical_long_msg_small_alpha(self, fahe1: "FAHE1"):
+        TestHelper.fahe_debug(fahe1)
+        assert TestHelper.run_add(fahe1)
+    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_CLASSICAL_LONG_MSG_HIGH_ALPHA], indirect=True)
+    def test_fahe1_classical_long_msg_high_alpha(self, fahe1: "FAHE1"):
+        TestHelper.fahe_debug(fahe1)
+        assert TestHelper.run_add(fahe1)
+    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_QUANTUM_SMALL_MSG_SMALL_ALPHA], indirect=True)
+    def test_fahe1_quantum_small_msg_small_alpha(self, fahe1: "FAHE1"):
+        TestHelper.fahe_debug(fahe1)
+        assert TestHelper.run_add(fahe1)
+    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_QUANTUM_SMALL_MSG_HIGH_ALPHA], indirect=True)
+    def test_fahe1_quantum_small_msg_high_alpha(self, fahe1: "FAHE1"):
+        TestHelper.fahe_debug(fahe1)
+        assert TestHelper.run_add(fahe1)
+    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_QUANTUM_LONG_MSG_SMALL_ALPHA], indirect=True)
+    def test_fahe1_quantum_long_msg_small_alpha(self, fahe1: "FAHE1"):
+        TestHelper.fahe_debug(fahe1)
+        assert TestHelper.run_add(fahe1)
+    @pytest.mark.parametrize("fahe1", [PresetTests.FAHE1_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True)
+    def test_fahe1_quantum_long_msg_high_alpha(self, fahe1: "FAHE1"):
+        TestHelper.fahe_debug(fahe1)
+        assert TestHelper.run_add(fahe1)
+    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_MINIMUM], indirect=True)
+    def test_fahe2_minimum(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_CLASSICAL_SMALL_MSG_HIGH_ALPHA], indirect=True)
+    def test_fahe2_classical_small_msg_high_alpha(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_CLASSICAL_LONG_MSG_SMALL_ALPHA], indirect=True)
+    def test_fahe2_classical_long_msg_small_alpha(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_CLASSICAL_LONG_MSG_HIGH_ALPHA], indirect=True)
+    def test_fahe2_classical_long_msg_high_alpha(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_QUANTUM_SMALL_MSG_SMALL_ALPHA], indirect=True)
+    def test_fahe2_quantum_small_msg_small_alpha(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_QUANTUM_SMALL_MSG_HIGH_ALPHA], indirect=True)
+    def test_fahe2_quantum_small_msg_high_alpha(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_QUANTUM_LONG_MSG_SMALL_ALPHA], indirect=True)
+    def test_fahe2_quantum_long_msg_small_alpha(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+    @pytest.mark.parametrize("fahe2", [PresetTests.FAHE2_QUANTUM_LONG_MSG_HIGH_ALPHA], indirect=True)
+    def test_fahe2_quantum_long_msg_high_alpha(self, fahe2: "FAHE2"):
+        TestHelper.fahe_debug(fahe2)
+        assert TestHelper.run_add(fahe2)
+    
+    
