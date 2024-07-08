@@ -1,26 +1,3 @@
-# Table of Contents
-
-- [Fast Additive Homomorphic Encryption (FAHE) Implementation](#fast-additive-homomorphic-encryption-fahe-implementation)
-  - [Overview](#overview)
-    - [How to Replicate the Experiment and Test Your Own Values](#how-to-replicate-the-experiment-and-test-your-own-values)
-  - [How to Use This Project](#how-to-use-this-project)
-    - [File Structure (Find what you need)](#file-structure-find-what-you-need)
-  - [FAHE 1 & 2 Experimentation](#fahe-1--2-experimentation)
-    - [FAHE 1 & FAHE 2 Facts and Intuitions](#fahe-1--fahe-2-facts-and-intuitions)
-    - [Assumptions and Variables](#assumptions-and-variables)
-    - [FAHE1.Keygen(λ, |m_{max}|, α)](#fahe1keygenλ--m_max--α)
-    - [FAHE1.Encr(m)](#fahe1encrm)
-    - [FAHE1.Add(c1, c2)](#fahe1addc1-c2)
-    - [FAHE1.Decr(c)](#fahe1decrc)
-    - [FAHE2.Keygen(λ, |m_{max}|, α)](#fahe2keygenλ--m_max--α)
-    - [FAHE2.Encr(m)](#fahe2encrm)
-    - [FAHE2.Add(c1, c2)](#fahe2addc1-c2)
-    - [FAHE2.Decr(c)](#fahe2decrc)
-    - [FAHE Suggested Values](#fahe-suggested-values)
-  - [FAQ](#faq)
-  - [References](#references)
-
-
 # Fast Additive Homomorphic Encryption (FAHE) Implementation
 
 ## Overview
@@ -30,14 +7,32 @@ This project attempts to replicate Cominetti's experiments on FAHE1 and FAHE2 wi
 
 *Disclaimer: The FAHE1 & 2 processes described below are merely summarized in importance of our analysis from Cominetti's research and do not explain some of the math involved.*
 
-### How to Replicate the Experiment and Test Your Own Values
-Suggested Experiments:
+### How to Run Homomorphic Additivity Tests
+First, navigate to `/tests` folder
+
+Changing Constants:
+Change `NUM_TRIALS` to run each test a different number of times (*Note:* This may make tests slower).
+Change `TOGGLE_FIXED_MESSAGE` for debugging. This generates message lists with only a single unique message.
+Change `FIXED_MESSAGE` to change what unique message is generated.
+
+Running Preset Addition Tests:
+- You can run all addition tests by running `python3 -m pytest -s testfahe.py`
+- You can run only fahe1 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe1"`
+- You can run only fahe2 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe2"`
+- You can run only fast fahe1 addition tests by running `python3 -m pytest -s testfahe.py -m "fahe1 and not slow`
+- You can run specific tests/functions by running `python3 -m pytest -s -m testfahe.py::[class name]::[test name]`
+
+Running Custom Tests:
+- Change the custom constants as necessary
+- Run custom tests by running: `python3 -m pytest -s testfahe.py -m "custom"`
+
+Suggested Custom Experiments:
+You can set your own custom experiment parameters and try running tests
 - Start with $\(\lambda = 128\)$
 - Test with $\(|m_{max}| = 32\)$ and $\(\alpha = 6\)$.
 - Increase $\(|m_{max}|\)$ to 64 and observe the impact.
 - Increment $\(\alpha\)$ gradually (e.g., $\(\alpha = 10, 15, 20, 25, 30\)$) and evaluate performance.
 - If higher security is needed, test with $\(\lambda = 256\)$ 
-- **NOTE:  $\(\rho\)$ and $\(\eta\)$ and $\gamma\$ are calculated, not set. Take a look at the suggest values section for more information.
 
 ## How to Use This Project
 Clone this repository using:
@@ -50,21 +45,28 @@ Make sure to have the current requirements by installing requirements:
 pip install -r requirements.txt
 ```
 
-To run the current tests in test.py or to run your own tests in test.py :
-```bash
-python3 test.py
-```
+To run the current tests, please reference the above section on running additivity tests
+
+
 To run the ipynb graphing file:
+- Navigate to `/legacy` folder and run:
 ```bash
 jupyter notebook plot_performance.ipynb
 ```
 
 To run csv benchmark tests, edit ```analysis.py``` with desired values and run:
+- Navigate to `/legacy` folder and run:
 ```bash
 python3 analysis.py
 ```
+### File Structure (Current Testing Framework)
+| File Name           | Description                                                                                                                               |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/fahe.py`          | FAHE1 key generation, encryption, and decryption calculations. Used in `plot_performance.ipynb`, `data_collection.py`, and `test.py`.     |
+| `tests/testfahe.py`          | Same as `fahe1.py` but for FAHE2.                                                                                                          |
 
-### File Structure (Find what you need)
+
+### Legacy File Structure (Older Tests)
 | File Name           | Description                                                                                                                               |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `fahe1.py`          | FAHE1 key generation, encryption, and decryption calculations. Used in `plot_performance.ipynb`, `data_collection.py`, and `test.py`.     |
