@@ -1,6 +1,6 @@
 import secrets
 import unittest
-from data_collection import Operation, collect_security_param_performance, get_op_func_map, print_data_points, collect_security_param_ciphertext, collect_alpha_performance
+from legacy.data_collection import Operation, collect_security_param_performance, get_op_func_map, print_data_points, collect_security_param_ciphertext, collect_alpha_performance
 from fahe1 import dec1, enc1, length_enc1, keygen1
 from fahe2 import dec2, enc2, keygen2
 import time

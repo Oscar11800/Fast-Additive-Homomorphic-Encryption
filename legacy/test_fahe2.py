@@ -1,6 +1,6 @@
 import secrets
 import unittest
-from data_collection import (
+from legacy.data_collection import (
     Operation,
     collect_security_param_performance,
     get_op_func_map,
