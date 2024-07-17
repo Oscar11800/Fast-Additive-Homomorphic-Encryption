@@ -47,11 +47,9 @@ typedef union {
 
 // Enum to specify the type of instance
 typedef enum { FAHE1_TYPE, FAHE2_TYPE } fahe_type;
-// Function prototypes for initialization and cleanup
-fahe_base *fahe_init(const fahe_params *params, fahe_type type);
 
-void fahe_free(fahe_base *fahe, fahe_type type);
-
+fahe_union *fahe_init(const fahe_params *params, fahe_type type);
+void fahe_free(fahe_union *fahe, fahe_type type);
 // Key generation function prototypes
 int *fahe1_keygen(uint16_t lambda_param, uint8_t m_max, uint8_t alpha,
                   int key_size);

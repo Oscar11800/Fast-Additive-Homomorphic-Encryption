@@ -1,3 +1,4 @@
+#include <fahe.h>
 #include <gmp.h>
 #include <math.h>
 #include <openssl/bn.h>
@@ -5,16 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fahe.h>
 
-fahe_base *fahe_init(const fahe_params *params, fahe_type type) {
-  fahe_base *fahe;
+fahe_union *fahe_init(const fahe_params *params, fahe_type type) {
+  fahe_union *fahe = (fahe_union *)malloc(sizeof(fahe_union));
+  if (!fahe) {
+    fprintf(stderr, "Memory allocation for fahe_union struct failed\n");
+    exit(EXIT_FAILURE);
+  }
   if (type == FAHE1_TYPE) {
-    fahe1 *fahe1_instance = (fahe1 *)malloc(sizeof(fahe1));
-    if (!fahe1_instance) {
-      fprintf(stderr, "Memory allocation for fahe1 struct failed\n");
-      exit(EXIT_FAILURE);
-    }
+    fahe1 *fahe1_instance = &fahe->fahe1_instance;
 
     // Initialize common params
     fahe1_instance->base.lambda_param = params->lambda_param;
@@ -33,15 +33,12 @@ fahe_base *fahe_init(const fahe_params *params, fahe_type type) {
       exit(EXIT_FAILURE);
     }
     BN_one(fahe1_instance->num_additions);
-    BN_lshift(fahe1_instance->num_additions, fahe1_instance->num_additions, (fahe1_instance->base.alpha) - 1);
+    BN_lshift(fahe1_instance->num_additions, fahe1_instance->num_additions,
+              (fahe1_instance->base.alpha) - 1);
 
     fahe = (fahe_base *)fahe1_instance;
   } else if (type == FAHE2_TYPE) {
-    fahe2 *fahe2_instance = (fahe2 *)malloc(sizeof(fahe2));
-    if (!fahe2_instance) {
-      fprintf(stderr, "Memory allocation for fahe2 struct failed\n");
-      exit(EXIT_FAILURE);
-    }
+    fahe2 *fahe2_instance = &fahe->fahe2_instance;
 
     // Initialize common params
     fahe2_instance->base.lambda_param = params->lambda_param;
@@ -52,14 +49,15 @@ fahe_base *fahe_init(const fahe_params *params, fahe_type type) {
     fahe2_instance->base.enc_key_size = params->enc_key_size;
     fahe2_instance->base.dec_key_size = params->dec_key_size;
 
-    fahe = (fahe_base *)fahe2_instance;
   } else {
     fprintf(stderr, "Unknown type for fahe_init\n");
+    free(fahe);
     exit(EXIT_FAILURE);
   }
 
   // Allocate memory for keys (for both fahe1 and fahe2)
-  fahe_base *base = (fahe_base *)fahe;
+  fahe_base *base = (type == FAHE1_TYPE) ? (fahe_base *)&fahe->fahe1_instance.base : (fahe_base *)&fahe->fahe2_instance.base;
+  
   base->key = (int *)malloc(base->key_size * sizeof(int));
   if (!base->key) {
     fprintf(stderr, "Memory allocation for key failed\n");
@@ -99,51 +97,51 @@ fahe_base *fahe_init(const fahe_params *params, fahe_type type) {
   return fahe;
 }
 
-void fahe_free(fahe_base *fahe, fahe_type type){
-    if(!fahe){
-        return;
+void fahe_free(fahe_union *fahe, fahe_type type) {
+  if (!fahe) {
+    return;
+  }
+
+  if (type == FAHE1_TYPE) {
+    fahe1 *fahe1_instance = &fahe->fahe1_instance;
+
+    // Free num_additions BIGNUM
+    if (fahe1_instance->num_additions) {
+      BN_free(fahe1_instance->num_additions);
     }
 
-    if(type == FAHE1_TYPE){
-        fahe1 *fahe1_instance = &fahe->fahe1_instance;
-        
-        // Free num_additions BIGNUM
-        if (fahe1_instance->num_additions) {
-            BN_free(fahe1_instance->num_additions);
-        }
-        
-        // Free the key arrays
-        if (fahe1_instance->base.key) {
-            free(fahe1_instance->base.key);
-        }
-        if (fahe1_instance->base.enc_key) {
-            free(fahe1_instance->base.enc_key);
-        }
-        if (fahe1_instance->base.dec_key) {
-            free(fahe1_instance->base.dec_key);
-        }
-    }else if (type == FAHE2_TYPE) {
-        fahe2 *fahe2_instance = &fahe->fahe2_instance;
-        
-        // Free num_additions BIGNUM
-        if (fahe2_instance->num_additions) {
-            BN_free(fahe2_instance->num_additions);
-        }
-
-        // Free the key arrays
-        if (fahe2_instance->base.key) {
-            free(fahe2_instance->base.key);
-        }
-        if (fahe2_instance->base.enc_key) {
-            free(fahe2_instance->base.enc_key);
-        }
-        if (fahe2_instance->base.dec_key) {
-            free(fahe2_instance->base.dec_key);
-        }
-    } else {
-        fprintf(stderr, "Unknown type for fahe_free\n");
-        return;
+    // Free the key arrays
+    if (fahe1_instance->base.key) {
+      free(fahe1_instance->base.key);
     }
-    // Free the union itself
-    free(fahe);
+    if (fahe1_instance->base.enc_key) {
+      free(fahe1_instance->base.enc_key);
+    }
+    if (fahe1_instance->base.dec_key) {
+      free(fahe1_instance->base.dec_key);
+    }
+  } else if (type == FAHE2_TYPE) {
+    fahe2 *fahe2_instance = &fahe->fahe2_instance;
+
+    // Free num_additions BIGNUM
+    if (fahe2_instance->num_additions) {
+      BN_free(fahe2_instance->num_additions);
+    }
+
+    // Free the key arrays
+    if (fahe2_instance->base.key) {
+      free(fahe2_instance->base.key);
+    }
+    if (fahe2_instance->base.enc_key) {
+      free(fahe2_instance->base.enc_key);
+    }
+    if (fahe2_instance->base.dec_key) {
+      free(fahe2_instance->base.dec_key);
+    }
+  } else {
+    fprintf(stderr, "Unknown type for fahe_free\n");
+    return;
+  }
+  // Free the union itself
+  free(fahe);
 }
