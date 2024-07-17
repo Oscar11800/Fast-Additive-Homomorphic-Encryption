@@ -1,4 +1,3 @@
-#include <gmp.h>
 #include <math.h>
 #include <openssl/bn.h>
 #include <stdint.h>
@@ -7,20 +6,38 @@
 #include <string.h>
 
 typedef struct {
-  int lambda_param;
+  int lambda;
   int m_max;
   int alpha;
   int msg_size;
 } fahe_params;
 
 typedef struct {
-  int lambda_param;
+  int lambda;
   int m_max;
   int alpha;
-  int msg_size;
-  int *key;
+  int rho;
+  BIGNUM *X;
+  BIGNUM *p;
+} fahe1_key;
+
+typedef struct {
+  int lambda;
+  int m_max;
+  int alpha;
+  int X;
+  int rho;
+  int pos;
+  BIGNUM *p;
+
+} fahe2_key;
+
+typedef struct {
+  fahe1_key key1;  // Encapsulated key
+  fahe2_key key2;
   int *enc_key;
   int *dec_key;
+  int msg_size;
 } fahe_base;
 
 typedef struct {
@@ -49,16 +66,18 @@ fahe_union *fahe_init(const fahe_params *params, fahe_type type);
 void fahe_free(fahe_union *fahe, fahe_type type);
 
 // Key generation function prototypes
-int *fahe1_keygen(int lambda_param, int m_max, int alpha);
-int *fahe2_keygen(int lambda_param, int m_max, int alpha);
+fahe1_key fahe1_keygen(int lambda, int m_max, int alpha);
+fahe2_key fahe2_keygen(int lambda, int m_max, int alpha);
 
 // Function pointer type definition for fahe_enc
 typedef BIGNUM (*fahe_enc_func)(int *enc_key, int message);
 
 // Encryption and decryption function prototypes
 BIGNUM fahe1_enc(int *enc_key, int message);
-BIGNUM *fahe1_enc_list(fahe_enc_func enc_func, int *message_list, size_t list_size, int *enc_key);
+BIGNUM *fahe1_enc_list(fahe_enc_func enc_func, int *message_list,
+                       size_t list_size, int *enc_key);
 BIGNUM fahe2_enc(int *enc_key, int message);
-BIGNUM *fahe2_enc_list(fahe_enc_func enc_func, int *message_list, size_t list_size, int *enc_key);
+BIGNUM *fahe2_enc_list(fahe_enc_func enc_func, int *message_list,
+                       size_t list_size, int *enc_key);
 int fahe1_dec(int *dec_key, BIGNUM ciphertext);
 int fahe2_dec(int *dec_key, BIGNUM ciphertext);
