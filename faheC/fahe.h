@@ -7,23 +7,17 @@
 #include <string.h>
 
 typedef struct {
-  uint16_t lambda_param;
-  uint8_t m_max;
-  uint8_t alpha;
-  uint8_t msg_size;
-  int key_size;
-  int enc_key_size;
-  int dec_key_size;
+  int lambda_param;
+  int m_max;
+  int alpha;
+  int msg_size;
 } fahe_params;
 
 typedef struct {
-  uint16_t lambda_param;
-  uint8_t m_max;
-  uint8_t alpha;
-  uint8_t msg_size;
-  int key_size;
-  int enc_key_size;
-  int dec_key_size;
+  int lambda_param;
+  int m_max;
+  int alpha;
+  int msg_size;
   int *key;
   int *enc_key;
   int *dec_key;
@@ -48,23 +42,23 @@ typedef union {
 // Enum to specify the type of instance
 typedef enum { FAHE1_TYPE, FAHE2_TYPE } fahe_type;
 
+void init();
+
+// Function prototypes for initialization and cleanup
 fahe_union *fahe_init(const fahe_params *params, fahe_type type);
 void fahe_free(fahe_union *fahe, fahe_type type);
+
 // Key generation function prototypes
-int *fahe1_keygen(uint16_t lambda_param, uint8_t m_max, uint8_t alpha,
-                  int key_size);
-int *fahe2_keygen(uint16_t lambda_param, uint8_t m_max, uint8_t alpha,
-                  int key_size);
+int *fahe1_keygen(int lambda_param, int m_max, int alpha);
+int *fahe2_keygen(int lambda_param, int m_max, int alpha);
 
 // Function pointer type definition for fahe_enc
-typedef BIGNUM (*fahe_enc_func)(int *enc_key, uint8_t message);
+typedef BIGNUM (*fahe_enc_func)(int *enc_key, int message);
 
 // Encryption and decryption function prototypes
-BIGNUM fahe1_enc(int *enc_key, uint8_t message);
-BIGNUM *fahe1_enc_list(fahe_enc_func enc_func, uint8_t *message_list,
-                       size_t list_size, int *enc_key);
-BIGNUM fahe2_enc(int *enc_key, uint8_t message);
-BIGNUM *fahe2_enc_list(fahe_enc_func enc_func, uint8_t *message_list,
-                       size_t list_size, int *enc_key);
-uint8_t fahe1_dec(int *dec_key, BIGNUM ciphertext);
-uint8_t fahe2_dec(int *dec_key, BIGNUM ciphertext);
+BIGNUM fahe1_enc(int *enc_key, int message);
+BIGNUM *fahe1_enc_list(fahe_enc_func enc_func, int *message_list, size_t list_size, int *enc_key);
+BIGNUM fahe2_enc(int *enc_key, int message);
+BIGNUM *fahe2_enc_list(fahe_enc_func enc_func, int *message_list, size_t list_size, int *enc_key);
+int fahe1_dec(int *dec_key, BIGNUM ciphertext);
+int fahe2_dec(int *dec_key, BIGNUM ciphertext);
