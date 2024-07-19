@@ -1,5 +1,6 @@
 #include <math.h>
 #include <openssl/bn.h>
+#include <openssl/rand.h>
 
 BIGNUM *rand_num_below(const BIGNUM *upper_bound) {
   BIGNUM *rand_bn = BN_new();
@@ -38,7 +39,7 @@ BIGNUM *rand_bits_below(unsigned int bitlength) {
   return rand_bn;
 }
 
-BIGNUM *generate_message(unsigned int message_size) {
+BIGNUM *generate_big_message(unsigned int message_size) {
   BIGNUM *BN_message = BN_new();
   if (!BN_message) {
     fprintf(stderr, "BNmessage failed\n");
@@ -56,24 +57,35 @@ BIGNUM *generate_message(unsigned int message_size) {
   return BN_message;
 }
 
-uint64_t generate_int_message(unsigned int bit_length) {
-  if (bit_length > 64) {
-    fprintf(stderr, "Bit length must be 64 or less\n");
-    exit(EXIT_FAILURE);
-  }
-  // Calculate the maximum value for the given bit length
-  uint64_t max_value = (1ULL << bit_length) - 1;
-  // Generate a random number in the range [0, max_value]
-  uint64_t random_value = 0;
-  for (unsigned int i = 0; i < bit_length; i += 32) {
-    random_value <<= 32;
-    random_value |= (uint32_t)rand();
-  }
-  // Ensure the number is within the desired bit length
-  random_value &= max_value;
+// TODO: This method does not work
+// // Function to generate a random uint64_t number with n bits
+// uint64_t generate_rand_int(unsigned int n) {
+//     if (n > 64) {
+//         fprintf(stderr, "Number of bits should be <= 64\n");
+//         exit(EXIT_FAILURE);
+//     }
 
-  return random_value;
-}
+//     // Calculate the number of bytes needed and maximum value for n bits
+//     unsigned int bytes_needed = (n + 7) / 8;
+//     uint64_t max_value = (1ULL << n) - 1;
+//     uint64_t random_value = 0;
+//     unsigned char buf[8] = {0};
+
+//     // Generate random bytes
+//     if (RAND_bytes(buf, bytes_needed) != 1) {
+//         fprintf(stderr, "Error generating random bytes\n");
+//         exit(EXIT_FAILURE);
+//     }
+
+//     // Convert bytes to uint64_t
+//     for (unsigned int i = 0; i < bytes_needed; ++i) {
+//         random_value = (random_value << 8) | buf[i];
+//     }
+
+//     // Ensure the value is within the correct range
+//     random_value = random_value & max_value;
+//     return random_value;
+// }
 
 BIGNUM **generate_message_list(unsigned int message_size,
                                unsigned int num_messages) {
@@ -84,9 +96,9 @@ BIGNUM **generate_message_list(unsigned int message_size,
   }
 
   for (unsigned int i = 0; i < num_messages; i++) {
-    message_list[i] = generate_message(message_size);
+    message_list[i] = generate_big_message(message_size);
     if (!message_list[i]) {
-      fprintf(stderr, "generate_message failed for message %u\n", i);
+      fprintf(stderr, "generate_big_message failed for message %u\n", i);
       // Free previously allocated BIGNUMs
       for (unsigned int j = 0; j < i; j++) {
         BN_free(message_list[j]);

@@ -127,20 +127,19 @@ fahe1_key fahe1_keygen(int lambda, int m_max, int alpha) {
   return key;
 }
 
-BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, int message) {
-  printf("ENCRYPTING");
+BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM *message) {
+  printf("ENCRYPTING\n");
   BIGNUM *q = NULL;
   BIGNUM *noise = NULL;
   BIGNUM *M = BN_new();
   BIGNUM *n = BN_new();
   BIGNUM *c = BN_new();
-  BIGNUM *message_bn = BN_new();
   BIGNUM *rho_alpha_shift = BN_new();
   BIGNUM *rho_alpha = BN_new();
   //   CTX stores temp variables
   BN_CTX *ctx = BN_CTX_new();
 
-  if (!M || !n || !c || !message_bn || !rho_alpha_shift || !rho_alpha || !ctx) {
+  if (!M || !n || !c || !rho_alpha_shift || !rho_alpha || !ctx) {
     fprintf(stderr, "Memory allocation failed\n");
     exit(EXIT_FAILURE);
   }
@@ -159,12 +158,11 @@ BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, int message) {
   // TODO: Can noise be negative?
   // Generate random noise of bit length rho
   noise = rand_bits_below(rho);
-  printf("Noise: %s", BN_bn2dec(noise));
+  printf("Noise: %s\n", BN_bn2dec(noise));
 
   // M = (message << (rho + alpha)) + noise
-  BN_set_word(message_bn, message);
   BN_set_word(rho_alpha, rho + alpha);
-  BN_lshift(rho_alpha_shift, message_bn, rho + alpha);
+  BN_lshift(rho_alpha_shift, message, rho + alpha);
   BN_add(M, rho_alpha_shift, noise);
 
   // n = p * q
@@ -178,7 +176,6 @@ BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, int message) {
   BN_free(noise);
   BN_free(M);
   BN_free(n);
-  BN_free(message_bn);
   BN_free(rho_alpha_shift);
   BN_free(rho_alpha);
   BN_CTX_free(ctx);
