@@ -168,7 +168,7 @@ BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM *message) {
     log_message(LOG_FATAL, "Input BIGNUM X is NULL\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_FATAL, "Debug: Input BIGNUM X is not NULL\n");
+  log_message(LOG_DEBUG, "Debug: Input BIGNUM X is not NULL\n");
 
   log_message(LOG_DEBUG, "Debug: X = %c\n", BN_bn2dec(X));
 

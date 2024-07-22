@@ -1,12 +1,23 @@
-.PHONY: clean
+.PHONY: clean post_build run_phase1 run_tests
 
-# it checks presence of functions, not correctness
+# Build phase1 executable
 phase1: fahe1.h fahe1.c phase1.c helper.c logger.c
 	clang -o phase1 -Wall fahe1.c phase1.c helper.c logger.c -lm -lcriterion -lssl -lcrypto
 
-# test is for the tests you write in fahe1
-testfahe1: fahe1.h fahe1.c fahe1test.c helper.c logger.c
-	clang -o fahe1test -Wall fahe1.c fahe1test.c helper.c logger.c -lm -lcriterion -lssl -lcrypto
+# Build testfahe1 executable for running tests
+testfahe1: fahe1.h fahe1.c testfahe1.c helper.c logger.c
+	clang -o testfahe1 -Wall fahe1.c testfahe1.c helper.c logger.c -lm -lcriterion -lssl -lcrypto
 
+# Clean up generated files
 clean:
 	rm -rf phase1 testfahe1 a.out
+
+# Run the phase1 executable
+run_phase1: phase1
+	./phase1
+	$(MAKE) clean
+
+# Run the tests
+run_tests: testfahe1
+	./testfahe1
+	$(MAKE) clean
