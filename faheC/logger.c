@@ -1,10 +1,12 @@
+#ifdef ENABLE_LOGGING
+
 #include "logger.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 
 // Default log level (can be changed externally)
-LogLevel current_log_level = LOG_FATAL;
+LogLevel current_log_level = LOG_INFO;
 
 #define RESET_COLOR "\033[0m"
 #define RED_COLOR "\033[31m"
@@ -45,3 +47,5 @@ void log_message(LogLevel level, const char* format, ...) {
     va_end(args);
   }
 }
+
+#endif // ENABLE_LOGGING

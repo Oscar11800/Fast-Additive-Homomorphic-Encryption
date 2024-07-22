@@ -10,6 +10,10 @@ typedef enum {
     LOG_FATAL
 }LogLevel;
 
+#ifdef ENABLE_LOGGING
 void log_message(LogLevel level, const char* format,...);
-
+#else
+#define log_message(level, format, ...) ((void)0) // Do nothing
 #endif
+
+#endif // LOGGER_H

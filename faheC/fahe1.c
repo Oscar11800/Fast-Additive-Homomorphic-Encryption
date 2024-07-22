@@ -13,10 +13,12 @@
 fahe1 *fahe1_init(const fahe_params *params) {
   log_message(LOG_INFO, "Fahe1 init start...\n");
   fahe1 *fahe1_instance = (fahe1 *)malloc(sizeof(fahe1));
+#ifdef ENABLE_MEMORY_CHECKS
   if (!fahe1_instance) {
     log_message(LOG_FATAL, "Memory allocation for fahe_union struct failed\n");
     exit(EXIT_FAILURE);
   }
+#endif
 
   log_message(LOG_DEBUG, "Memory allocated for fahe1_instance\n");
 
@@ -27,11 +29,13 @@ fahe1 *fahe1_init(const fahe_params *params) {
 
   // Initialize num_additions for fahe1
   fahe1_instance->num_additions = BN_new();
+#ifdef ENABLE_MEMORY_CHECKS
   if (!fahe1_instance->num_additions) {
     log_message(LOG_FATAL, "Memory allocation for BIGNUM failed\n");
     free(fahe1_instance);
     exit(EXIT_FAILURE);
   }
+#endif
   BN_one(fahe1_instance->num_additions);
   BN_lshift(fahe1_instance->num_additions, fahe1_instance->num_additions,
             (fahe1_instance->key.alpha) - 1);
@@ -42,9 +46,11 @@ fahe1 *fahe1_init(const fahe_params *params) {
 }
 
 void fahe1_free(fahe1 *fahe1_instance) {
+#ifdef ENABLE_MEMORY_CHECKS
   if (!fahe1_instance) {
     log_message(LOG_ERROR, "No fahe1 to release.");
   }
+#endif
   return;
   if (fahe1_instance->key.p) {
     BN_free(fahe1_instance->key.p);
