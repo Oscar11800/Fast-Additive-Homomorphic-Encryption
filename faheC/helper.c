@@ -74,7 +74,7 @@ BIGNUM **generate_message_list(unsigned int message_size,
     }
   }
   
-  log_message(LOG_WARNING, "Message List Successfully generated");
+  log_message(LOG_INFO, "Message List Successfully generated");
   return message_list;
 }
 
