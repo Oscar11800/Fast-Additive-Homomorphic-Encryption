@@ -4,6 +4,7 @@
 
 #include "fahe1.h"
 #include "helper.h"
+#include "logger.h"
 
 /*
 This file is meant for the initial testing of fahe1.c and its corresponding
@@ -14,77 +15,6 @@ helper.c functions. Examples of the code in here include:
     - fahe1.c keygeneration
 */
 
-// Helper functions
-void debug_fahe_init(fahe1 *fahe1_instance) {
-  if (!fahe1_instance) {
-    fprintf(stderr, "ERROR DEBUGGING: FAHE instance is NULL.\n");
-    return;
-  }
-  printf("FAHE1 Instance:\n");
-  printf("lambda: %d\n", fahe1_instance->key.lambda);
-  printf("m_max: %d\n", fahe1_instance->key.m_max);
-  printf("alpha: %d\n", fahe1_instance->key.alpha);
-  printf("msg_size: %u\n", fahe1_instance->msg_size);
-
-  // Print num_additions
-  char *num_additions_str = BN_bn2dec(fahe1_instance->num_additions);
-  if (num_additions_str) {
-    printf("num_additions: %s\n", num_additions_str);
-    OPENSSL_free(num_additions_str);
-  } else {
-    fprintf(stderr, "Error converting num_additions to string\n");
-  }
-}
-
-// Helper function to print a BIGNUM
-void print_bn(const char *label, BIGNUM *bn) {
-  char *bn_str = BN_bn2dec(bn);
-  if (bn_str) {
-    fprintf(stdout, "%s: %s\n", label, bn_str);
-    OPENSSL_free(bn_str);  // Free the allocated string
-  } else {
-    fprintf(stderr, "Error converting BIGNUM to decimal string\n");
-  }
-}
-
-void print_bn_list(const char *label, BIGNUM **bn_list, unsigned int len) {
-  for (unsigned int i = 0; i < len; i++) {
-    char *bn_str = BN_bn2dec(bn_list[i]);
-    if (bn_str) {
-      fprintf(stdout, "%s[%u]: %s\n", label, i, bn_str);
-      OPENSSL_free(bn_str);
-    } else {
-      fprintf(stderr, "Error converting BIGNUM to decimal string at index %u\n",
-              i);
-    }
-  }
-}
-
-void write_messages_to_file(BIGNUM **message_list, unsigned int num_msgs,
-                            const char *filename) {
-  FILE *file = fopen(filename, "w");
-  if (!file) {
-    fprintf(stderr, "Failed to open file for writing\n");
-    exit(EXIT_FAILURE);
-  }
-
-  for (unsigned int i = 0; i < num_msgs; i++) {
-    char *msg_str = BN_bn2dec(message_list[i]);
-    if (msg_str) {
-      fprintf(file, "%s", msg_str);
-      if (i < num_msgs - 1) {
-        fprintf(file, ",");
-      }
-      OPENSSL_free(msg_str);
-    } else {
-      fprintf(stderr, "Error converting BIGNUM to string\n");
-      fclose(file);
-      exit(EXIT_FAILURE);
-    }
-  }
-
-  fclose(file);
-}
 // Phase 1 Tests --------------
 
 Test(public, create_public_test) {
@@ -112,7 +42,7 @@ Test(public, create_public_test) {
 Test(fahe1, fahe1_init) {
   fahe_params params = {128, 32, 6, 32};
   fahe1 *fahe1_instance = fahe1_init(&params);
-  debug_fahe_init(fahe1_instance);
+  debug_fahe1_init(fahe1_instance);
   fahe1_free(fahe1_instance);
 }
 
@@ -120,7 +50,7 @@ Test(fahe1, fahe1_full_single) {
   fahe_params params = {128, 32, 6, 32};
   fahe1 *fahe1_instance = fahe1_init(&params);
   cr_assert_not_null(fahe1_instance, "fahe1_init failed");
-  debug_fahe_init(fahe1_instance);
+  debug_fahe1_init(fahe1_instance);
 
   // Generate a message
   BIGNUM *message = generate_big_message(fahe1_instance->msg_size);
@@ -180,7 +110,7 @@ Test(fahe1, fahe1_enc_multiple) {
   fahe_params params = {128, 32, 6, 32};
   fahe1 *fahe1_instance = fahe1_init(&params);
   cr_assert_not_null(fahe1_instance, "fahe1_init failed");
-  debug_fahe_init(fahe1_instance);
+  debug_fahe1_init(fahe1_instance);
 
   // Generate a list of messages
   BIGNUM **message_list = generate_message_list(fahe1_instance->msg_size,
@@ -237,7 +167,7 @@ Test(fahe1, fahe1_enc_multiple) {
 //   fahe_params params = {128, 32, 6, 32};
 //   fahe1 *fahe1_instance = fahe1_init(&params);
 //   cr_assert_not_null(fahe1_instance, "fahe1_init failed");
-//   debug_fahe_init(fahe1_instance);
+//   debug_fahe1_init(fahe1_instance);
 
 //   // Generate a list of messages
 //   BIGNUM *message_list = generate_message_list(fahe1_instance->msg_size,
