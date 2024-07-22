@@ -9,7 +9,7 @@
 
 Test(fahe1_analysis, fahe1_analysis_fahe1_full) {
   // Number of trials
-  int num_trials = 10;
+  int num_trials = 100;
   // lambda, m_max, alpha, msg_size
   fahe_params params = {128, 32, 6, 32};
   int list_size = 32;

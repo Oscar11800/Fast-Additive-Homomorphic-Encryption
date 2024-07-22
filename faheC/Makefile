@@ -1,16 +1,14 @@
 .PHONY: clean post_build run_phase1 run_tests
 
-# To enable memory checks, uncomment the following line
-# CFLAGS += -DENABLE_MEMORY_CHECKS
 
 
 # Build phase1 executable
 phase1: fahe1.h fahe1.c phase1.c helper.c logger.c
-	clang $(CFLAGS) -o phase1 -Wall fahe1.c phase1.c helper.c logger.c -lm -lcriterion -lssl -lcrypto
+	clang -o phase1 -Wall fahe1.c phase1.c helper.c logger.c -lm -lcriterion -lssl -lcrypto
 
 # Build testfahe1 executable for running tests
 testfahe1: fahe1.h fahe1.c testfahe1.c helper.c logger.c
-	clang $(CFLAGS) -o testfahe1 -Wall fahe1.c testfahe1.c helper.c logger.c -lm -lcriterion -lssl -lcrypto
+	clang -o testfahe1 -Wall fahe1.c testfahe1.c helper.c logger.c -lm -lcriterion -lssl -lcrypto
 
 # Clean up generated files
 clean:
