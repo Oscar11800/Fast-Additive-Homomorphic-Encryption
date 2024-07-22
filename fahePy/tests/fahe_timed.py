@@ -102,6 +102,15 @@ class FAHE1(FAHE):
             c_list.append(c)
             t_list.append(t)
         return c_list, t_list
+    
+    def dec_list(self, ciph_list):
+        msg_list = []
+        t_list = []
+        for c in ciph_list:
+            m_masked, t = self.dec(c)
+            msg_list.append(m_masked)
+            t_list.append(t)
+        return msg_list, t_list
             
 
     def dec(self, ciphertext) -> int:
@@ -180,3 +189,12 @@ class FAHE2(FAHE):
         tok = time.time()
 
         return m_masked, tok - tik
+    
+    def dec_list(self, ciph_list):
+        msg_list = []
+        t_list = []
+        for c in ciph_list:
+            m_masked, t = self.dec(c)
+            msg_list.append(m_masked)
+            t_list.append(t)
+        return msg_list, t_list
