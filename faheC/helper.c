@@ -1,6 +1,9 @@
 #include <math.h>
 #include <openssl/bn.h>
 #include <openssl/rand.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "fahe1.h"
 #include "logger.h"
@@ -159,4 +162,79 @@ void write_messages_to_file(BIGNUM **message_list, unsigned int num_msgs,
   }
 
   fclose(file);
+}
+
+BIGNUM **read_bignum_list_from_file(const char *filename, int *num_elements) {
+  FILE *file = fopen(filename, "r");
+  if (!file) {
+    fprintf(stderr, "Failed to open file %s for reading\n", filename);
+    return NULL;
+  }
+
+  // Read the file content into a string
+  fseek(file, 0, SEEK_END);
+  long file_size = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  char *file_content = (char *)malloc(file_size + 1);
+  if (!file_content) {
+    fprintf(stderr, "Memory allocation failed\n");
+    fclose(file);
+    return NULL;
+  }
+
+  fread(file_content, 1, file_size, file);
+  file_content[file_size] = '\0';
+  fclose(file);
+
+  // Count the number of elements
+  *num_elements = 1;  // There's at least one number
+  for (char *p = file_content; *p; p++) {
+    if (*p == ',') {
+      (*num_elements)++;
+    }
+  }
+
+  // Allocate memory for the BIGNUM list
+  BIGNUM **bignum_list = (BIGNUM **)malloc(*num_elements * sizeof(BIGNUM *));
+  if (!bignum_list) {
+    fprintf(stderr, "Memory allocation failed\n");
+    free(file_content);
+    return NULL;
+  }
+
+  // Split the file content by commas and convert to BIGNUMs
+  char *token = strtok(file_content, ",");
+  int index = 0;
+  while (token) {
+    bignum_list[index] = BN_new();
+    if (!bignum_list[index]) {
+      fprintf(stderr, "BN_new failed\n");
+      // Free previously allocated BIGNUMs
+      for (int j = 0; j < index; j++) {
+        BN_free(bignum_list[j]);
+      }
+      free(bignum_list);
+      free(file_content);
+      return NULL;
+    }
+
+    if (!BN_dec2bn(&bignum_list[index], token)) {
+      fprintf(stderr, "BN_dec2bn failed for token %s\n", token);
+      // Free previously allocated BIGNUMs
+      for (int j = 0; j < index; j++) {
+        BN_free(bignum_list[j]);
+      }
+      BN_free(bignum_list[index]);
+      free(bignum_list);
+      free(file_content);
+      return NULL;
+    }
+
+    token = strtok(NULL, ",");
+    index++;
+  }
+
+  free(file_content);
+  return bignum_list;
 }
