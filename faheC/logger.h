@@ -2,14 +2,14 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-enum LogLevel {
+typedef enum {
     LOG_DEBUG,
     LOG_INFO,
     LOG_WARNING,
     LOG_ERROR,
     LOG_FATAL
-};
+}LogLevel;
 
-void logMessage(enum LogLevel level, const char* message);
+void log_message(LogLevel level, const char* format,...);
 
 #endif

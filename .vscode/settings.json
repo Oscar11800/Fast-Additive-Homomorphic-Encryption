@@ -58,6 +58,6 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "random": "c",
-    "helper.h": "c"
-  }
+    "string_view": "c"
+}
 }

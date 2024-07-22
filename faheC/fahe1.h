@@ -33,12 +33,14 @@ void fahe1_free(fahe1 *fahe1_instance);
 // Key generation function prototypes
 fahe1_key fahe1_keygen(int lambda, int m_max, int alpha);
 
-// Function pointer type definition for fahe_enc
-typedef BIGNUM (*fahe_enc_func)(int *enc_key, int message);
+// TODO: Find a way to sipmlify encrypting and decrypting a list of messages,
+// ie. DRY. Be careful not to repeaet initialization of variables
 
 // Encryption and decryption function prototypes
 BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM *message);
-BIGNUM *fahe1_enc_list(fahe_enc_func enc_func, int *message_list,
-                       size_t list_size, int *enc_key);
+BIGNUM **fahe1_enc_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
+                       BIGNUM **message_list, BIGNUM *list_size);
 
-BIGNUM *fahe1_dec(BIGNUM *p, int m_max, int rho, int alpha, BIGNUM *ciphertext);
+BIGNUM *fahe1_dec(BIGNUM *p, int m_max, int rho, int alpha,
+                  BIGNUM *ciphertext);
+BIGNUM **fahe1_dec_list(BIGNUM *p, int m_max, int rho, int alpha, BIGNUM **ciphertext_list, BIGNUM *list_size);
