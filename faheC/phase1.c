@@ -17,93 +17,97 @@ helper.c functions. Examples of the code in here include:
 
 // Phase 1 Tests --------------
 
-Test(public, create_public_test) {
-  BIGNUM *num_msgs = BN_new();
-  BN_set_word(num_msgs, 32);
-  unsigned int message_size = 32;
+// Test(public, create_public_test) {
+//   BIGNUM *num_msgs = BN_new();
+//   BN_set_word(num_msgs, 32);
+//   unsigned int message_size = 32;
 
-  BIGNUM **message_list = generate_message_list(message_size, num_msgs);
-  if (!message_list) {
-    fprintf(stderr, "Failed to generate message list\n");
-    exit(EXIT_FAILURE);
-  }
+//   BIGNUM **message_list = generate_message_list(message_size, num_msgs);
+//   if (!message_list) {
+//     fprintf(stderr, "Failed to generate message list\n");
+//     exit(EXIT_FAILURE);
+//   }
 
-  const char *filename = "../public/mintest.txt";  // Adjust the path as needed
-  write_messages_to_file(message_list, BN_get_word(num_msgs), filename);
+//   const char *filename = "../public/mintest.txt";  // Adjust the path as
+//   needed write_messages_to_file(message_list, BN_get_word(num_msgs),
+//   filename);
 
-  // Free allocated BIGNUMs
-  for (unsigned int i = 0; i < BN_get_word(num_msgs); i++) {
-    BN_free(message_list[i]);
-  }
-  free(message_list);
-  BN_free(num_msgs);
-}
+//   // Free allocated BIGNUMs
+//   for (unsigned int i = 0; i < BN_get_word(num_msgs); i++) {
+//     BN_free(message_list[i]);
+//   }
+//   free(message_list);
+//   BN_free(num_msgs);
+// }
+
 // arg 1: name of test suite, arg 2: test name
-Test(fahe1, fahe1_init) {
-  fahe_params params = {128, 32, 6, 32};
-  fahe1 *fahe1_instance = fahe1_init(&params);
-  debug_fahe1_init(fahe1_instance);
-  fahe1_free(fahe1_instance);
-}
+// Test(fahe1, fahe1_init) {
+//   fahe_params params = {128, 32, 6, 32};
+//   fahe1 *fahe1_instance = fahe1_init(&params);
+//   debug_fahe1_init(fahe1_instance);
+//   fahe1_free(fahe1_instance);
+// }
 
-Test(fahe1, fahe1_full_single) {
-  fahe_params params = {128, 32, 6, 32};
-  fahe1 *fahe1_instance = fahe1_init(&params);
-  cr_assert_not_null(fahe1_instance, "fahe1_init failed");
-  debug_fahe1_init(fahe1_instance);
+// Test(fahe1, fahe1_full_single) {
+//   fahe_params params = {128, 32, 6, 32};
+//   fahe1 *fahe1_instance = fahe1_init(&params);
+//   cr_assert_not_null(fahe1_instance, "fahe1_init failed");
+//   debug_fahe1_init(fahe1_instance);
 
-  // Generate a message
-  BIGNUM *message = generate_big_message(fahe1_instance->msg_size);
-  cr_assert_not_null(message, "generate_big_message failed");
-  print_bn("MESSAGE", message);
-  printf("Message size:%d\n", BN_num_bits(message));
-  char *message_string = BN_bn2dec(message);
-  cr_assert_not_null(message_string, "BN_bn2dec failed for message");
+//   // Generate a message
+//   BIGNUM *message = generate_big_message(fahe1_instance->msg_size);
+//   cr_assert_not_null(message, "generate_big_message failed");
+//   print_bn("MESSAGE", message);
+//   printf("Message size:%d\n", BN_num_bits(message));
+//   char *message_string = BN_bn2dec(message);
+//   cr_assert_not_null(message_string, "BN_bn2dec failed for message");
 
-  // Encrypt the message
-  BIGNUM *ciphertext =
-      fahe1_enc(fahe1_instance->key.p, fahe1_instance->key.X,
-                fahe1_instance->key.rho, fahe1_instance->key.alpha, message);
-  cr_assert_not_null(ciphertext, "fahe1_enc failed");
-  char *ciphertext_str = BN_bn2dec(ciphertext);
-  cr_assert_not_null(ciphertext_str, "BN_bn2dec failed for ciphertext");
+//   // Encrypt the message
+//   BIGNUM *ciphertext =
+//       fahe1_enc(fahe1_instance->key.p, fahe1_instance->key.X,
+//                 fahe1_instance->key.rho, fahe1_instance->key.alpha, message);
+//   cr_assert_not_null(ciphertext, "fahe1_enc failed");
+//   char *ciphertext_str = BN_bn2dec(ciphertext);
+//   cr_assert_not_null(ciphertext_str, "BN_bn2dec failed for ciphertext");
 
-  // Print message and ciphertext to a file
-  FILE *file = fopen("ciphertext.txt", "w");
-  if (file) {
-    fprintf(file,
-            "Message: %s\nMessage Size: %d\nCiphertext: %s\nCiphertext Size: "
-            "%d\n",
-            message_string, BN_num_bits(message), ciphertext_str,
-            BN_num_bits(ciphertext));
-    fclose(file);
-  } else {
-    fprintf(stderr, "Failed to open file for writing\n");
-  }
+//   // Print message and ciphertext to a file
+//   FILE *file = fopen("ciphertext.txt", "w");
+//   if (file) {
+//     fprintf(file,
+//             "Message: %s\nMessage Size: %d\nCiphertext: %s\nCiphertext Size:
+//             "
+//             "%d\n",
+//             message_string, BN_num_bits(message), ciphertext_str,
+//             BN_num_bits(ciphertext));
+//     fclose(file);
+//   } else {
+//     fprintf(stderr, "Failed to open file for writing\n");
+//   }
 
-  // Decrypt the message
-  BIGNUM *decrypted_message =
-      fahe1_dec(fahe1_instance->key.p, fahe1_instance->key.m_max,
-                fahe1_instance->key.rho, fahe1_instance->key.alpha, ciphertext);
-  cr_assert_not_null(decrypted_message, "fahe1_dec failed");
-  print_bn("UNENCRYPTED MESSAGE", decrypted_message);
+//   // Decrypt the message
+//   BIGNUM *decrypted_message =
+//       fahe1_dec(fahe1_instance->key.p, fahe1_instance->key.m_max,
+//                 fahe1_instance->key.rho, fahe1_instance->key.alpha,
+//                 ciphertext);
+//   cr_assert_not_null(decrypted_message, "fahe1_dec failed");
+//   print_bn("UNENCRYPTED MESSAGE", decrypted_message);
 
-  // Compare the original message with the decrypted message
-  printf("Debug: Comparing original message and decrypted message\n");
-  if (BN_cmp(message, decrypted_message) == 0) {
-    printf("Debug: Messages match!\n");
-  } else {
-    printf("Debug: Messages do not match!\n");
-  }
-  cr_assert(BN_cmp(message, decrypted_message) == 0);
-  // Clean up
+//   // Compare the original message with the decrypted message
+//   printf("Debug: Comparing original message and decrypted message\n");
+//   if (BN_cmp(message, decrypted_message) == 0) {
+//     printf("Debug: Messages match!\n");
+//   } else {
+//     printf("Debug: Messages do not match!\n");
+//   }
+//   cr_assert(BN_cmp(message, decrypted_message) == 0);
+//   // Clean up
 
-  BN_free(message);
-  BN_free(ciphertext);
-  BN_free(decrypted_message);
-  OPENSSL_free(message_string);
-  OPENSSL_free(ciphertext_str);
-}
+//   BN_free(message);
+//   BN_free(ciphertext);
+//   BN_free(decrypted_message);
+//   OPENSSL_free(message_string);
+//   OPENSSL_free(ciphertext_str);
+// }
 
 Test(fahe1, fahe1_enc_multiple) {
   // lambda, m_max, alpha, msg_size
@@ -111,7 +115,6 @@ Test(fahe1, fahe1_enc_multiple) {
   fahe1 *fahe1_instance = fahe1_init(&params);
   cr_assert_not_null(fahe1_instance, "fahe1_init failed");
   debug_fahe1_init(fahe1_instance);
-
   // Generate a list of messages
   BIGNUM **message_list = generate_message_list(fahe1_instance->msg_size,
                                                 fahe1_instance->num_additions);

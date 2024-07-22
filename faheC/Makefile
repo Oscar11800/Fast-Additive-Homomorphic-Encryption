@@ -4,9 +4,6 @@
 # CFLAGS += -DENABLE_MEMORY_CHECKS
 
 
-# To enable logging, uncomment the following line
-# CFLAGS += -DENABLE_LOGGING 
-
 # Build phase1 executable
 phase1: fahe1.h fahe1.c phase1.c helper.c logger.c
 	clang $(CFLAGS) -o phase1 -Wall fahe1.c phase1.c helper.c logger.c -lm -lcriterion -lssl -lcrypto

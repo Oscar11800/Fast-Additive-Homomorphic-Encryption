@@ -60,6 +60,7 @@
     "random": "c",
     "string_view": "c",
     "logger.h": "c",
-    "fahe1.h": "c"
+    "fahe1.h": "c",
+    "cstdlib": "c"
 }
 }
