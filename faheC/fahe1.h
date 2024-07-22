@@ -37,8 +37,8 @@ fahe1_key fahe1_keygen(int lambda, int m_max, int alpha);
 typedef BIGNUM (*fahe_enc_func)(int *enc_key, int message);
 
 // Encryption and decryption function prototypes
-BIGNUM *fahe1_enc(BIGNUM *x, BIGNUM *p, int rho, int alpha, BIGNUM *message);
+BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM *message);
 BIGNUM *fahe1_enc_list(fahe_enc_func enc_func, int *message_list,
                        size_t list_size, int *enc_key);
 
-int fahe1_dec(int *dec_key, BIGNUM ciphertext);
+BIGNUM *fahe1_dec(BIGNUM *p, int m_max, int rho, int alpha, BIGNUM *ciphertext);

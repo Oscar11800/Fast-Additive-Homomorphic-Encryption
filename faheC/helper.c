@@ -31,11 +31,6 @@ BIGNUM *rand_bits_below(unsigned int bitlength) {
     exit(EXIT_FAILURE);
   }
 
-  // Ensure the generated number is positive
-  if (BN_is_negative(rand_bn)) {
-    BN_set_negative(rand_bn, 0);
-  }
-
   return rand_bn;
 }
 
