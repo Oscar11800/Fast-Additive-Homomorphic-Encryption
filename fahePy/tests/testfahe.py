@@ -1,8 +1,7 @@
 from enum import Enum
 import random
 import pytest
-from fahe import FAHE, FAHE1
-from fahe import FAHE2
+from fahe_timed import FAHE, FAHE1, FAHE2
 import matplotlib.pyplot as plt
 
 # Printing values
@@ -127,28 +126,28 @@ class TestHelper:
         print("alpha: ", fahe.alpha)
         print("num_additions: ", fahe.num_additions)
 
-    @staticmethod
-    def add_fahe(fahe: FAHE) -> bool:
-        """
-        Perform the addition test for FAHE scheme.
+    # @staticmethod
+    # def add_fahe(fahe: FAHE) -> bool:
+    #     """
+    #     Perform the addition test for FAHE scheme.
 
-        Args:
-            index (int): Index of the current trial.
+    #     Args:
+    #         index (int): Index of the current trial.
 
-        Returns:
-            was_succesful(bool): Whether the addition was successful.
-        """
+    #     Returns:
+    #         was_succesful(bool): Whether the addition was successful.
+    #     """
 
-        # NOTE: You can change msg list params below
-        msg_list = TestHelper.generate_msg_list(fahe.num_additions, fahe.msg_size)
-        ciph_list = fahe.enc_list(msg_list)
-        msg_sum = TestHelper.get_msg_sum(msg_list)
-        masked_msg_sum = TestHelper.get_masked_msg_sum(msg_sum, fahe.m_max)
-        ciph_sum = TestHelper.get_ciph_sum(ciph_list)
-        de_ciph_sum = fahe.dec(ciph_sum)
+    #     # NOTE: You can change msg list params below
+    #     msg_list = TestHelper.generate_msg_list(fahe.num_additions, fahe.msg_size)
+    #     ciph_list, enc_time_list = fahe.enc_list(msg_list)
+    #     msg_sum = TestHelper.get_msg_sum(msg_list)
+    #     masked_msg_sum = TestHelper.get_masked_msg_sum(msg_sum, fahe.m_max)
+    #     ciph_sum = TestHelper.get_ciph_sum(ciph_list)
+    #     de_ciph_sum, de_ciph_time = fahe.dec(ciph_sum)
 
-        was_successful = TestHelper.verify_add(masked_msg_sum, de_ciph_sum)
-        return was_successful, masked_msg_sum, de_ciph_sum
+    #     was_successful = TestHelper.verify_add(masked_msg_sum, de_ciph_sum)
+    #     return was_successful, masked_msg_sum, de_ciph_sum 
 
     @staticmethod
     def run_add(fahe: FAHE):
@@ -158,14 +157,24 @@ class TestHelper:
         pass_equal_sums = []
         failed_msg_sums = []
         failed_decrypted_ciph_sums = []
+        total_enc_time_list = []
+        de_ciph_time_list = []
 
         for trial in range(NUM_TRIALS):
             msg_list = TestHelper.generate_msg_list(fahe.num_additions, fahe.msg_size)
-            ciph_list = fahe.enc_list(msg_list)
+            ciph_list, enc_time_list = fahe.enc_list(msg_list)
+            total_enc_time = sum(enc_time_list)
             msg_sum = TestHelper.get_msg_sum(msg_list)
             masked_msg_sum = TestHelper.get_masked_msg_sum(msg_sum, fahe.m_max)
             ciph_sum = TestHelper.get_ciph_sum(ciph_list)
-            de_ciph_sum = fahe.dec(ciph_sum)
+            de_ciph_sum, de_ciph_time = fahe.dec(ciph_sum)
+
+            total_enc_time_list.append(total_enc_time)
+            de_ciph_time_list.append(de_ciph_time)
+
+            average_total_enc_time = sum(total_enc_time_list) / NUM_TRIALS
+            average_enc_time_per_msg = average_total_enc_time / fahe.num_additions
+            average_de_ciph_time = sum(de_ciph_time_list) / NUM_TRIALS
 
             was_successful = TestHelper.verify_add(masked_msg_sum, de_ciph_sum)
 
@@ -190,7 +199,11 @@ class TestHelper:
                 "M SUM                      : {}\n"
                 "Bit length of M SUM        : {}\n"
                 "Was this successful        : {}\n"
-                "DECRYPT Ciphertext LENGTH  : {}\n".format(
+                "DECRYPT Ciphertext LENGTH  : {}\n"
+                "Average keygen time p trial: {}\n"
+                "Average enc time per trial : {}\n"
+                "Average enc time per msg   : {}\n"
+                "Average dec time per msgSum: {}\n".format(
                     trial,
                     fahe.alpha,
                     fahe.num_additions,
@@ -199,6 +212,10 @@ class TestHelper:
                     msg_sum.bit_length(),
                     was_successful,
                     ciph_length,
+                    fahe.keygen_time,
+                    average_total_enc_time,
+                    average_enc_time_per_msg,
+                    average_de_ciph_time,
                 )
             )
 
