@@ -148,8 +148,8 @@ class FAHE2(FAHE):
         p = number.getPrime(eta)
         X = (Decimal(2) ** Decimal(gamma)) / p
         pos = secrets.randbelow(
-            self._lambda_param + 2
-        )  # +2 because lambda is inclusive
+            self._lambda_param + 1
+        )  # +1 because lambda is inclusive
 
         k = (p, X, pos, self._m_max, self._lambda_param, self._alpha)
         tok = time.time()

@@ -1,7 +1,8 @@
-from fahe_timed import FAHE1
+from fahe_timed import FAHE1, FAHE2
 import os
 
 FAHE1_MINIMUM = (128, 32, 6, 32, 2 ** (6 - 1)) # (LAMBDA_PARAM, M_MAX, ALPHA, MSG_SIZE, NUM_ADDITIONS)
+FAHE2_MINIMUM = (128, 32, 29, 32, 100) # (LAMBDA_PARAM, M_MAX, ALPHA, MSG_SIZE, NUM_ADDITIONS)
 NUM_TRIALS = 1000
 
 def extract_mintest():
@@ -29,7 +30,7 @@ def extract_mintest():
     print("mintest.txt extracted")
     return numbers_list
 
-print("Number of trials = {}\n".format(NUM_TRIALS))
+print("Number of trials = {}".format(NUM_TRIALS))
 msg_list = extract_mintest()
 num_messages_per_trial = len(msg_list)
 assert num_messages_per_trial <= FAHE1_MINIMUM[4]
