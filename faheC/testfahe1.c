@@ -3,13 +3,16 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "fahe1.h"
 #include "fahe1optimized.h"
 #include "helper.h"
 #include "logger.h"
+#include "threads.h"
 
 Test(fahe1_analysis, fahe1_analysis_fahe1_full) {
+  thread_setup();
   // Number of trials
-  int num_trials = 100;
+  int num_trials = 1000;
   // lambda, m_max, alpha, msg_size
   fahe_params params = {128, 32, 6, 32};
   int list_size = 32;
@@ -71,12 +74,18 @@ Test(fahe1_analysis, fahe1_analysis_fahe1_full) {
   double avg_keygen_time = total_keygen_time / num_trials;
   double avg_encryption_time = total_encryption_time / num_trials;
   double avg_decryption_time = total_decryption_time / num_trials;
+  printf(
+      "FAHE1 Test in C: alpha: %d \tlambda: %d \tm_max:%d\tmsg_size%d\tnum "
+      "trials:%d\n",
+      params.alpha, params.msg_size, params.m_max, params.msg_size, num_trials);
 
-  printf("Average Keygen time: %.6f seconds\n", avg_keygen_time);
+  printf("Average (per trial) Keygen time: %.6f seconds\n", avg_keygen_time);
   printf("Average Encryption time: %.6f seconds\n", avg_encryption_time);
   printf("Average Decryption time: %.6f seconds\n", avg_decryption_time);
 
-  printf("Total Keygen time: %.6f seconds\n", total_keygen_time);
+  printf(
+      "Total (sum of all messages from all trials) Keygen time: %.6f seconds\n",
+      total_keygen_time);
   printf("Total Encryption time: %.6f seconds\n", total_encryption_time);
   printf("Total Decryption time: %.6f seconds\n", total_decryption_time);
 
@@ -86,4 +95,5 @@ Test(fahe1_analysis, fahe1_analysis_fahe1_full) {
     BN_free(msg_list[i]);
   }
   free(msg_list);
+  thread_cleanup();
 }

@@ -2,7 +2,7 @@ from fahe_timed import FAHE1
 import os
 
 FAHE1_MINIMUM = (128, 32, 6, 32, 2 ** (6 - 1)) # (LAMBDA_PARAM, M_MAX, ALPHA, MSG_SIZE, NUM_ADDITIONS)
-NUM_TRIALS = 1000
+NUM_TRIALS = 100
 
 def extract_mintest():
     # Initialize an empty list to store the extracted numbers
