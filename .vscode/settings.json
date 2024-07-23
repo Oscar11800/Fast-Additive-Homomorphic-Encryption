@@ -61,6 +61,8 @@
     "string_view": "c",
     "logger.h": "c",
     "fahe1.h": "c",
-    "cstdlib": "c"
+    "cstdlib": "c",
+    "bn.h": "c",
+    "string.h": "c"
 }
 }

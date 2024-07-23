@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "fahe1.h"
+#include "fahe1optimized.h"
 #include "helper.h"
 #include "logger.h"
 
@@ -26,7 +26,7 @@ Test(fahe1_analysis, fahe1_analysis_fahe1_full) {
   for (int trial = 0; trial < num_trials; trial++) {
     // TIMED KEYGEN
     clock_t fahe1_keygen_start_time = clock();
-    fahe1 *fahe1_instance = fahe1_init(&params);
+    fahe1 *fahe1_instance = fahe1_init_op(&params);
     clock_t fahe1_keygen_end_time = clock();
 
     double fahe1_keygen_time =
@@ -36,7 +36,7 @@ Test(fahe1_analysis, fahe1_analysis_fahe1_full) {
 
     // TIMED ENCRYPTION
     clock_t fahe1_encryption_start_time = clock();
-    BIGNUM **ciphertext_list = fahe1_enc_list(
+    BIGNUM **ciphertext_list = fahe1_enc_list_op(
         fahe1_instance->key.p, fahe1_instance->key.X, fahe1_instance->key.rho,
         fahe1_instance->key.alpha, msg_list, fahe1_instance->num_additions);
     clock_t fahe1_encryption_end_time = clock();
@@ -48,9 +48,9 @@ Test(fahe1_analysis, fahe1_analysis_fahe1_full) {
     // TIMED DECRYPTION
     clock_t fahe1_decryption_start_time = clock();
     BIGNUM **decrypted_msg_list =
-        fahe1_dec_list(fahe1_instance->key.p, fahe1_instance->key.m_max,
-                       fahe1_instance->key.rho, fahe1_instance->key.alpha,
-                       ciphertext_list, bn_list_size);
+        fahe1_dec_list_op(fahe1_instance->key.p, fahe1_instance->key.m_max,
+                          fahe1_instance->key.rho, fahe1_instance->key.alpha,
+                          ciphertext_list, bn_list_size);
     clock_t fahe1_decryption_end_time = clock();
     double fahe1_decryption_time =
         (double)(fahe1_decryption_end_time - fahe1_decryption_start_time) /
@@ -64,7 +64,7 @@ Test(fahe1_analysis, fahe1_analysis_fahe1_full) {
     }
     free(ciphertext_list);
     free(decrypted_msg_list);
-    fahe1_free(fahe1_instance);
+    fahe1_free_op(fahe1_instance);
   }
 
   // Calculate averages

@@ -1,3 +1,5 @@
+#ifndef FAHE1_H
+#define FAHE1_H
 
 #include <openssl/bn.h>
 
@@ -39,8 +41,9 @@ fahe1_key fahe1_keygen(int lambda, int m_max, int alpha);
 // Encryption and decryption function prototypes
 BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM *message);
 BIGNUM **fahe1_enc_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
-                       BIGNUM **message_list, BIGNUM *list_size);
+                        BIGNUM **message_list, BIGNUM *list_size);
 
-BIGNUM *fahe1_dec(BIGNUM *p, int m_max, int rho, int alpha,
-                  BIGNUM *ciphertext);
-BIGNUM **fahe1_dec_list(BIGNUM *p, int m_max, int rho, int alpha, BIGNUM **ciphertext_list, BIGNUM *list_size);
+BIGNUM *fahe1_dec(BIGNUM *p, int m_max, int rho, int alpha, BIGNUM *ciphertext);
+BIGNUM **fahe1_dec_list(BIGNUM *p, int m_max, int rho, int alpha,
+                        BIGNUM **ciphertext_list, BIGNUM *list_size);
+#endif  // FAHE1_H
