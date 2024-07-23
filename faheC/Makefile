@@ -33,37 +33,37 @@ all: $(TARGETS)
 
 # Build phase1 executable
 phase1: $(BUILD_DIR)/phase1.o $(SRC_OBJS)
-	$(CC) -o $(BUILD_DIR)/$@ $(BUILD_DIR)/phase1.o $(SRC_OBJS) $(LDFLAGS)
+	@$(CC) -o $(BUILD_DIR)/$@ $(BUILD_DIR)/phase1.o $(SRC_OBJS) $(LDFLAGS)
 
 # Build testfahe1 executable for running tests
 testfahe1: $(BUILD_DIR)/testfahe1.o $(SRC_OBJS)
-	$(CC) -o $(BUILD_DIR)/$@ $(BUILD_DIR)/testfahe1.o $(SRC_OBJS) $(LDFLAGS)
+	@$(CC) -o $(BUILD_DIR)/$@ $(BUILD_DIR)/testfahe1.o $(SRC_OBJS) $(LDFLAGS)
 
 # Compile source files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Compile test files
 $(BUILD_DIR)/%.o: $(TEST_DIR)/%.c
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
 # Clean build files
 clean:
-	rm -rf $(BUILD_DIR) $(OUTPUT_DIR) $(TARGETS)
+	@rm -rf $(BUILD_DIR) $(OUTPUT_DIR) $(TARGETS)
 
 # Run the clean target after each build
 post_build: clean
 
-# Run the phase1 executable
+# Build and run the phase1 executable
 run_phase1: phase1
-	./$(BUILD_DIR)/phase1
-	$(MAKE) clean
+	@./$(BUILD_DIR)/phase1
+	@$(MAKE) --no-print-directory clean
 
-# Run the tests
+# Build and run the testfahe1 executable for running tests
 run_fahe1_tests: testfahe1
-	./$(BUILD_DIR)/testfahe1
-	$(MAKE) clean
+	@./$(BUILD_DIR)/testfahe1
+	@$(MAKE) --no-print-directory clean
 
-.PHONY: all clean post_build run_phase1 run_tests
+.PHONY: all clean post_build run_phase1 run_fahe1_tests

@@ -1,31 +1,74 @@
+/**
+ * @file fahe1.c
+ * @brief Implementation of Fast Additive Homomorphic Encryption (FAHE1)
+ *
+ * This file contains the implementation of various functions required
+ * for the Fast Additive Homomorphic Encryption (FAHE1) scheme.
+ * These include initialization, key generation, encryption, and
+ * decryption functions, along with helper functions
+ * for managing BIGNUM structures.
+ *
+ * The main functionalities provided by this file are:
+ * - Initialization of the FAHE1 structure
+ * - Key generation for FAHE1
+ * - Encryption of plaintext message(s)
+ * - Decryption of ciphertext(s)
+ *
+ * @note The functions in this file use OpenSSL's BIGNUM library for handling
+ * large integers.
+ *
+ * @warning This implementation assumes that OpenSSL's BIGNUM library is
+ * properly installed and configured. Find more information here: @link
+ * https://github.com/openssl/openssl
+ *
+ * @example
+ * // Example of initializing fahe_params and using fahe1 functions.
+ * fahe_params params = {128, 32, 6, 32};
+ * fahe1 *fahe = fahe1_init(&params);
+ * // Use fahe for encryption and decryption...
+ * fahe1_free(fahe);
+ *
+ * Dependencies:
+ * - math.h
+ * - openssl/bn.h
+ * - helper.h
+ * - logger.h
+ *
+ * @see fahe1.h for the documetation of the functions implemented in this file.
+ * @see helper.h for additional helper functions such as random primes
+ * @see logger.h for conditional logging functionalities.
+ * @see fahe1optimized.c for the fastest (not as safe) version of
+ * these functions without memory checks nor logging.
+ */
+
 #include "fahe1.h"
 
 #include <math.h>
 #include <openssl/bn.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "helper.h"
 #include "logger.h"
 
 fahe1 *fahe1_init(const fahe_params *params) {
   log_message(LOG_INFO, "Fahe1 init start...\n");
+
+  // Allocate memory for fahe1 struct
   fahe1 *fahe1_instance = (fahe1 *)malloc(sizeof(fahe1));
   if (!fahe1_instance) {
     log_message(LOG_FATAL, "Memory allocation for fahe_union struct failed\n");
     exit(EXIT_FAILURE);
   }
+  log_message(LOG_DEBUG, "Memory successfully allocated for fahe1_instance\n");
 
-  log_message(LOG_DEBUG, "Memory allocated for fahe1_instance\n");
-
-  // Generate the key
+  //  Initialize fahe1 struct attributes: key, msg_size, num_additions
+  // Generate fahe1 key
   fahe1_instance->key =
       fahe1_keygen(params->lambda, params->m_max, params->alpha);
+
+  // Assign message size
   fahe1_instance->msg_size = params->msg_size;
 
-  // Initialize num_additions for fahe1
+  // Initialize num_additions
   fahe1_instance->num_additions = BN_new();
   if (!fahe1_instance->num_additions) {
     log_message(LOG_FATAL, "Memory allocation for BIGNUM failed\n");
@@ -33,25 +76,22 @@ fahe1 *fahe1_init(const fahe_params *params) {
     exit(EXIT_FAILURE);
   }
   BN_one(fahe1_instance->num_additions);
+  // Set num_additions to 2**(alpha-1)
   BN_lshift(fahe1_instance->num_additions, fahe1_instance->num_additions,
             (fahe1_instance->key.alpha) - 1);
 
-  log_message(LOG_DEBUG, "Debug: fahe1_instance initialized\n");
-
+  log_message(LOG_INFO, "Debug: fahe1_instance initialized\n");
   return fahe1_instance;
 }
 
 void fahe1_free(fahe1 *fahe1_instance) {
-#ifdef ENABLE_MEMORY_CHECKS
   if (!fahe1_instance) {
     log_message(LOG_ERROR, "No fahe1 to release.");
+    return;
   }
-#endif
-  return;
   if (fahe1_instance->key.p) {
     BN_free(fahe1_instance->key.p);
   }
-
   if (fahe1_instance->key.X) {
     BN_free(fahe1_instance->key.X);
   }
@@ -60,12 +100,14 @@ void fahe1_free(fahe1 *fahe1_instance) {
 }
 
 fahe1_key fahe1_keygen(int lambda, int m_max, int alpha) {
+  // Assign key's int attributes
   fahe1_key key;
 
   key.lambda = lambda;
   key.m_max = m_max;
   key.alpha = alpha;
 
+// Calculate and init key's BIGNUM attributes
   int rho = lambda;
   key.rho = rho;
   double eta = rho + (2 * alpha) + m_max;
@@ -85,7 +127,7 @@ fahe1_key fahe1_keygen(int lambda, int m_max, int alpha) {
   }
   log_message(LOG_DEBUG, "p decimal: %s\n", BN_bn2dec(key.p));
 
-  // Calculate X = (2^gamma) / p using BIGNUM
+  // Calculating X = (2^gamma) / p...
   BIGNUM *X = BN_new();
   BIGNUM *base = BN_new();
   BIGNUM *gamma_bn = BN_new();
@@ -115,7 +157,7 @@ fahe1_key fahe1_keygen(int lambda, int m_max, int alpha) {
     exit(EXIT_FAILURE);
   }
 
-  // Divide 2^gamma by p
+  // Calculate (2^gamma)/p
   if (!BN_div(X, NULL, X, key.p, ctx)) {
     log_message(LOG_FATAL, "BN_div failed\n");
     BN_free(key.p);
@@ -134,13 +176,14 @@ fahe1_key fahe1_keygen(int lambda, int m_max, int alpha) {
   BN_free(gamma_bn);
   BN_CTX_free(ctx);
 
-  log_message(LOG_INFO, "Debug: FAHE1 Key generated...\n");
+  log_message(LOG_INFO, "FAHE1 Key successfully generated.\n");
 
   return key;
 }
 
-BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM *message) {
-  log_message(LOG_DEBUG, "Initializing Encryption");
+BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
+                      BIGNUM *message) {
+  log_message(LOG_DEBUG, "Initializing encryption...");
   // Initialize BIGNUM values
   BIGNUM *q = NULL;
   BIGNUM *noise = NULL;
@@ -156,9 +199,9 @@ BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM *message) {
     exit(EXIT_FAILURE);
   }
 
-  log_message(LOG_DEBUG, "Debug: Initialized BIGNUM variables\n");
+  log_message(LOG_DEBUG, "Debug: Successfully initialized encryption BIGNUM variables\n");
 
-  // q < X + 1
+  // Calculating q < X + 1
   BIGNUM *X_plus_one = BN_new();
   if (!X_plus_one) {
     log_message(LOG_FATAL, "BN_new for X_plus_one failed\n");
@@ -251,8 +294,8 @@ BIGNUM *fahe1_enc(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM *message) {
   return c;
 }
 
-BIGNUM **fahe1_enc_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
-                        BIGNUM **message_list, BIGNUM *list_size) {
+BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
+                            BIGNUM **message_list, BIGNUM *list_size) {
   // Initialize BIGNUM values
   BIGNUM *q = NULL;
   BIGNUM *noise = NULL;
@@ -404,8 +447,8 @@ BIGNUM **fahe1_enc_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
   return ciphertext_list;
 }
 
-BIGNUM *fahe1_dec(BIGNUM *p, int m_max, int rho, int alpha,
-                  BIGNUM *ciphertext) {
+BIGNUM *fahe1_decrypt(BIGNUM *p, int m_max, int rho, int alpha,
+                      BIGNUM *ciphertext) {
   BIGNUM *m_full = BN_new();
   BIGNUM *m_shifted = BN_new();
   BIGNUM *m_masked = BN_new();
@@ -455,8 +498,8 @@ BIGNUM *fahe1_dec(BIGNUM *p, int m_max, int rho, int alpha,
   return m_masked;
 }
 
-BIGNUM **fahe1_dec_list(BIGNUM *p, int m_max, int rho, int alpha,
-                        BIGNUM **ciphertext_list, BIGNUM *list_size) {
+BIGNUM **fahe1_decrypt_list(BIGNUM *p, int m_max, int rho, int alpha,
+                            BIGNUM **ciphertext_list, BIGNUM *list_size) {
   // Initialize BIGNUM values
   BIGNUM *m_full = BN_new();
   BIGNUM *m_shifted = BN_new();

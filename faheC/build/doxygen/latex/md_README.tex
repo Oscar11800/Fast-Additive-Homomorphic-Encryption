@@ -1,0 +1,172 @@
+\hypertarget{md_README_autotoc_md1}{}\doxysection{Overview}\label{md_README_autotoc_md1}
+This repository contains the implementation of the FAHE1 and FAHE2 encryption schemes, based on the Fast Additive Partially Homomorphic Encryption from the Approximate Common Divisor Problem. These schemes enable the execution of addition operations directly on encrypted data.
+
+This project attempts to replicate Cominetti\textquotesingle{}s experiments on FAHE1 and FAHE2 with variable security parameters, message lengths, and maximum number of additions.
+
+{\itshape Disclaimer\+: The FAHE1 \& 2 processes described below are merely summarized in importance of our analysis from Cominetti\textquotesingle{}s research and do not explain some of the math involved.}\hypertarget{md_README_autotoc_md2}{}\doxysubsection{How to Run Homomorphic Additivity Tests}\label{md_README_autotoc_md2}
+First, navigate to {\ttfamily /tests} folder
+
+Changing Constants\+:
+\begin{DoxyItemize}
+\item Change {\ttfamily NUM\+\_\+\+TRIALS} to run each test a different number of times ({\itshape Note\+:} This may make tests slower).
+\item Change {\ttfamily TOGGLE\+\_\+\+FIXED\+\_\+\+MESSAGE} for debugging. This generates message lists with only a single unique message.
+\item Change {\ttfamily FIXED\+\_\+\+MESSAGE} to change what unique message is generated.
+\end{DoxyItemize}
+
+Running Preset Addition Tests\+:
+\begin{DoxyItemize}
+\item You can run all addition tests by running {\ttfamily python3 -\/m pytest -\/s testfahe.\+py}
+\item You can run only fahe1 addition tests by running {\ttfamily python3 -\/m pytest -\/s testfahe.\+py -\/m \char`\"{}fahe1\char`\"{}}
+\item You can run only fahe2 addition tests by running {\ttfamily python3 -\/m pytest -\/s testfahe.\+py -\/m \char`\"{}fahe2\char`\"{}}
+\item You can run only fast fahe1 addition tests by running {\ttfamily python3 -\/m pytest -\/s testfahe.\+py -\/m \char`\"{}fahe1 and not slow\char`\"{}}
+\item You can run specific tests/functions by running {\ttfamily python3 -\/m pytest -\/s -\/m testfahe.\+py\+:\+:\mbox{[}class name\mbox{]}\+::\mbox{[}test name\mbox{]}}
+\end{DoxyItemize}
+
+Running Custom Tests\+:
+\begin{DoxyItemize}
+\item Change the custom constants as necessary
+\item Run custom tests by running\+: {\ttfamily python3 -\/m pytest -\/s testfahe.\+py -\/m \char`\"{}custom\char`\"{}}
+\end{DoxyItemize}
+
+Suggested Custom Experiments\+: You can set your own custom experiment parameters and try running tests
+\begin{DoxyItemize}
+\item Start with \$(\textbackslash{}lambda = 128)\$
+\item Test with \$($\vert$m\+\_\+\{max\}$\vert$ = 32)\$ and \$(\textbackslash{}alpha = 6)\$.
+\item Increase \$($\vert$m\+\_\+\{max\}$\vert$)\$ to 64 and observe the impact.
+\item Increment \$(\textbackslash{}alpha)\$ gradually (e.\+g., \$(\textbackslash{}alpha = 10, 15, 20, 25, 30)\$) and evaluate performance.
+\item If higher security is needed, test with \$(\textbackslash{}lambda = 256)\$
+\end{DoxyItemize}\hypertarget{md_README_autotoc_md3}{}\doxysection{How to Use This Project}\label{md_README_autotoc_md3}
+Clone this repository using\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{git clone https://github.com/Oscar11800/Fast-\/Additive-\/Homomorphic-\/Encryption.git}
+
+\end{DoxyCode}
+
+
+Make sure to have the current requirements by installing requirements\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{pip install -\/r requirements.txt}
+
+\end{DoxyCode}
+
+
+To run the current tests, please reference the above section on running additivity tests
+
+To run the ipynb graphing file\+:
+\begin{DoxyItemize}
+\item Navigate to {\ttfamily /legacy} folder and run\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{jupyter notebook plot\_performance.ipynb}
+
+\end{DoxyCode}
+
+\end{DoxyItemize}
+
+To run csv benchmark tests, edit {\ttfamily analysis.\+py} with desired values and run\+:
+\begin{DoxyItemize}
+\item Navigate to {\ttfamily /legacy} folder and run\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{python3 analysis.py}
+
+\end{DoxyCode}
+ 
+\end{DoxyItemize}\hypertarget{md_README_autotoc_md4}{}\doxysubsection{File Structure (\+Current Testing Framework)}\label{md_README_autotoc_md4}
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ File Name   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ File Name   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily src/fahe.\+py}   &FAHE1 key generation, encryption, and decryption calculations. Used in {\ttfamily plot\+\_\+performance.\+ipynb}, {\ttfamily data\+\_\+collection.\+py}, and {\ttfamily test.\+py}.    \\\cline{1-2}
+{\ttfamily tests/testfahe.\+py}   &Same as {\ttfamily fahe1.\+py} but for FAHE2.   \\\cline{1-2}
+\end{longtabu}
+\hypertarget{md_README_autotoc_md5}{}\doxysubsection{Legacy File Structure (\+Older Tests)}\label{md_README_autotoc_md5}
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ File Name   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ File Name   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily fahe1.\+py}   &FAHE1 key generation, encryption, and decryption calculations. Used in {\ttfamily plot\+\_\+performance.\+ipynb}, {\ttfamily data\+\_\+collection.\+py}, and {\ttfamily test.\+py}.    \\\cline{1-2}
+{\ttfamily fahe2.\+py}   &Same as {\ttfamily fahe1.\+py} but for FAHE2.    \\\cline{1-2}
+{\ttfamily helper.\+py}   &Helper functions (e.\+g., prime number calculation). Credit\+: Oded Leiba.    \\\cline{1-2}
+{\ttfamily plot\+\_\+performance.\+ipynb}   &Matplotlib graphs of FAHE1 benchmark tests vs. λ, α, and m\+\_\+max variables.    \\\cline{1-2}
+{\ttfamily data\+\_\+collection.\+py}   &Similar to {\ttfamily plot\+\_\+performance.\+ipynb} but creates dictionaries for benchmark testing.    \\\cline{1-2}
+{\ttfamily plotting.\+py}   &Helper class for matplotlib in {\ttfamily test.\+py}.    \\\cline{1-2}
+{\ttfamily test.\+py}   &Unit tests for FAHE1/\+FAHE2 functions, benchmark tests, and plotting.    \\\cline{1-2}
+{\ttfamily analysis.\+py}   &USE THIS TO RUN EXPERIMENTS! CSV writing code. Edit to run csv benchmark tests with different values.    \\\cline{1-2}
+{\ttfamily old\+\_\+csv folder}   &Past (outdated) results of experiments.    \\\cline{1-2}
+{\ttfamily experiment\+\_\+params.\+txt}   &Contains information on parameters and machine info of the latest experiment run    \\\cline{1-2}
+{\ttfamily analysis\+\_\+tests folder}   &USE THIS AFTER ANALYZING. Contains latest csvs from experiments   \\\cline{1-2}
+\end{longtabu}
+\hypertarget{md_README_autotoc_md6}{}\doxysection{FAHE 1 \& 2 Experimentation}\label{md_README_autotoc_md6}
+\hypertarget{md_README_autotoc_md7}{}\doxysubsection{FAHE 1 \& FAHE 2 Facts and Intuitions}\label{md_README_autotoc_md7}
+
+\begin{DoxyItemize}
+\item FAHE relies on symmetric keys for both encryption and decryption.
+\item FAHE is additively homomorphic, so addition can be performed by any entity.
+\item FAHE is partially and somewhat homomorphic; i.\+e., they only support addition a limited number of times.
+\item Cominetti states that with a suitable choice of parameters, the total number of additions can be \char`\"{}practically unlimited.\char`\"{}
+\item FAHE relies on the Approximate Common Divisor (ACD) as its security problem.
+\item FAHE1 uses distribution of positive noise to encrypt messages.
+\item {\bfseries{Note\+: FAHE is unable to provide IND-\/\+CCA2 security.}}
+\end{DoxyItemize}\hypertarget{md_README_autotoc_md8}{}\doxysubsection{Assumptions and Variables}\label{md_README_autotoc_md8}
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\cellcolor{\tableheadbgcolor}\textbf{ Symbol   }&\cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\cellcolor{\tableheadbgcolor}\textbf{ Symbol   }&\cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+\$   &prime number of size \$(\textbackslash{}eta)\$ bits.    \\\cline{1-2}
+\$   &integer in interval \$(\mbox{[}0, 2$^\wedge$\{\textbackslash{}gamma\} / p\mbox{]})\$.    \\\cline{1-2}
+\$(\textbackslash{}gamma)\$\+: gamma   &ciphertext\textquotesingle{}s final size.    \\\cline{1-2}
+\$(\textbackslash{}rho)\$\+: rho   &noise size, determines \$    \\\cline{1-2}
+\$(\textbackslash{}eta)\$\+: eta   &secret key size, determines size of \$    \\\cline{1-2}
+\$   &random noise defined by \$(\textbackslash{}rho)\$, determines ciphertext\textquotesingle{}s final size    \\\cline{1-2}
+({$\alpha$})\+: alpha   &determines total number of supported additions    \\\cline{1-2}
+({$\lambda$})\+: lambda   &security parameter (commonly 128 or 256 bits)   \\\cline{1-2}
+\end{longtabu}
+
+
+If the desired security level against classical computers is \$(\textbackslash{}lambda)\$ bits, we must have\+:
+\begin{DoxyItemize}
+\item \$(\textbackslash{}rho \textbackslash{}geq \textbackslash{}lambda)\$
+\item \$(\textbackslash{}eta $>$ \textbackslash{}rho)\$
+\item \$(\textbackslash{}gamma \textbackslash{}geq \textbackslash{}\+Omega\textbackslash{}left( \textbackslash{}frac\{\textbackslash{}rho\}\{\textbackslash{}log\+\_\+2(\textbackslash{}rho)\} \textbackslash{}cdot (\textbackslash{}eta -\/ \textbackslash{}rho)$^\wedge$2 \textbackslash{}right))\$
+\end{DoxyItemize}\hypertarget{md_README_autotoc_md9}{}\doxysubsection{FAHE1.\+Keygen(\$\textbackslash{}lambda\$, \$$\vert$m\+\_\+\{max\}$\vert$\$, \$\textbackslash{}alpha\$)}\label{md_README_autotoc_md9}
+
+\begin{DoxyEnumerate}
+\item Choose a suitable security parameter \$\textbackslash{}lambda\$, the maximum message size \$$\vert$m\+\_\+\{max\}$\vert$\$, and the parameter \$\textbackslash{}alpha\$ that defines the total number of supported additions.
+\item Compute the set of parameters \$(\textbackslash{}rho, \textbackslash{}eta, \textbackslash{}gamma)\$\+:
+\begin{DoxyItemize}
+\item \$\textbackslash{}rho = \textbackslash{}lambda\$
+\item \$\textbackslash{}eta = \textbackslash{}rho + 2\textbackslash{}alpha + $\vert$m\+\_\+\{max\}$\vert$\$
+\item \$\textbackslash{}gamma = \textbackslash{}left(\textbackslash{}frac\{\textbackslash{}rho\}\{\textbackslash{}log \textbackslash{}rho\}\textbackslash{}right) \textbackslash{}cdot (\textbackslash{}eta -\/ \textbackslash{}rho)$^\wedge$2\$
+\end{DoxyItemize}
+\item Pick a prime \$p\$ of size \$\textbackslash{}eta\$ and set \$X = 2$^\wedge$\{\textbackslash{}gamma\} / p\$.
+\end{DoxyEnumerate}
+
+Set the scheme\textquotesingle{}s key to \$k = (\textbackslash{}rho, $\vert$m\+\_\+\{max\}$\vert$, X, p, \textbackslash{}alpha)\$.
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Encryption Key (ek)\+:}} \$(p, X, \textbackslash{}rho, \textbackslash{}alpha)\$
+\item {\bfseries{Decryption Key (dk)\+:}} \$(p, $\vert$m\+\_\+\{max\}$\vert$, \textbackslash{}rho, \textbackslash{}alpha)\$
+\end{DoxyItemize}\hypertarget{md_README_autotoc_md10}{}\doxysubsection{FAHE1.\+Encr(\$m\$)}\label{md_README_autotoc_md10}
+
+\begin{DoxyEnumerate}
+\item Given a message \$m\$, sample \$q \textbackslash{}leftarrow \mbox{[}0, X\mbox{]}\$.
+\item Generate noise \$\textbackslash{}text\{noise\} \textbackslash{}leftarrow 0, 1 
+\end{DoxyEnumerate}

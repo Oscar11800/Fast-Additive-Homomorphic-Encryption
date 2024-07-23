@@ -63,6 +63,7 @@
     "fahe1.h": "c",
     "cstdlib": "c",
     "bn.h": "c",
-    "string.h": "c"
+    "string.h": "c",
+    "helper.h": "c"
 }
 }

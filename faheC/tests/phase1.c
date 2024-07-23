@@ -65,9 +65,9 @@ helper.c functions. Examples of the code in here include:
 
 //   // Encrypt the message
 //   BIGNUM *ciphertext =
-//       fahe1_enc(fahe1_instance->key.p, fahe1_instance->key.X,
+//       fahe1_encrypt(fahe1_instance->key.p, fahe1_instance->key.X,
 //                 fahe1_instance->key.rho, fahe1_instance->key.alpha, message);
-//   cr_assert_not_null(ciphertext, "fahe1_enc failed");
+//   cr_assert_not_null(ciphertext, "fahe1_encrypt failed");
 //   char *ciphertext_str = BN_bn2dec(ciphertext);
 //   cr_assert_not_null(ciphertext_str, "BN_bn2dec failed for ciphertext");
 
@@ -87,10 +87,10 @@ helper.c functions. Examples of the code in here include:
 
 //   // Decrypt the message
 //   BIGNUM *decrypted_message =
-//       fahe1_dec(fahe1_instance->key.p, fahe1_instance->key.m_max,
+//       fahe1_decrypt(fahe1_instance->key.p, fahe1_instance->key.m_max,
 //                 fahe1_instance->key.rho, fahe1_instance->key.alpha,
 //                 ciphertext);
-//   cr_assert_not_null(decrypted_message, "fahe1_dec failed");
+//   cr_assert_not_null(decrypted_message, "fahe1_decrypt failed");
 //   print_bn("UNENCRYPTED MESSAGE", decrypted_message);
 
 //   // Compare the original message with the decrypted message
@@ -124,10 +124,10 @@ helper.c functions. Examples of the code in here include:
 //   //   print_bn_list("MESSAGE", message_list,
 //   //   BN_get_word(fahe1_instance->num_additions));
 
-//   BIGNUM **ciphertext_list = fahe1_enc_list(
+//   BIGNUM **ciphertext_list = fahe1_encrypt_list(
 //       fahe1_instance->key.p, fahe1_instance->key.X, fahe1_instance->key.rho,
 //       fahe1_instance->key.alpha, message_list, fahe1_instance->num_additions);
-//   cr_assert_not_null(ciphertext_list, "fahe1_enc_list failed");
+//   cr_assert_not_null(ciphertext_list, "fahe1_encrypt_list failed");
 
 //   //   print_bn_list("CIPHERTEXT", ciphertext_list,
 //   //   BN_get_word(fahe1_instance->num_additions));
@@ -183,7 +183,7 @@ Test(fahe1, fahe1_full_multiple) {
     BIGNUM **ciphertext_list = fahe1_enc_list_op(
         fahe1_instance->key.p, fahe1_instance->key.X, fahe1_instance->key.rho,
         fahe1_instance->key.alpha, message_list, fahe1_instance->num_additions);
-    cr_assert_not_null(ciphertext_list, "fahe1_enc_list failed");
+    cr_assert_not_null(ciphertext_list, "fahe1_encrypt_list failed");
 
     // // Print message and ciphertext to a file
     // FILE *file = fopen("ciphertext.txt", "w");
