@@ -106,7 +106,7 @@ fahe2_key fahe2_keygen(int lambda, int m_max, int alpha) {
   key.lambda = lambda;
   key.m_max = m_max;
   key.alpha = alpha;
-
+  key.pos = rand_int_below(lambda);
   // Calculate and init key's BIGNUM attributes
   int rho = lambda + alpha + m_max;
   key.rho = rho;
@@ -181,7 +181,7 @@ fahe2_key fahe2_keygen(int lambda, int m_max, int alpha) {
   return key;
 }
 
-BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx) {
+BIGNUM *fahe2_encrypt(fahe2_key key, BIGNUM *message, BN_CTX *ctx) {
   log_message(LOG_DEBUG, "Initializing encryption...");
 
   // Initialize BIGNUM values
@@ -212,15 +212,15 @@ BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx) {
   }
   log_message(LOG_DEBUG, "BN_new for X_plus_one succeeded\n");
 
-  if (!key->X) {
+  if (!key.X) {
     log_message(LOG_FATAL, "Input BIGNUM X is NULL\n");
     exit(EXIT_FAILURE);
   }
   log_message(LOG_DEBUG, "Input BIGNUM X is not NULL\n");
 
-  log_message(LOG_DEBUG, "X = %s\n", BN_bn2dec(key->X));
+  log_message(LOG_DEBUG, "X = %s\n", BN_bn2dec(key.X));
 
-  if (!BN_copy(X_plus_one, key->X)) {
+  if (!BN_copy(X_plus_one, key.X)) {
     log_message(LOG_FATAL, "BN_copy failed\n");
     exit(EXIT_FAILURE);
   }
@@ -234,16 +234,16 @@ BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx) {
 
   log_message(LOG_DEBUG, "X+1 = %s\n", BN_bn2dec(X_plus_one));
 
-  q = rand_num_below(X_plus_one);
+  q = rand_bignum_below(X_plus_one);
   if (!q) {
-    log_message(LOG_FATAL, "rand_num_below failed\n");
+    log_message(LOG_FATAL, "rand_bignum_below failed\n");
     exit(EXIT_FAILURE);
   }
   log_message(LOG_DEBUG, "q = %s\n", BN_bn2dec(q));
   BN_free(X_plus_one);
-
+log_message(LOG_FATAL, "POS: %c", key.pos);
   // Generate noise 2
-  noise2 = rand_bits_below(key->lambda - key->pos);
+  noise2 = rand_bits_below((int)(key.lambda - key.pos));
   if (!noise2) {
     log_message(LOG_FATAL, "rand_bits_below failed\n");
     exit(EXIT_FAILURE);
@@ -252,7 +252,7 @@ BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx) {
 
   // (noise2 << (pos + m_max + alpha))
   if (!BN_lshift(pos_max_alpha_shift, noise2,
-                 key->pos + key->m_max + key->alpha)) {
+                 key.pos + key.m_max + key.alpha)) {
     log_message(LOG_FATAL, "BN_lshift failed\n");
     exit(EXIT_FAILURE);
   }
@@ -260,7 +260,7 @@ BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx) {
               BN_bn2dec(pos_max_alpha_shift));
 
   // message << (pos + alpha)
-  if (!BN_lshift(pos_alpha_shift, message, key->pos + key->alpha)) {
+  if (!BN_lshift(pos_alpha_shift, message, key.pos + key.alpha)) {
     log_message(LOG_FATAL, "BN_lshift failed\n");
     exit(EXIT_FAILURE);
   }
@@ -277,7 +277,7 @@ BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx) {
       "(noise2 << (pos + m_max + alpha)) + (message << (pos + alpha)) = %s\n",
       BN_bn2dec(temp));
 
-  noise1 = rand_bits_below(key->pos);
+  noise1 = rand_bits_below(key.pos);
   if (!noise1) {
     log_message(LOG_FATAL, "rand_bits_below failed for noise1\n");
     exit(EXIT_FAILURE);
@@ -291,7 +291,7 @@ BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx) {
   BN_free(noise1);
 
   // n = p * q
-  if (!BN_mul(n, key->p, q, ctx)) {
+  if (!BN_mul(n, key.p, q, ctx)) {
     log_message(LOG_FATAL, "BN_mul failed\n");
     exit(EXIT_FAILURE);
   }
@@ -316,7 +316,7 @@ BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx) {
   return c;
 }
 
-BIGNUM **fahe2_encrypt_list(fahe2_key *key, BIGNUM **message_list,
+BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
                             int list_size, BN_CTX *ctx) {
   log_message(LOG_INFO, "Initializing List Encryption");
 
@@ -348,15 +348,15 @@ BIGNUM **fahe2_encrypt_list(fahe2_key *key, BIGNUM **message_list,
   }
   log_message(LOG_DEBUG, "BN_new for X_plus_one succeeded\n");
 
-  if (!key->X) {
+  if (!key.X) {
     log_message(LOG_FATAL, "Input BIGNUM X is NULL\n");
     exit(EXIT_FAILURE);
   }
   log_message(LOG_DEBUG, "Input BIGNUM X is not NULL\n");
 
-  log_message(LOG_DEBUG, "X = %s\n", BN_bn2dec(key->X));
+  log_message(LOG_DEBUG, "X = %s\n", BN_bn2dec(key.X));
 
-  if (!BN_copy(X_plus_one, key->X)) {
+  if (!BN_copy(X_plus_one, key.X)) {
     log_message(LOG_FATAL, "BN_copy failed\n");
     exit(EXIT_FAILURE);
   }
@@ -376,14 +376,14 @@ BIGNUM **fahe2_encrypt_list(fahe2_key *key, BIGNUM **message_list,
 
   // Loop through each message and perform encryption
   for (int i = 0; i < list_size; i++) {
-    q = rand_num_below(X_plus_one);
+    q = rand_bignum_below(X_plus_one);
     if (!q) {
-      log_message(LOG_FATAL, "rand_num_below failed\n");
+      log_message(LOG_FATAL, "rand_bignum_below failed\n");
       exit(EXIT_FAILURE);
     }
     log_message(LOG_DEBUG, "q = %s\n", BN_bn2dec(q));
 
-    noise2 = rand_bits_below(key->lambda - key->pos);
+    noise2 = rand_bits_below(key.lambda - key.pos);
     if (!noise2) {
       log_message(LOG_FATAL, "rand_bits_below failed\n");
       exit(EXIT_FAILURE);
@@ -392,7 +392,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key *key, BIGNUM **message_list,
 
     // (noise2 << (pos + m_max + alpha))
     if (!BN_lshift(pos_max_alpha_shift, noise2,
-                   key->pos + key->m_max + key->alpha)) {
+                   key.pos + key.m_max + key.alpha)) {
       log_message(LOG_FATAL, "BN_lshift failed\n");
       exit(EXIT_FAILURE);
     }
@@ -400,7 +400,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key *key, BIGNUM **message_list,
                 BN_bn2dec(pos_max_alpha_shift));
 
     // message << (pos + alpha)
-    if (!BN_lshift(pos_alpha_shift, message_list[i], key->pos + key->alpha)) {
+    if (!BN_lshift(pos_alpha_shift, message_list[i], key.pos + key.alpha)) {
       log_message(LOG_FATAL, "BN_lshift failed\n");
       exit(EXIT_FAILURE);
     }
@@ -418,7 +418,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key *key, BIGNUM **message_list,
         "(noise2 << (pos + m_max + alpha)) + (message << (pos + alpha)) = %s\n",
         BN_bn2dec(temp));
 
-    noise1 = rand_bits_below(key->pos);
+    noise1 = rand_bits_below(key.pos);
     if (!noise1) {
       log_message(LOG_FATAL, "rand_bits_below failed for noise1\n");
       exit(EXIT_FAILURE);
@@ -432,7 +432,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key *key, BIGNUM **message_list,
     BN_free(noise1);
 
     // n = p * q
-    if (!BN_mul(n, key->p, q, ctx)) {
+    if (!BN_mul(n, key.p, q, ctx)) {
       log_message(LOG_FATAL, "BN_mul failed\n");
       exit(EXIT_FAILURE);
     }

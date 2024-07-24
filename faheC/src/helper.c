@@ -9,7 +9,7 @@
 #include "fahe2.h"
 #include "logger.h"
 
-BIGNUM *rand_num_below(const BIGNUM *upper_bound) {
+BIGNUM *rand_bignum_below(const BIGNUM *upper_bound) {
   BIGNUM *rand_bn = BN_new();
   if (!rand_bn) {
     log_message(LOG_FATAL, "BN_new failed\n");
@@ -23,6 +23,13 @@ BIGNUM *rand_num_below(const BIGNUM *upper_bound) {
   }
 
   return rand_bn;
+}
+
+int rand_int_below(int x) {
+    if (x <= 0) {
+        return 0;
+    }
+    return rand() % (x + 1);
 }
 
 BIGNUM *rand_bits_below(unsigned int bitlength) {

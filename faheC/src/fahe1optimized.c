@@ -94,7 +94,7 @@ BIGNUM *fahe1_enc_op(BIGNUM *p, BIGNUM *X, int rho, int alpha,
 
   BN_copy(X_plus_one, X);
   BN_add_word(X_plus_one, 1);
-  q = rand_num_below(X_plus_one);
+  q = rand_bignum_below(X_plus_one);
   BN_free(X_plus_one);
 
   noise = rand_bits_below(rho);
@@ -128,7 +128,7 @@ void *thread_enc_func(void *arg) {
   BN_add_word(X_plus_one, 1);
 
   for (int i = data->start; i < data->end; i++) {
-    BIGNUM *q = rand_num_below(X_plus_one);
+    BIGNUM *q = rand_bignum_below(X_plus_one);
     BIGNUM *noise = rand_bits_below(data->rho);
     BN_set_word(rho_alpha, data->rho + data->alpha);
     data->ciphertext_list[i] = BN_new();

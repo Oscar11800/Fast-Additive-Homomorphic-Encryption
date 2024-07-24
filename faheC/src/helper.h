@@ -1,7 +1,8 @@
 #include <openssl/bn.h>
 #include "fahe2.h"
 
-BIGNUM *rand_num_below(const BIGNUM *upper_bound);
+BIGNUM *rand_bignum_below(const BIGNUM *upper_bound);
+int rand_int_below(int x);
 BIGNUM *rand_bits_below(unsigned int bitlength);
 BIGNUM *generate_big_message(unsigned int message_size);
 uint64_t generate_random_uint64(uint64_t max_value);

@@ -232,9 +232,9 @@ BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
 
   log_message(LOG_DEBUG, "Debug: X+1 = %s\n", BN_bn2dec(X_plus_one));
 
-  q = rand_num_below(X_plus_one);
+  q = rand_bignum_below(X_plus_one);
   if (!q) {
-    log_message(LOG_FATAL, "rand_num_below failed\n");
+    log_message(LOG_FATAL, "rand_bignum_below failed\n");
     exit(EXIT_FAILURE);
   }
   log_message(LOG_DEBUG, "Debug: q = %s\n", BN_bn2dec(q));
@@ -348,9 +348,9 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
   // loop through each message and perform q, noise, M, n, c calculations
   for (int i = 0; i < BN_get_word(list_size); i++) {
     // q -> [0,X]
-    q = rand_num_below(X_plus_one);
+    q = rand_bignum_below(X_plus_one);
     if (!q) {
-      log_message(LOG_FATAL, "rand_num_below failed\n");
+      log_message(LOG_FATAL, "rand_bignum_below failed\n");
       exit(EXIT_FAILURE);
     }
     log_message(LOG_DEBUG, "Debug: q = %s\n", BN_bn2dec(q));

@@ -170,7 +170,7 @@ fahe2_key fahe2_keygen(int lambda, int m_max, int alpha);
  *
  * @return The encrypted ciphertext. c = n + M. @see variables above.
  */
-BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx);
+BIGNUM *fahe2_encrypt(fahe2_key key, BIGNUM *message, BN_CTX *ctx);
 /**
  * @brief Encrypts a list of plaintext messages into a list of ciphertext.
  *
@@ -192,7 +192,7 @@ BIGNUM *fahe2_encrypt(fahe2_key *key, BIGNUM *message, BN_CTX *ctx);
  *
  * @return The encrypted ciphertext. c = n + M. @see variables above.
  */
-BIGNUM **fahe2_encrypt_list(fahe2_key *key, BIGNUM **message_list,
+BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
                             int list_size, BN_CTX *ctx);
 
 /**
