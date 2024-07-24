@@ -1,11 +1,13 @@
 /**
  * @file fahe1.h
- * @brief Header file for fahe1.c, the main file for Fast Additive Homomorphic
- * Encryption operations such as encryption, decryption, and key generation.
+ * @brief Header file for fahe1.c, the main file for Fast Additive
+ * Homomorphic Encryption 1 operations such as encryption, decryption,
+ * and key generation.
  *
- * This file contains the following structs: fahe_params, fahe1_key, fahe1
- *                and the following methods: fahe1_init, fahe1_free
- * fahe1_keygen, fahe1_encrypt, fahe1_encrypt_list, fahe1_decrypt
+ * This file contains the following structs: fahe_params, fahe1_key,
+ * fahe1 and the following methods:
+ *          fahe1_init, fahe1_free fahe1_keygen,
+ *          fahe1_encrypt, fahe1_encrypt_list, fahe1_decrypt
  *
  * @author Oscar Chen
  * @date 2024-07-23
@@ -42,19 +44,23 @@ typedef struct {
  * @struct fahe1_key
  *
  * @var fahe1_key: lambda (int)
- * Security parameter; bit length of the key.
+ * The security parameter; bit length of the key.
  *
  * @var fahe1_key: m_max (int)
- * Max plaintext message size in bits.
+ * The max plaintext message size in bits.
  *
  * @var fahe1_key: alpha (int)
- * Determines encryption noise level and the safe max number of additions.\
+ * Alpha determines encryption noise level and the safe max number of
+ * additions.
+ *
+ * @var fahe1_key: rho (int)
+ * size of noise, in bits
  *
  * @var fahe1_key: X (BIGNUM*)
- * X = (2**rho)/p. Affects encrypted ciphertext.
+ * X = (2**rho)/p. This affects encrypted ciphertext.
  *
  * @var fahe1_key: p (BIGNUM*)
- * Random prime number of size (eta) bits.
+ * A random prime number of size (eta) bits.
  */
 typedef struct {
   int lambda;
@@ -64,19 +70,18 @@ typedef struct {
   BIGNUM *X;
   BIGNUM *p;
 } fahe1_key;
-    
+
 /**
  * @typedef fahe1
- * @brief Fast Additive Homomorphic Encryption structure.
+ * @brief Fast Additive Homomorphic Encryption 2 structure.
  *
- * This structure contains all the necessary parameters and keys for performing
- * Fast Additive Homomorphic Encryption (FAHE). Only one instance of this
- * structure is needed for any set of messages of the same size and security
- * parameters. It can be reused for encrypting and decrypting multiple messages
- * with the same characteristics.
+ * This structure contains all the necessary parameters and keys for
+ *  performing Fast Additive Homomorphic Encryption 1 (FAHE). Only one
+ *  instance of this structure is needed for any set of messages of the 
+ * same size and security parameters. It can be reused for encrypting
+ * and decrypting multiple messages with the same characteristics.
  *
- * @note This struct is reusable for all messages of the same size and with the
- *       same desirable security variables.
+ * @note This struct is reusable for all messages of the same size and with the same desirable security variables.
  */
 
 /**
@@ -87,14 +92,14 @@ typedef struct {
  *
  * @var fahe1::msg_size (unsigned int)
  * Size of accepted plaintext message, in bits. This is usually used for
- message generation.
+ * message generation.
  *
  * @var fahe1::num_additions (BIGNUM)
- * Maximum number of additions that can be performed. This is usually set to
- * 2**(alpha-1).
+ * Maximum number of additions that can be performed. This is usually
+ * set to 2**(alpha-1).
  *
- * @note num_additions is a BIGNUM because with a sufficiently large alpha,
- * num_additions may surpass 32 and even 64 bits.
+ * @note num_additions is a BIGNUM because with a sufficiently large
+ * alpha, num_additions may surpass 32 and even 64 bits.
  */
 typedef struct {
   fahe1_key key;

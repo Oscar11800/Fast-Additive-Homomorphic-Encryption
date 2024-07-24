@@ -55,7 +55,7 @@ fahe1 *fahe1_init(const fahe_params *params) {
   // Allocate memory for fahe1 struct
   fahe1 *fahe1_instance = (fahe1 *)malloc(sizeof(fahe1));
   if (!fahe1_instance) {
-    log_message(LOG_FATAL, "Memory allocation for fahe_union struct failed\n");
+    log_message(LOG_FATAL, "Memory allocation for fahe2_union struct failed\n");
     exit(EXIT_FAILURE);
   }
   log_message(LOG_DEBUG, "Memory successfully allocated for fahe1_instance\n");
@@ -216,7 +216,7 @@ BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
   }
   log_message(LOG_DEBUG, "Debug: Input BIGNUM X is not NULL\n");
 
-  log_message(LOG_DEBUG, "Debug: X = %c\n", BN_bn2dec(X));
+  log_message(LOG_DEBUG, "Debug: X = %s\n", BN_bn2dec(X));
 
   if (!BN_copy(X_plus_one, X)) {
     log_message(LOG_FATAL, "BN_copy failed\n");
@@ -230,14 +230,14 @@ BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
   }
   log_message(LOG_DEBUG, "Debug: BN_add_word succeeded\n");
 
-  log_message(LOG_DEBUG, "Debug: X+1 = %c\n", BN_bn2dec(X_plus_one));
+  log_message(LOG_DEBUG, "Debug: X+1 = %s\n", BN_bn2dec(X_plus_one));
 
   q = rand_num_below(X_plus_one);
   if (!q) {
     log_message(LOG_FATAL, "rand_num_below failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: q = %c\n", BN_bn2dec(q));
+  log_message(LOG_DEBUG, "Debug: q = %s\n", BN_bn2dec(q));
   BN_free(X_plus_one);
 
   // Generate random noise of bit length rho
@@ -247,41 +247,41 @@ BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
     exit(EXIT_FAILURE);
   }
 
-  log_message(LOG_DEBUG, "Debug: noise = %c\n", BN_bn2dec(noise));
+  log_message(LOG_DEBUG, "Debug: noise = %s\n", BN_bn2dec(noise));
 
   // M = (message << (rho + alpha)) + noise
   if (!BN_set_word(rho_alpha, rho + alpha)) {
     log_message(LOG_FATAL, "BN_set_word failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: rho+alpha = %c\n", BN_bn2dec(rho_alpha));
+  log_message(LOG_DEBUG, "Debug: rho+alpha = %s\n", BN_bn2dec(rho_alpha));
 
   if (!BN_lshift(rho_alpha_shift, message, rho + alpha)) {
     log_message(LOG_FATAL, "BN_lshift failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: message << (rho + alpha) = %c\n",
+  log_message(LOG_DEBUG, "Debug: message << (rho + alpha) = %s\n",
               BN_bn2dec(rho_alpha_shift));
 
   if (!BN_add(M, rho_alpha_shift, noise)) {
     log_message(LOG_FATAL, "BN_add for M failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: M = %c\n", BN_bn2dec(M));
+  log_message(LOG_DEBUG, "Debug: M = %s\n", BN_bn2dec(M));
 
   // n = p * q
   if (!BN_mul(n, p, q, ctx)) {
     log_message(LOG_FATAL, "BN_mul failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: n = %c\n", BN_bn2dec(n));
+  log_message(LOG_DEBUG, "Debug: n = %s\n", BN_bn2dec(n));
 
   // c = n + M
   if (!BN_add(c, n, M)) {
     log_message(LOG_FATAL, "BN_add for c failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: c = %c\n", BN_bn2dec(c));
+  log_message(LOG_DEBUG, "Debug: c = %s\n", BN_bn2dec(c));
 
   // Free temporary BIGNUMs and context
   BN_free(q);

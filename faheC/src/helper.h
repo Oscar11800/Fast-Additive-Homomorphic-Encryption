@@ -1,4 +1,5 @@
 #include <openssl/bn.h>
+#include "fahe2.h"
 
 BIGNUM *rand_num_below(const BIGNUM *upper_bound);
 BIGNUM *rand_bits_below(unsigned int bitlength);
@@ -13,4 +14,5 @@ void write_messages_to_file(BIGNUM **message_list, unsigned int num_msgs,
 void print_bn_list(const char *label, BIGNUM **bn_list, unsigned int len);
 void print_bn(const char *label, BIGNUM *bn);
 void debug_fahe1_init(fahe1 *fahe1_instance);
+void debug_fahe2_init(fahe2 *fahe2_instance);
 BIGNUM **read_bignum_list_from_file(const char *filename, int *num_elements);

@@ -122,6 +122,27 @@ void debug_fahe1_init(fahe1 *fahe1_instance) {
   }
 }
 
+void debug_fahe2_init(fahe2 *fahe2_instance) {
+  if (!fahe2_instance) {
+    fprintf(stderr, "ERROR DEBUGGING: FAHE instance is NULL.\n");
+    return;
+  }
+  printf("FAHE2 Instance:\n");
+  printf("lambda: %d\n", fahe2_instance->key.lambda);
+  printf("m_max: %d\n", fahe2_instance->key.m_max);
+  printf("alpha: %d\n", fahe2_instance->key.alpha);
+  printf("msg_size: %u\n", fahe2_instance->msg_size);
+
+  // Print num_additions
+  char *num_additions_str = BN_bn2dec(fahe2_instance->num_additions);
+  if (num_additions_str) {
+    printf("num_additions: %s\n", num_additions_str);
+    OPENSSL_free(num_additions_str);
+  } else {
+    fprintf(stderr, "Error converting num_additions to string\n");
+  }
+}
+
 // Helper function to print a BIGNUM
 void print_bn(const char *label, BIGNUM *bn) {
   char *bn_str = BN_bn2dec(bn);
