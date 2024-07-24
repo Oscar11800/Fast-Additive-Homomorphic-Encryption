@@ -207,5 +207,10 @@ thus it can take advantage of the performance gains of FAHE 1 & 2
 	Downside: it's more computationally intensive than partially or somewhat homomorphic
 
 References:
-Cominetti, Eduardo & Simplicio, Marcos. (2020). Fast Additive Partially Homomorphic Encryption From the Approximate Common Divisor Problem. IEEE Transactions on Information Forensics and Security. DOI: 10.1109/TIFS.2020.2981239.
-https://github.com/oleiba/RSA-accumulator
+E. L. Cominetti and M. A. Simplicio, "Fast Additive Partially Homomorphic Encryption From the Approximate Common Divisor Problem," in IEEE Transactions on Information Forensics and Security, vol. 15, pp. 2988-2998, 2020, doi: 10.1109/TIFS.2020.2981239.
+Abstract: This paper presents two efficient partially homomorphic encryption schemes built upon the approximate common divisor problem, believed to be resistant to quantum computer attacks. Both proposals, named FAHE1 and FAHE2, are additively homomorphic and have a symmetric nature, meaning that they are useful in scenarios where encryption and decryption are performed by the same entity. This is the case, for example, of encrypted databases stored in a public cloud. We also evaluate the performance of our proposals in comparison with two alternatives displaying additive homomorphism: the traditional Paillier asymmetric cryptosystem, which is not quantum-resistant; and the XPIR algorithm, which is both quantum-resistant and symmetric. Our experimental results show that both solutions provide considerable speed-ups when compared to Paillier. Namely, encryption and decryption with FAHE1 are, respectively, 120 and 25 times faster than Paillier's, while for FAHE2 both operations run more than 1000 times faster. In addition, when compared with a highly optimized XPIR code, our reference implementation remains quite competitive while producing smaller ciphertexts.
+keywords: {Encryption;Additives;Proposals;Databases;Cloud computing;Partially homomorphic encryption;approximate common divisor;addition;fast;Paillier},
+URL: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9057655&isnumber=8833568
+
+
+
