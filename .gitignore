@@ -1,0 +1,57 @@
+# Compiled object files
+*.o
+
+# Compiled static libraries
+*.a
+
+# Compiled dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Executable files
+*.out
+*.exe
+
+# Build directories
+/build/
+/bin/
+/obj/
+/lib/
+
+# Doxygen output
+/docs/
+
+/Doxyfile
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# MacOS specific files
+.DS_Store
+
+# Python-specific
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+*.egg-info/
+
+# IDE specific files
+.idea/
+.vscode/
+.project
+.cproject
+.pydevproject
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Dependency directories
+node_modules/

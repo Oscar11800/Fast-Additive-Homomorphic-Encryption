@@ -64,7 +64,7 @@ typedef struct {
   BIGNUM *X;
   BIGNUM *p;
 } fahe1_key;
-
+    
 /**
  * @typedef fahe1
  * @brief Fast Additive Homomorphic Encryption structure.
