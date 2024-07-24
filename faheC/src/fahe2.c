@@ -241,7 +241,7 @@ BIGNUM *fahe2_encrypt(fahe2_key key, BIGNUM *message, BN_CTX *ctx) {
   }
   log_message(LOG_DEBUG, "q = %s\n", BN_bn2dec(q));
   BN_free(X_plus_one);
-log_message(LOG_FATAL, "POS: %c", key.pos);
+log_message(LOG_DEBUG, "POS: %c", key.pos);
   // Generate noise 2
   noise2 = rand_bits_below((int)(key.lambda - key.pos));
   if (!noise2) {

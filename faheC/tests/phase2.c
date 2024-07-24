@@ -20,7 +20,13 @@
 Test(fahe2, fahe2_full_single) {
   BN_CTX *ctx = BN_CTX_new();
   fahe_params params = {128, 32, 6, 32};
+  clock_t fahe2_keygen_start_time = clock();
   fahe2 *fahe2_instance = fahe2_init(&params);
+  clock_t fahe2_keygen_end_time = clock();
+  double fahe2_keygen_time =
+        (double)(fahe2_keygen_end_time - fahe2_keygen_start_time) /
+        CLOCKS_PER_SEC;
+
   cr_assert_not_null(fahe2_instance, "fahe2_init failed");
   debug_fahe2_init(fahe2_instance);
 
@@ -33,7 +39,15 @@ Test(fahe2, fahe2_full_single) {
   cr_assert_not_null(message_string, "BN_bn2dec failed for message");
 
   //   Encrypt the message
+  clock_t fahe2_encryption_start_time = clock();
   BIGNUM *ciphertext = fahe2_encrypt(fahe2_instance->key, message, ctx);
+  clock_t fahe2_encryption_end_time = clock();
+
+  double fahe2_encryption_time =
+        (double)(fahe2_encryption_end_time - fahe2_encryption_start_time) /
+        CLOCKS_PER_SEC;
+
+
   cr_assert_not_null(ciphertext, "fahe2_encrypt failed");
   char *ciphertext_str = BN_bn2dec(ciphertext);
   cr_assert_not_null(ciphertext_str, "BN_bn2dec failed for ciphertext");
@@ -50,4 +64,8 @@ Test(fahe2, fahe2_full_single) {
   } else {
     fprintf(stderr, "Failed to open file for writing\n");
   }
+
+  printf("KEYGEN TIME: %f\n", fahe2_keygen_time);
+  printf("ENCRYPTION TIME: %f\n", fahe2_encryption_time);
+
 }
