@@ -14,8 +14,8 @@
  * - Encryption of plaintext message(s)
  * - Decryption of ciphertext(s)
  *
- * @note The functions in this file use OpenSSL's BIGNUM library for handling
- * large integers.
+ * @note The functions in this file use OpenSSL's BIGNUM library for
+ * handling large integers.
  *
  * @warning This implementation assumes that OpenSSL's BIGNUM library is
  * properly installed and configured. Find more information here: @link
@@ -107,7 +107,7 @@ fahe1_key fahe1_keygen(int lambda, int m_max, int alpha) {
   key.m_max = m_max;
   key.alpha = alpha;
 
-// Calculate and init key's BIGNUM attributes
+  // Calculate and init key's BIGNUM attributes
   int rho = lambda;
   key.rho = rho;
   double eta = rho + (2 * alpha) + m_max;
@@ -199,7 +199,8 @@ BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
     exit(EXIT_FAILURE);
   }
 
-  log_message(LOG_DEBUG, "Debug: Successfully initialized encryption BIGNUM variables\n");
+  log_message(LOG_DEBUG,
+              "Debug: Successfully initialized encryption BIGNUM variables\n");
 
   // Calculating q < X + 1
   BIGNUM *X_plus_one = BN_new();
@@ -296,6 +297,8 @@ BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
 
 BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
                             BIGNUM **message_list, BIGNUM *list_size) {
+  log_message(LOG_INFO, "Initializing List Encryption");
+
   // Initialize BIGNUM values
   BIGNUM *q = NULL;
   BIGNUM *noise = NULL;
@@ -308,81 +311,69 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
 
   BIGNUM **ciphertext_list = malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
   if (ciphertext_list == NULL) {
-    // fprintf(stderr, "Memory allocation failed\n");
+    log_message(LOG_FATAL, "Memory allocation failed\n");
     return NULL;
   }
-
   if (!M || !n || !c || !rho_alpha_shift || !rho_alpha || !ctx) {
-    // fprintf(stderr, "Memory allocation failed\n");
+    log_message(LOG_FATAL, "Memory allocation failed\n");
     exit(EXIT_FAILURE);
   }
-
-  // fprintf(stderr, "Debug: Initialized BIGNUM variables\n");
+  log_message(LOG_DEBUG, "Debug: Initialized BIGNUM variables\n");
 
   // q < X + 1
   BIGNUM *X_plus_one = BN_new();
   if (!X_plus_one) {
-    // fprintf(stderr, "BN_new for X_plus_one failed\n");
+    log_message(LOG_FATAL, "BN_new for X_plus_one failed\n");
     exit(EXIT_FAILURE);
   }
-  // fprintf(stderr, "Debug: BN_new for X_plus_one succeeded\n");
-
+  log_message(LOG_DEBUG, "Debug: BN_new for X_plus_one succeeded\n");
   if (!X) {
-    // fprintf(stderr, "Input BIGNUM X is NULL\n");
+    log_message(LOG_FATAL, "Input BIGNUM X is NULL\n");
     exit(EXIT_FAILURE);
   }
-  // fprintf(stderr, "Debug: Input BIGNUM X is not NULL\n");
-
-  //   //fprintf(stderr, "Debug: X = ");
-  //   //BN_print_fp(stderr, X);
-  //   //fprintf(stderr, "\n");
-
+  log_message(LOG_DEBUG, "Debug: Input BIGNUM X is not NULL\n");
+  log_message(LOG_DEBUG, "Debug: X = %s\n", BN_bn2dec(X));
   if (!BN_copy(X_plus_one, X)) {
-    // fprintf(stderr, "BN_copy failed\n");
+    log_message(LOG_FATAL, "BN_copy failed\n");
     exit(EXIT_FAILURE);
   }
-  // fprintf(stderr, "Debug: BN_copy succeeded\n");
-
+  log_message(LOG_DEBUG, "Debug: BN_copy succeeded\n");
   if (!BN_add_word(X_plus_one, 1)) {
-    // fprintf(stderr, "BN_add_word failed\n");
+    log_message(LOG_FATAL, "BN_add_word failed\n");
     exit(EXIT_FAILURE);
   }
-  // fprintf(stderr, "Debug: BN_add_word succeeded\n");
+  log_message(LOG_DEBUG, "Debug: BN_add_word succeeded\n");
+  log_message(LOG_DEBUG, "Debug: X + 1 = %s\n", BN_bn2dec(X_plus_one));
 
-  //   //fprintf(stderr, "Debug: X + 1 = ");
-  //   //BN_print_fp(stderr, X_plus_one);
-  //   //fprintf(stderr, "\n");
-
+  // loop through each message and perform q, noise, M, n, c calculations
   for (int i = 0; i < BN_get_word(list_size); i++) {
+    // q -> [0,X]
     q = rand_num_below(X_plus_one);
     if (!q) {
-      // fprintf(stderr, "rand_num_below failed\n");
+      log_message(LOG_FATAL, "rand_num_below failed\n");
       exit(EXIT_FAILURE);
     }
-    // //fprintf(stderr, "Debug: q = ");
-    // //BN_print_fp(stderr, q);
-    // //fprintf(stderr, "\n");
+    log_message(LOG_DEBUG, "Debug: q = %s\n", BN_bn2dec(q));
 
+    // noise > [0, 1^rho] bits
     noise = rand_bits_below(rho);
     if (!noise) {
-      // fprintf(stderr, "rand_bits_below failed\n");
+      log_message(LOG_FATAL, "rand_bits_below failed\n");
       exit(EXIT_FAILURE);
     }
-    // fprintf(stderr, "Debug: noise = ");
-    // BN_print_fp(stderr, noise);
-    // fprintf(stderr, "\n");
+    log_message(LOG_FATAL, "Debug: noise = %s\n", BN_bn2dec(noise));
 
+    // calculating M...
     if (!BN_set_word(rho_alpha, rho + alpha)) {
-      // fprintf(stderr, "BN_set_word failed\n");
+      log_message(LOG_FATAL, "BN_set_word failed\n");
       exit(EXIT_FAILURE);
     }
-    // fprintf(stderr, "Debug: rho + alpha = ");
-    // BN_print_fp(stderr, rho_alpha);
-    // fprintf(stderr, "\n");
+    log_message(LOG_FATAL, "Debug: rho + alpha = %s\n", BN_bn2dec(rho_alpha));
 
+    // Creating ciphertext...
     ciphertext_list[i] = BN_new();
     if (ciphertext_list[i] == NULL) {
-      // fprintf(stderr, "BN_new failed for index %d\n", i);
+      log_message(LOG_FATAL, "BN_new failed for index %d\n", i);
       for (int j = 0; j < i; j++) {
         BN_free(ciphertext_list[j]);
       }
@@ -391,43 +382,39 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
     }
 
     if (!BN_lshift(rho_alpha_shift, message_list[i], rho + alpha)) {
-      // fprintf(stderr, "BN_lshift failed\n");
+      log_message(LOG_FATAL, "BN_lshift failed\n");
       for (int j = 0; j <= i; j++) {
         BN_free(ciphertext_list[j]);
       }
       free(ciphertext_list);
       exit(EXIT_FAILURE);
     }
-    // fprintf(stderr, "Debug: message << (rho + alpha) = ");
-    // BN_print_fp(stderr, rho_alpha_shift);
-    // fprintf(stderr, "\n");
+    log_message(LOG_FATAL, "Debug: message << (rho + alpha) = %s\n",
+                BN_bn2dec(rho_alpha_shift));
 
+    // M = (message << (rho + alpha)) + noise
     if (!BN_add(M, rho_alpha_shift, noise)) {
-      // fprintf(stderr, "BN_add for M failed\n");
+      log_message(LOG_FATAL, "BN_add for M failed\n");
       exit(EXIT_FAILURE);
     }
-    // //fprintf(stderr, "Debug: M = ");
-    // //BN_print_fp(stderr, M);
-    // //fprintf(stderr, "\n");
+    log_message(LOG_FATAL, "Debug: M = %s\n", BN_bn2dec(M));
 
+    // n = p * q
     if (!BN_mul(n, p, q, ctx)) {
-      // fprintf(stderr, "BN_mul failed\n");
+      log_message(LOG_FATAL, "BN_mul failed\n");
       exit(EXIT_FAILURE);
     }
-    // //fprintf(stderr, "Debug: n = ");
-    // //BN_print_fp(stderr, n);
-    // //fprintf(stderr, "\n");
+    log_message(LOG_FATAL, "Debug: n = %s\n", BN_bn2dec(n));
 
+    // c = n + M
     if (!BN_add(c, n, M)) {
-      // fprintf(stderr, "BN_add for c failed\n");
+      log_message(LOG_FATAL, "BN_add for c failed\n");
       exit(EXIT_FAILURE);
     }
-    // //fprintf(stderr, "Debug: c = ");
-    // //BN_print_fp(stderr, c);
-    // //fprintf(stderr, "\n");
+    log_message(LOG_DEBUG, "Debug: c = %s\n", BN_bn2dec(c));
 
     if (!BN_copy(ciphertext_list[i], c)) {
-      // fprintf(stderr, "BN_copy failed for ciphertext_list[%d]\n", i);
+      log_message(LOG_FATAL, "BN_copy failed for ciphertext_list[%d]\n", i);
       exit(EXIT_FAILURE);
     }
 
@@ -471,7 +458,7 @@ BIGNUM *fahe1_decrypt(BIGNUM *p, int m_max, int rho, int alpha,
     log_message(LOG_FATAL, "BN_rshift failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug:  m_shifted before masking = %c\n",
+  log_message(LOG_DEBUG, "Debug: m_shifted before masking = %c\n",
               BN_bn2dec(m_shifted));
 
   // Mask the bits to the size of m_max
@@ -500,20 +487,22 @@ BIGNUM *fahe1_decrypt(BIGNUM *p, int m_max, int rho, int alpha,
 
 BIGNUM **fahe1_decrypt_list(BIGNUM *p, int m_max, int rho, int alpha,
                             BIGNUM **ciphertext_list, BIGNUM *list_size) {
+  log_message(LOG_DEBUG, "Decrypting ciphertext list...");
+
   // Initialize BIGNUM values
   BIGNUM *m_full = BN_new();
   BIGNUM *m_shifted = BN_new();
   BN_CTX *ctx = BN_CTX_new();
 
   if (!m_full || !m_shifted || !ctx) {
-    // fprintf(stderr, "Memory allocation failed\n");
+    log_message(LOG_FATAL, "Memory allocation failed\n");
     exit(EXIT_FAILURE);
   }
 
   // Allocate memory for the list of decrypted messages
   BIGNUM **decrypted_list = malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
   if (decrypted_list == NULL) {
-    // fprintf(stderr, "Memory allocation for decrypted_list failed\n");
+    log_message(LOG_FATAL, "Memory allocation for decrypted_list failed\n");
     BN_free(m_full);
     BN_free(m_shifted);
     BN_CTX_free(ctx);
@@ -525,7 +514,7 @@ BIGNUM **fahe1_decrypt_list(BIGNUM *p, int m_max, int rho, int alpha,
     // Allocate memory for each decrypted message
     decrypted_list[i] = BN_new();
     if (!decrypted_list[i]) {
-      // fprintf(stderr, "BN_new failed for index %zu\n", i);
+      log_message(LOG_FATAL, "BN_new failed for index %zu\n", i);
       //  Free already allocated BIGNUMs
       for (size_t j = 0; j < i; j++) {
         BN_free(decrypted_list[j]);
@@ -539,9 +528,8 @@ BIGNUM **fahe1_decrypt_list(BIGNUM *p, int m_max, int rho, int alpha,
 
     // m_full = ciphertext % p
     if (!BN_mod(m_full, ciphertext_list[i], p, ctx)) {
-      // fprintf(stderr, "BN_mod failed for index %zu\n", i);
+      log_message(LOG_FATAL, "BN_mod failed for index %zu\n", i);
       BN_free(decrypted_list[i]);
-      // Free already allocated BIGNUMs
       for (size_t j = 0; j < i; j++) {
         BN_free(decrypted_list[j]);
       }
@@ -554,9 +542,8 @@ BIGNUM **fahe1_decrypt_list(BIGNUM *p, int m_max, int rho, int alpha,
 
     // m_shifted = m_full >> (rho + alpha)
     if (!BN_rshift(m_shifted, m_full, rho + alpha)) {
-      // fprintf(stderr, "BN_rshift failed for index %zu\n", i);
+      log_message(LOG_FATAL, "BN_rshift failed for index %zu\n", i);
       BN_free(decrypted_list[i]);
-      // Free already allocated BIGNUMs
       for (size_t j = 0; j < i; j++) {
         BN_free(decrypted_list[j]);
       }
@@ -569,9 +556,8 @@ BIGNUM **fahe1_decrypt_list(BIGNUM *p, int m_max, int rho, int alpha,
 
     // Mask the bits to the size of m_max
     if (!BN_mask_bits(m_shifted, m_max)) {
-      // fprintf(stderr, "BN_mask_bits failed for index %zu\n", i);
+      log_message(LOG_FATAL, "BN_mask_bits failed for index %zu\n", i);
       BN_free(decrypted_list[i]);
-      // Free already allocated BIGNUMs
       for (size_t j = 0; j < i; j++) {
         BN_free(decrypted_list[j]);
       }
@@ -584,9 +570,8 @@ BIGNUM **fahe1_decrypt_list(BIGNUM *p, int m_max, int rho, int alpha,
 
     // Copy the masked value to the decrypted message
     if (!BN_copy(decrypted_list[i], m_shifted)) {
-      // fprintf(stderr, "BN_copy failed for index %zu\n", i);
+      log_message(LOG_FATAL, "BN_copy failed for index %zu\n", i);
       BN_free(decrypted_list[i]);
-      // Free already allocated BIGNUMs
       for (size_t j = 0; j < i; j++) {
         BN_free(decrypted_list[j]);
       }
