@@ -1,5 +1,5 @@
 /**
- * @file fahe2.h
+ * @file fahe2optimized.h
  * @brief Header file for fahe2.c, the main file for Fast Additive Homomorphic
  * Encryption 2 operations such as encryption, decryption, and key generation.
  *
@@ -11,85 +11,12 @@
  * @date 2024-07-23
  */
 
-#ifndef FAHE2_H
-#define FAHE2_H
+#ifndef FAHE2OPTIMIZED_H
+#define FAHE2OPTIMIZED_H
 
 #include <openssl/bn.h>
 
-#include "fahe1.h"  //for the fahe_params struct
-
-/**
- * @struct fahe2_key
- *
- * @var fahe2_key: lambda (int)
- * The security parameter; bit length of the key.
- *
- * @var fahe2_key: m_max (int)
- * The max plaintext message size in bits.
- *
- * @var fahe2_key: alpha (int)
- * Alpha determines encryption noise level and the safe max number of additions.
- *
- * @var fahe2_key: rho (int)
- * The size of noise, in bits
- *
- * @var fahe2_key: pos (int):
- * A random number in the range [0, lambda].
- *
- * @var fahe2_key: X (BIGNUM*)
- * X = (2**rho)/p. This affects encrypted ciphertext.
- *
- * @var fahe2_key: p (BIGNUM*)
- * A random prime number of size (eta) bits.
- */
-
-typedef struct {
-  int lambda;
-  int m_max;
-  int alpha;
-  int rho;
-  int pos;
-  BIGNUM *X;
-  BIGNUM *p;
-} fahe2_key;
-
-/**
- * @typedef fahe2
- * @brief Fast Additive Homomorphic Encryption 2 structure.
- *
- * This structure contains all the necessary parameters and keys for performing
- * Fast Additive Homomorphic Encryption 2 (FAHE). Only one instance of this
- * structure is needed for any set of messages of the same size and security
- * parameters. It can be reused for encrypting and decrypting multiple messages
- * with the same characteristics.
- *
- * @note This struct is reusable for all messages of the same size and with the
- *       same desirable security variables.
- */
-
-/**
- * @struct fahe2
- *
- * @var fahe2::key (fahe2_key)
- * Full key structure. Refer to the fahe2_key struct for details.
- *
- * @var fahe2::msg_size (unsigned int)
- * Size of accepted plaintext message, in bits. This is usually used for
- * message generation.
- *
- * @var fahe2::num_additions (BIGNUM)
- * Maximum number of additions that can be performed. This is usually set to
- * 2**(alpha-1).
- *
- * @note num_additions is a BIGNUM because with a sufficiently large alpha,
- * num_additions may surpass 32 and even 64 bits.
- */
-typedef struct {
-  fahe2_key key;
-  unsigned int msg_size;
-  BIGNUM *num_additions;
-} fahe2;
-
+#include "fahe2.h"  //for the fahe_params struct
 /**
  * @todo Allow for dynamic num_additions and have 2**(alpha-1) be the default
  *
@@ -111,7 +38,7 @@ typedef struct {
  *                   - msg_size: @see fahe2 struct
  * @return The initialized fahe2 struct
  */
-fahe2 *fahe2_init(const fahe_params *params);
+fahe2 *fahe2_init_op(const fahe_params *params);
 
 /**
  * @brief Frees the fahe2 struct.
@@ -124,7 +51,7 @@ fahe2 *fahe2_init(const fahe_params *params);
  *                   - alpha (int): @see fahe2_key struct
  *                   - msg_size (BIGNUM): @see fahe2 struct
  */
-void fahe2_free(fahe2 *fahe2_instance);
+void fahe2_free_op(fahe2 *fahe2_instance);
 
 /**
  * @brief Creates fahe2_key for an instance of fahe2.
@@ -141,7 +68,7 @@ void fahe2_free(fahe2 *fahe2_instance);
  *
  * @param[in] params An instance of the fahe2 struct @see fahe2 struct:
  */
-fahe2_key fahe2_keygen(int lambda, int m_max, int alpha);
+fahe2_key fahe2_keygen_op(int lambda, int m_max, int alpha);
 
 /**
  * @brief Encrypts a plaintext message into ciphertext.
@@ -170,7 +97,9 @@ fahe2_key fahe2_keygen(int lambda, int m_max, int alpha);
  *
  * @return The encrypted ciphertext. c = n + M. @see variables above.
  */
-BIGNUM *fahe2_encrypt(fahe2_key key, BIGNUM *message, BN_CTX *ctx);
+BIGNUM *fahe2_encrypt_op(fahe2_key key, BIGNUM *message, BN_CTX *ctx);
+
+void *fahe2_thread_encrypt(void *arg);
 /**
  * @brief Encrypts a list of plaintext messages into a list of ciphertext.
  *
@@ -192,8 +121,8 @@ BIGNUM *fahe2_encrypt(fahe2_key key, BIGNUM *message, BN_CTX *ctx);
  *
  * @return The encrypted ciphertext. c = n + M. @see variables above.
  */
-BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
-                            int list_size, BN_CTX *ctx);
+BIGNUM **fahe2_encrypt_list_op(fahe2_key key, BIGNUM **message_list,
+                               int list_size);
 
 /**
  * @brief Decrypts a ciphertext into plaintext message.
@@ -214,7 +143,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
  *
  * @return The decrypted message masked to m_max bits.
  */
-BIGNUM *fahe2_decrypt(fahe2_key key, BIGNUM *ciphertext, BN_CTX *ctx);
+BIGNUM *fahe2_decrypt_op(fahe2_key key, BIGNUM *ciphertext, BN_CTX *ctx);
 /**
  * @brief Decrypts a list of ciphertext into a list of plaintext messages.
  *
@@ -237,7 +166,7 @@ BIGNUM *fahe2_decrypt(fahe2_key key, BIGNUM *ciphertext, BN_CTX *ctx);
  *
  * @return A list of decrypted, masked messages
  */
-BIGNUM **fahe2_decrypt_list(fahe2_key key, BIGNUM **ciphertext_list,
-                            BIGNUM *list_size, BN_CTX *ctx);
+BIGNUM **fahe2_decrypt_list_op(fahe2_key key, BIGNUM **ciphertext_list,
+                               BIGNUM *list_size, BN_CTX *ctx);
 
-#endif  // FAHE2
+#endif  // FAHE2optimized

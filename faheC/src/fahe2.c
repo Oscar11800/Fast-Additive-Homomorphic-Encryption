@@ -316,8 +316,7 @@ BIGNUM *fahe2_encrypt(fahe2_key key, BIGNUM *message, BN_CTX *ctx) {
   return c;
 }
 
-BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list, int list_size,
-                            BN_CTX *ctx) {
+BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list, int list_size, BN_CTX *ctx) {
   log_message(LOG_INFO, "Initializing List Encryption");
   log_message(LOG_DEBUG, "LIST SIZE: %d\n", list_size);
 
@@ -514,4 +513,110 @@ BIGNUM *fahe2_decrypt(fahe2_key key, BIGNUM *ciphertext, BN_CTX *ctx) {
   BN_CTX_free(ctx);
 
   return m_masked;
+}
+
+BIGNUM **fahe2_decrypt_list(fahe2_key key, BIGNUM **ciphertext_list,
+                            BIGNUM *list_size, BN_CTX *ctx) {
+  log_message(LOG_INFO, "Decrypting ciphertext list...");
+
+  // Initialize BIGNUM values
+  BIGNUM *m_full = BN_new();
+  BIGNUM *m_shifted = BN_new();
+
+  if (!m_full || !m_shifted || !ctx) {
+    log_message(LOG_FATAL, "Memory allocation failed\n");
+    exit(EXIT_FAILURE);
+  }
+
+  // Allocate memory for the list of decrypted messages
+  BIGNUM **decrypted_list = malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
+  if (decrypted_list == NULL) {
+    log_message(LOG_FATAL, "Memory allocation for decrypted_list failed\n");
+    BN_free(m_full);
+    BN_free(m_shifted);
+    BN_CTX_free(ctx);
+    return NULL;
+  }
+
+  // Decrypt each ciphertext
+  for (size_t i = 0; i < BN_get_word(list_size); i++) {
+    // Allocate memory for each decrypted message
+    decrypted_list[i] = BN_new();
+    if (!decrypted_list[i]) {
+      log_message(LOG_FATAL, "BN_new failed for index %zu\n", i);
+      //  Free already allocated BIGNUMs
+      for (size_t j = 0; j < i; j++) {
+        BN_free(decrypted_list[j]);
+      }
+      free(decrypted_list);
+      BN_free(m_full);
+      BN_free(m_shifted);
+      BN_CTX_free(ctx);
+      return NULL;
+    }
+
+    // m_full = ciphertext % p
+    if (!BN_mod(m_full, ciphertext_list[i], key.p, ctx)) {
+      log_message(LOG_FATAL, "BN_mod failed for index %zu\n", i);
+      BN_free(decrypted_list[i]);
+      for (size_t j = 0; j < i; j++) {
+        BN_free(decrypted_list[j]);
+      }
+      free(decrypted_list);
+      BN_free(m_full);
+      BN_free(m_shifted);
+      BN_CTX_free(ctx);
+      return NULL;
+    }
+
+    // m_shifted = m_full >> (pos + alpha)
+    if (!BN_rshift(m_shifted, m_full, key.pos + key.alpha)) {
+      log_message(LOG_FATAL, "BN_rshift failed for index %zu\n", i);
+      BN_free(decrypted_list[i]);
+      for (size_t j = 0; j < i; j++) {
+        BN_free(decrypted_list[j]);
+      }
+      free(decrypted_list);
+      BN_free(m_full);
+      BN_free(m_shifted);
+      BN_CTX_free(ctx);
+      return NULL;
+    }
+
+    // Mask the bits to the size of m_max
+    if (!BN_mask_bits(m_shifted, key.m_max)) {
+      log_message(LOG_FATAL, "BN_mask_bits failed for index %zu\n", i);
+      BN_free(decrypted_list[i]);
+      for (size_t j = 0; j < i; j++) {
+        BN_free(decrypted_list[j]);
+      }
+      free(decrypted_list);
+      BN_free(m_full);
+      BN_free(m_shifted);
+      BN_CTX_free(ctx);
+      return NULL;
+    }
+
+    // Copy the masked value to the decrypted message
+    if (!BN_copy(decrypted_list[i], m_shifted)) {
+      log_message(LOG_FATAL, "BN_copy failed for index %zu\n", i);
+      BN_free(decrypted_list[i]);
+      for (size_t j = 0; j < i; j++) {
+        BN_free(decrypted_list[j]);
+      }
+      free(decrypted_list);
+      BN_free(m_full);
+      BN_free(m_shifted);
+      BN_CTX_free(ctx);
+      return NULL;
+    }
+  }
+
+  // Free temporary BIGNUMs and context
+  BN_free(m_full);
+  BN_free(m_shifted);
+  BN_CTX_free(ctx);
+
+  log_message(LOG_INFO, "Ciphertext list sucessfully decrypted");
+  return decrypted_list;
 }

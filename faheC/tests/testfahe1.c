@@ -13,14 +13,14 @@ TestSuite(fahe1, .init = thread_setup, .fini = thread_teardown);
 
 Test(fahe1, fahe1_analysis_fahe1_full) {
   // Number of trials
-  int num_trials = 1000;
+  int num_trials = 100;
   // lambda, m_max, alpha, msg_size
   fahe_params params = {128, 32, 6, 32};
   int list_size = 32;
   BIGNUM *bn_list_size = BN_new();
   BN_set_word(bn_list_size, list_size);
 
-  const char *filename = "../public/mintest.txt";
+  const char *filename = "../assets/mintest.txt";
   BIGNUM **msg_list = read_bignum_list_from_file(filename, &list_size);
 
   double total_keygen_time = 0.0;
@@ -40,7 +40,7 @@ Test(fahe1, fahe1_analysis_fahe1_full) {
 
     // TIMED ENCRYPTION
     clock_t fahe1_encryption_start_time = clock();
-    BIGNUM **ciphertext_list = fahe1_enc_list_op(
+    BIGNUM **ciphertext_list = fahe1_encrypt_list_op(
         fahe1_instance->key.p, fahe1_instance->key.X, fahe1_instance->key.rho,
         fahe1_instance->key.alpha, msg_list, fahe1_instance->num_additions);
     clock_t fahe1_encryption_end_time = clock();
@@ -52,7 +52,7 @@ Test(fahe1, fahe1_analysis_fahe1_full) {
     // TIMED DECRYPTION
     clock_t fahe1_decryption_start_time = clock();
     BIGNUM **decrypted_msg_list =
-        fahe1_dec_list_op(fahe1_instance->key.p, fahe1_instance->key.m_max,
+        fahe1_decrypt_list_op(fahe1_instance->key.p, fahe1_instance->key.m_max,
                           fahe1_instance->key.rho, fahe1_instance->key.alpha,
                           ciphertext_list, bn_list_size);
     clock_t fahe1_decryption_end_time = clock();

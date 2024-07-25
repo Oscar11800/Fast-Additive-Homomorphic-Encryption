@@ -9,7 +9,7 @@ typedef struct {
     int start;
     int end;
     BIGNUM **decrypted_list;
-} DecThreadData;
+} Fahe1DecThreadData;
 
 typedef struct {
     BIGNUM *p;
@@ -20,7 +20,23 @@ typedef struct {
     int start;
     int end;
     BIGNUM **ciphertext_list;
-} EncThreadData;
+} Fahe1EncThreadData;
+
+typedef struct {
+    fahe2_key key;
+    BIGNUM **ciphertext_list;
+    int start;
+    int end;
+    BIGNUM **decrypted_list;
+} Fahe2DecThreadData;
+
+typedef struct {
+    fahe2_key key;
+    BIGNUM **message_list;
+    int start;
+    int end;
+    BIGNUM **ciphertext_list;
+} Fahe2EncThreadData;
 
 void thread_setup(void);
 void thread_teardown(void);

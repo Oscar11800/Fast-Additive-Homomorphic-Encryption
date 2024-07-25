@@ -79,7 +79,7 @@ fahe1_key fahe1_keygen_op(int lambda, int m_max, int alpha) {
   return key;
 }
 
-BIGNUM *fahe1_enc_op(BIGNUM *p, BIGNUM *X, int rho, int alpha,
+BIGNUM *fahe1_encrypt_op(BIGNUM *p, BIGNUM *X, int rho, int alpha,
                      BIGNUM *message) {
   // Initialize BIGNUM values
   BIGNUM *q = NULL;
@@ -114,8 +114,8 @@ BIGNUM *fahe1_enc_op(BIGNUM *p, BIGNUM *X, int rho, int alpha,
 
   return c;
 }
-void *thread_enc_func(void *arg) {
-  EncThreadData *data = (EncThreadData *)arg;
+void *fahe1_thread_encrypt(void *arg) {
+  Fahe1EncThreadData *data = (Fahe1EncThreadData *)arg;
   BN_CTX *ctx = BN_CTX_new();
   BIGNUM *rho_alpha_shift = BN_new();
   BIGNUM *rho_alpha = BN_new();
@@ -154,10 +154,10 @@ void *thread_enc_func(void *arg) {
   return NULL;
 }
 
-BIGNUM **fahe1_enc_list_op(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM **message_list, BIGNUM *list_size) {
+BIGNUM **fahe1_encrypt_list_op(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM **message_list, BIGNUM *list_size) {
     int num_threads = 1;
     pthread_t threads[num_threads];
-    EncThreadData thread_data[num_threads];
+    Fahe1EncThreadData thread_data[num_threads];
 
     BIGNUM **ciphertext_list = malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
     int list_size_int = BN_get_word(list_size);
@@ -173,7 +173,7 @@ BIGNUM **fahe1_enc_list_op(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM **me
         thread_data[i].start = i * chunk_size;
         thread_data[i].end = (i == num_threads - 1) ? list_size_int : (i + 1) * chunk_size;
 
-        pthread_create(&threads[i], NULL, thread_enc_func, &thread_data[i]);
+        pthread_create(&threads[i], NULL, fahe1_thread_encrypt, &thread_data[i]);
     }
 
     for (int i = 0; i < num_threads; i++) {
@@ -183,7 +183,7 @@ BIGNUM **fahe1_enc_list_op(BIGNUM *p, BIGNUM *X, int rho, int alpha, BIGNUM **me
     return ciphertext_list;
 }
 
-BIGNUM *fahe1_dec_op(BIGNUM *p, int m_max, int rho, int alpha,
+BIGNUM *fahe1_decrypt_op(BIGNUM *p, int m_max, int rho, int alpha,
                      BIGNUM *ciphertext) {
   BIGNUM *m_full = BN_new();
   BIGNUM *m_shifted = BN_new();
@@ -203,8 +203,8 @@ BIGNUM *fahe1_dec_op(BIGNUM *p, int m_max, int rho, int alpha,
   return m_masked;
 }
 
-void *thread_dec_func(void *arg) {
-    DecThreadData *data = (DecThreadData *)arg;
+void *fahe1_thread_dec(void *arg) {
+    Fahe1DecThreadData *data = (Fahe1DecThreadData *)arg;
     BN_CTX *ctx = BN_CTX_new();
     BIGNUM *m_full = BN_new();
     BIGNUM *m_shifted = BN_new();
@@ -225,10 +225,10 @@ void *thread_dec_func(void *arg) {
     return NULL;
 }
 
-BIGNUM **fahe1_dec_list_op(BIGNUM *p, int m_max, int rho, int alpha, BIGNUM **ciphertext_list, BIGNUM *list_size) {
+BIGNUM **fahe1_decrypt_list_op(BIGNUM *p, int m_max, int rho, int alpha, BIGNUM **ciphertext_list, BIGNUM *list_size) {
     int num_threads = 1;
     pthread_t threads[num_threads];
-    DecThreadData thread_data[num_threads];
+    Fahe1DecThreadData thread_data[num_threads];
 
     BIGNUM **decrypted_list = malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
     int list_size_int = BN_get_word(list_size);
@@ -244,7 +244,7 @@ BIGNUM **fahe1_dec_list_op(BIGNUM *p, int m_max, int rho, int alpha, BIGNUM **ci
         thread_data[i].start = i * chunk_size;
         thread_data[i].end = (i == num_threads - 1) ? list_size_int : (i + 1) * chunk_size;
 
-        pthread_create(&threads[i], NULL, thread_dec_func, &thread_data[i]);
+        pthread_create(&threads[i], NULL, fahe1_thread_dec, &thread_data[i]);
     }
 
     for (int i = 0; i < num_threads; i++) {

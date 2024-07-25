@@ -180,7 +180,7 @@ Test(fahe1, fahe1_full_multiple) {
     cr_assert_not_null(message_list, "generate_message_list failed");
 
     // Encrypt the message list
-    BIGNUM **ciphertext_list = fahe1_enc_list_op(
+    BIGNUM **ciphertext_list = fahe1_encrypt_list_op(
         fahe1_instance->key.p, fahe1_instance->key.X, fahe1_instance->key.rho,
         fahe1_instance->key.alpha, message_list, fahe1_instance->num_additions);
     cr_assert_not_null(ciphertext_list, "fahe1_encrypt_list failed");
@@ -203,10 +203,10 @@ Test(fahe1, fahe1_full_multiple) {
     // fclose(file);
 
     // Decrypt the message list
-    // BIGNUM **decrypted_msg_list = fahe1_dec_list_op(
+    // BIGNUM **decrypted_msg_list = fahe1_decrypt_list_op(
     //     fahe1_instance->key.p, fahe1_instance->key.m_max, fahe1_instance->key.rho,
     //     fahe1_instance->key.alpha, ciphertext_list, fahe1_instance->num_additions);
-    // cr_assert_not_null(decrypted_msg_list, "fahe1_dec_list_op failed");
+    // cr_assert_not_null(decrypted_msg_list, "fahe1_decrypt_list_op failed");
 
     // // Compare the original message with the decrypted message
     // for (unsigned int i = 0; i < BN_get_word(fahe1_instance->num_additions); i++) {

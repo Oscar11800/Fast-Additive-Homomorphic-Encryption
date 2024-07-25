@@ -15,20 +15,22 @@ LDFLAGS = -lm -lcriterion -lssl -lcrypto
 SRC_FILES = $(SRC_DIR)/fahe1.c \
 			$(SRC_DIR)/fahe2.c \
             $(SRC_DIR)/fahe1optimized.c \
+			$(SRC_DIR)/fahe2optimized.c \
             $(SRC_DIR)/helper.c \
             $(SRC_DIR)/logger.c \
             $(SRC_DIR)/threads.c
 
 TEST_FILES = $(TEST_DIR)/phase1.c \
 			 $(TEST_DIR)/phase2.c \
-             $(TEST_DIR)/testfahe1.c
+             $(TEST_DIR)/testfahe1.c \
+			 $(TEST_DIR)/testfahe2.c
 
 # Object files
 SRC_OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRC_FILES))
 TEST_OBJS = $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/%.o, $(TEST_FILES))
 
 # Targets
-TARGETS = phase1 phase2 testfahe1 
+TARGETS = phase1 phase2 testfahe1 testfahe2
 
 # Default Target
 all: $(TARGETS)
@@ -44,6 +46,10 @@ testfahe1: $(BUILD_DIR)/testfahe1.o $(SRC_OBJS)
 # Build phase2 executable
 phase2: $(BUILD_DIR)/phase2.o $(SRC_OBJS)
 	@$(CC) -o $(BUILD_DIR)/$@ $(BUILD_DIR)/phase2.o $(SRC_OBJS) $(LDFLAGS)
+
+# Build testfahe2 executable for running tests
+testfahe2: $(BUILD_DIR)/testfahe2.o $(SRC_OBJS)
+	@$(CC) -o $(BUILD_DIR)/$@ $(BUILD_DIR)/testfahe2.o $(SRC_OBJS) $(LDFLAGS)
 
 # Compile source files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
@@ -67,7 +73,7 @@ run_phase1: phase1
 	@./$(BUILD_DIR)/phase1
 	@$(MAKE) --no-print-directory clean
 
-# Build and run the testfahe1 executable for running tests
+# Build and run the testfahe1 executable for running fahe1 tests
 run_fahe1_tests: testfahe1
 	@./$(BUILD_DIR)/testfahe1
 	@$(MAKE) --no-print-directory clean
@@ -77,4 +83,9 @@ run_phase2: phase2
 	@./$(BUILD_DIR)/phase2
 	@$(MAKE) --no-print-directory clean
 
-.PHONY: all clean post_build run_phase1 run_phase_2 run_fahe1_tests
+# Build and run the testfahe1 executable for running fahe2 tests
+run_fahe2_tests: testfahe2
+	@./$(BUILD_DIR)/testfahe2
+	@$(MAKE) --no-print-directory clean
+
+.PHONY: all clean post_build run_phase1 run_phase_2 run_fahe1_tests run_fahe2_tests
