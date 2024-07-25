@@ -451,14 +451,14 @@ BIGNUM *fahe1_decrypt(BIGNUM *p, int m_max, int rho, int alpha,
     log_message(LOG_FATAL, "BN_mod failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: m_full = %c\n", BN_bn2dec(m_full));
+  log_message(LOG_DEBUG, "Debug: m_full = %s\n", BN_bn2dec(m_full));
 
   // m_shifted = m_full >> (rho + alpha)
   if (!BN_rshift(m_shifted, m_full, rho + alpha)) {
     log_message(LOG_FATAL, "BN_rshift failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: m_shifted before masking = %c\n",
+  log_message(LOG_DEBUG, "Debug: m_shifted before masking = %s\n",
               BN_bn2dec(m_shifted));
 
   // Mask the bits to the size of m_max
@@ -466,7 +466,7 @@ BIGNUM *fahe1_decrypt(BIGNUM *p, int m_max, int rho, int alpha,
     log_message(LOG_FATAL, "BN_mask_bits failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug:  m_shifted after masking = %c\n",
+  log_message(LOG_DEBUG, "Debug:  m_shifted after masking = %s\n",
               BN_bn2dec(m_masked));
 
   // Assign the masked value to m_masked
@@ -474,7 +474,7 @@ BIGNUM *fahe1_decrypt(BIGNUM *p, int m_max, int rho, int alpha,
     log_message(LOG_FATAL, "BN_copy failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: m_masked after copying = %c\n",
+  log_message(LOG_DEBUG, "Debug: m_masked after copying = %s\n",
               BN_bn2dec(m_masked));
 
   // Free allocated memory

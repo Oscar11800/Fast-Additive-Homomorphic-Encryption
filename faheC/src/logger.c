@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 // Default log level (can be changed externally)
-LogLevel current_log_level = LOG_FATAL;
+LogLevel current_log_level = LOG_DEBUG;
 
 #define RESET_COLOR "\033[0m"
 #define RED_COLOR "\033[31m"

@@ -214,8 +214,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
  *
  * @return The decrypted message masked to m_max bits.
  */
-BIGNUM *fahe2_decrypt(BIGNUM *p, int m_max, int rho, int alpha,
-                      BIGNUM *ciphertext);
+BIGNUM *fahe2_decrypt(fahe2_key key, BIGNUM *ciphertext, BN_CTX *ctx);
 /**
  * @brief Decrypts a list of ciphertext into a list of plaintext messages.
  *

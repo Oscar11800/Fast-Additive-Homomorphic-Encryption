@@ -241,7 +241,7 @@ BIGNUM *fahe2_encrypt(fahe2_key key, BIGNUM *message, BN_CTX *ctx) {
   }
   log_message(LOG_DEBUG, "q = %s\n", BN_bn2dec(q));
   BN_free(X_plus_one);
-log_message(LOG_DEBUG, "POS: %c", key.pos);
+  log_message(LOG_DEBUG, "POS: %c", key.pos);
   // Generate noise 2
   noise2 = rand_bits_below((int)(key.lambda - key.pos));
   if (!noise2) {
@@ -316,9 +316,10 @@ log_message(LOG_DEBUG, "POS: %c", key.pos);
   return c;
 }
 
-BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
-                            int list_size, BN_CTX *ctx) {
+BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list, int list_size,
+                            BN_CTX *ctx) {
   log_message(LOG_INFO, "Initializing List Encryption");
+  log_message(LOG_DEBUG, "LIST SIZE: %d\n", list_size);
 
   // Initialize BIGNUM values
   BIGNUM *q = NULL;
@@ -383,6 +384,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
     }
     log_message(LOG_DEBUG, "q = %s\n", BN_bn2dec(q));
 
+    // Generate noise 2
     noise2 = rand_bits_below(key.lambda - key.pos);
     if (!noise2) {
       log_message(LOG_FATAL, "rand_bits_below failed\n");
@@ -418,13 +420,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
         "(noise2 << (pos + m_max + alpha)) + (message << (pos + alpha)) = %s\n",
         BN_bn2dec(temp));
 
-    noise1 = rand_bits_below(key.pos);
-    if (!noise1) {
-      log_message(LOG_FATAL, "rand_bits_below failed for noise1\n");
-      exit(EXIT_FAILURE);
-    }
-
-    if (!BN_add(M, temp, noise1)) {
+    if (!BN_add(M, temp, rand_bits_below(key.pos))) {
       log_message(LOG_FATAL, "BN_add failed for M\n");
       exit(EXIT_FAILURE);
     }
@@ -455,13 +451,11 @@ BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
       free(ciphertext_list);
       exit(EXIT_FAILURE);
     }
-
-    // Free temporary BIGNUMs for this iteration
-    BN_free(q);
-    BN_free(noise2);
   }
 
   // Free other temporary BIGNUMs and context
+  BN_free(q);
+  BN_free(noise2);
   BN_free(X_plus_one);
   BN_free(M);
   BN_free(n);
@@ -471,4 +465,53 @@ BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list,
   BN_free(temp);
 
   return ciphertext_list;
+}
+
+BIGNUM *fahe2_decrypt(fahe2_key key, BIGNUM *ciphertext, BN_CTX *ctx) {
+  BIGNUM *m_full = BN_new();
+  BIGNUM *m_shifted = BN_new();
+  BIGNUM *m_masked = BN_new();
+
+  if (!m_full || !m_shifted || !m_masked || !ctx) {
+    log_message(LOG_FATAL, "Memory allocation failed\n");
+    exit(EXIT_FAILURE);
+  }
+
+  // m_full = ciphertext % p
+  if (!BN_mod(m_full, ciphertext, key.p, ctx)) {
+    log_message(LOG_FATAL, "BN_mod failed\n");
+    exit(EXIT_FAILURE);
+  }
+  log_message(LOG_DEBUG, "Debug: m_full = %s\n", BN_bn2dec(m_full));
+
+  // m_shifted = m_full >> (pos + alpha)
+  if (!BN_rshift(m_shifted, m_full, key.pos + key.alpha)) {
+    log_message(LOG_FATAL, "BN_rshift failed\n");
+    exit(EXIT_FAILURE);
+  }
+  log_message(LOG_DEBUG, "Debug: m_shifted before masking = %s\n",
+              BN_bn2dec(m_shifted));
+
+  // Mask the bits to the size of m_max
+  if (!BN_mask_bits(m_shifted, key.m_max)) {
+    log_message(LOG_FATAL, "BN_mask_bits failed\n");
+    exit(EXIT_FAILURE);
+  }
+  log_message(LOG_DEBUG, "Debug:  m_shifted after masking = %s\n",
+              BN_bn2dec(m_masked));
+
+  // Assign the masked value to m_masked
+  if (!BN_copy(m_masked, m_shifted)) {
+    log_message(LOG_FATAL, "BN_copy failed\n");
+    exit(EXIT_FAILURE);
+  }
+  log_message(LOG_DEBUG, "Debug: m_masked after copying = %s\n",
+              BN_bn2dec(m_masked));
+
+  // Free allocated memory
+  BN_free(m_full);
+  BN_free(m_shifted);
+  BN_CTX_free(ctx);
+
+  return m_masked;
 }
