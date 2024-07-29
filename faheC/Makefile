@@ -14,8 +14,6 @@ LDFLAGS = -lm -lcriterion -lssl -lcrypto
 # Manually specify source and header files to include
 SRC_FILES = $(SRC_DIR)/fahe1.c \
 			$(SRC_DIR)/fahe2.c \
-            $(SRC_DIR)/fahe1optimized.c \
-			$(SRC_DIR)/fahe2optimized.c \
             $(SRC_DIR)/helper.c \
             $(SRC_DIR)/logger.c \
             $(SRC_DIR)/threads.c

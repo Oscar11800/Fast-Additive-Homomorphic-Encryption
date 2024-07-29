@@ -37,8 +37,6 @@
  * @see fahe2.h for the documetation of the functions implemented in this file.
  * @see helper.h for additional helper functions such as random primes
  * @see logger.h for conditional logging functionalities.
- * @see fahe2optimized.c for the fastest (not as safe) version of
- * these functions without memory checks nor logging.
  */
 #include "fahe2.h"
 

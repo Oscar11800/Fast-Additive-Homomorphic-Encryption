@@ -361,14 +361,14 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
       log_message(LOG_FATAL, "rand_bits_below failed\n");
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_FATAL, "Debug: noise = %s\n", BN_bn2dec(noise));
+    log_message(LOG_DEBUG, "Debug: noise = %s\n", BN_bn2dec(noise));
 
     // calculating M...
     if (!BN_set_word(rho_alpha, rho + alpha)) {
       log_message(LOG_FATAL, "BN_set_word failed\n");
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_FATAL, "Debug: rho + alpha = %s\n", BN_bn2dec(rho_alpha));
+    log_message(LOG_DEBUG, "Debug: rho + alpha = %s\n", BN_bn2dec(rho_alpha));
 
     // Creating ciphertext...
     ciphertext_list[i] = BN_new();
@@ -389,7 +389,7 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
       free(ciphertext_list);
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_FATAL, "Debug: message << (rho + alpha) = %s\n",
+    log_message(LOG_DEBUG, "Debug: message << (rho + alpha) = %s\n",
                 BN_bn2dec(rho_alpha_shift));
 
     // M = (message << (rho + alpha)) + noise
@@ -397,14 +397,14 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
       log_message(LOG_FATAL, "BN_add for M failed\n");
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_FATAL, "Debug: M = %s\n", BN_bn2dec(M));
+    log_message(LOG_DEBUG, "Debug: M = %s\n", BN_bn2dec(M));
 
     // n = p * q
     if (!BN_mul(n, p, q, ctx)) {
       log_message(LOG_FATAL, "BN_mul failed\n");
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_FATAL, "Debug: n = %s\n", BN_bn2dec(n));
+    log_message(LOG_DEBUG, "Debug: n = %s\n", BN_bn2dec(n));
 
     // c = n + M
     if (!BN_add(c, n, M)) {

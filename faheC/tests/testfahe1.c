@@ -4,7 +4,6 @@
 #include <time.h>
 
 #include "fahe1.h"
-#include "fahe1optimized.h"
 #include "helper.h"
 #include "logger.h"
 #include "threads.h"
@@ -30,7 +29,7 @@ Test(fahe1, fahe1_analysis_fahe1_full) {
   for (int trial = 0; trial < num_trials; trial++) {
     // TIMED KEYGEN
     clock_t fahe1_keygen_start_time = clock();
-    fahe1 *fahe1_instance = fahe1_init_op(&params);
+    fahe1 *fahe1_instance = fahe1_init(&params);
     clock_t fahe1_keygen_end_time = clock();
 
     double fahe1_keygen_time =
@@ -40,7 +39,7 @@ Test(fahe1, fahe1_analysis_fahe1_full) {
 
     // TIMED ENCRYPTION
     clock_t fahe1_encryption_start_time = clock();
-    BIGNUM **ciphertext_list = fahe1_encrypt_list_op(
+    BIGNUM **ciphertext_list = fahe1_encrypt_list(
         fahe1_instance->key.p, fahe1_instance->key.X, fahe1_instance->key.rho,
         fahe1_instance->key.alpha, msg_list, fahe1_instance->num_additions);
     clock_t fahe1_encryption_end_time = clock();
@@ -52,9 +51,9 @@ Test(fahe1, fahe1_analysis_fahe1_full) {
     // TIMED DECRYPTION
     clock_t fahe1_decryption_start_time = clock();
     BIGNUM **decrypted_msg_list =
-        fahe1_decrypt_list_op(fahe1_instance->key.p, fahe1_instance->key.m_max,
-                          fahe1_instance->key.rho, fahe1_instance->key.alpha,
-                          ciphertext_list, bn_list_size);
+        fahe1_decrypt_list(fahe1_instance->key.p, fahe1_instance->key.m_max,
+                           fahe1_instance->key.rho, fahe1_instance->key.alpha,
+                           ciphertext_list, bn_list_size);
     clock_t fahe1_decryption_end_time = clock();
     double fahe1_decryption_time =
         (double)(fahe1_decryption_end_time - fahe1_decryption_start_time) /
@@ -68,27 +67,16 @@ Test(fahe1, fahe1_analysis_fahe1_full) {
     }
     free(ciphertext_list);
     free(decrypted_msg_list);
-    fahe1_free_op(fahe1_instance);
+    fahe1_free(fahe1_instance);
   }
 
   // Calculate averages
   double avg_keygen_time = total_keygen_time / num_trials;
   double avg_encryption_time = total_encryption_time / num_trials;
   double avg_decryption_time = total_decryption_time / num_trials;
-  printf(
-      "FAHE1 Test in C: alpha: %d \tlambda: %d \tm_max:%d\tmsg_size%d\tnum "
-      "trials:%d\n",
-      params.alpha, params.msg_size, params.m_max, params.msg_size, num_trials);
-
-  printf("Average (per trial) Keygen time: %.6f seconds\n", avg_keygen_time);
-  printf("Average Encryption time: %.6f seconds\n", avg_encryption_time);
-  printf("Average Decryption time: %.6f seconds\n", avg_decryption_time);
-
-  printf(
-      "Total (sum of all messages from all trials) Keygen time: %.6f seconds\n",
-      total_keygen_time);
-  printf("Total Encryption time: %.6f seconds\n", total_encryption_time);
-  printf("Total Decryption time: %.6f seconds\n", total_decryption_time);
+  print_test_table("FAHE1 Test", params, num_trials, avg_keygen_time,
+                   avg_encryption_time, avg_decryption_time, total_keygen_time,
+                   total_encryption_time, total_decryption_time);
 
   // Free the last instance of bn_list_size and msg_list
   BN_free(bn_list_size);

@@ -26,10 +26,10 @@ BIGNUM *rand_bignum_below(const BIGNUM *upper_bound) {
 }
 
 int rand_int_below(int x) {
-    if (x <= 0) {
-        return 0;
-    }
-    return rand() % (x + 1);
+  if (x <= 0) {
+    return 0;
+  }
+  return rand() % (x + 1);
 }
 
 BIGNUM *rand_bits_below(unsigned int bitlength) {
@@ -93,10 +93,10 @@ BIGNUM **generate_message_list(unsigned int message_size,
 }
 
 void free_message_list(BIGNUM **message_list, int list_size) {
-    for (int i = 0; i < list_size; i++) {
-        BN_free(message_list[i]);
-    }
-    free(message_list);
+  for (int i = 0; i < list_size; i++) {
+    BN_free(message_list[i]);
+  }
+  free(message_list);
 }
 
 unsigned int bit_length(uint64_t num) {
@@ -273,4 +273,39 @@ BIGNUM **read_bignum_list_from_file(const char *filename, int *num_elements) {
 
   free(file_content);
   return bignum_list;
+}
+
+void print_test_table(char *test_name, fahe_params params, int num_trials,
+                      double avg_keygen_time, double avg_encryption_time,
+                      double avg_decryption_time, double total_keygen_time,
+                      double total_encryption_time,
+                      double total_decryption_time) {
+  printf("FAHE1 Test in C:\n");
+  printf("-------------------------------------------------------------\n");
+  printf("| %-20s | %-20s |\n", "Parameter", "Value");
+  printf("-------------------------------------------------------------\n");
+  printf("| %-20s | %-20d |\n", "alpha", params.alpha);
+  printf("| %-20s | %-20d |\n", "lambda", params.lambda);
+  printf("| %-20s | %-20d |\n", "m_max", params.m_max);
+  printf("| %-20s | %-20d |\n", "msg_size", params.msg_size);
+  printf("| %-20s | %-20d |\n", "num trials", num_trials);
+  printf("-------------------------------------------------------------\n\n");
+
+  printf("Timing Results (seconds):\n");
+  printf("-------------------------------------------------------------\n");
+  printf("| %-40s | %-15s |\n", "Operation", "Average Time");
+  printf("-------------------------------------------------------------\n");
+  printf("| %-40s | %-15.6f |\n", "Keygen time (per trial)", avg_keygen_time);
+  printf("| %-40s | %-15.6f |\n", "Encryption time (per trial)",
+         avg_encryption_time);
+  printf("| %-40s | %-15.6f |\n", "Decryption time (per trial)",
+         avg_decryption_time);
+  printf("-------------------------------------------------------------\n\n");
+
+  printf("Total Time (sum of all messages from all trials):\n");
+  printf("-------------------------------------------------------------\n");
+  printf("| %-40s | %-15.6f |\n", "Keygen time", total_keygen_time);
+  printf("| %-40s | %-15.6f |\n", "Encryption time", total_encryption_time);
+  printf("| %-40s | %-15.6f |\n", "Decryption time", total_decryption_time);
+  printf("-------------------------------------------------------------\n");
 }
