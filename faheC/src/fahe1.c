@@ -294,7 +294,6 @@ BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
 
   return c;
 }
-
 BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
                             BIGNUM **message_list, BIGNUM *list_size) {
   log_message(LOG_INFO, "Initializing List Encryption");
@@ -310,15 +309,11 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
   BN_CTX *ctx = BN_CTX_new();
 
   BIGNUM **ciphertext_list = malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
-  if (ciphertext_list == NULL) {
-    log_message(LOG_FATAL, "Memory allocation failed\n");
-    return NULL;
-  }
-  if (!M || !n || !c || !rho_alpha_shift || !rho_alpha || !ctx) {
+  if (!ciphertext_list || !M || !n || !c || !rho_alpha_shift || !rho_alpha ||
+      !ctx) {
     log_message(LOG_FATAL, "Memory allocation failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: Initialized BIGNUM variables\n");
 
   // q < X + 1
   BIGNUM *X_plus_one = BN_new();
@@ -326,103 +321,62 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
     log_message(LOG_FATAL, "BN_new for X_plus_one failed\n");
     exit(EXIT_FAILURE);
   }
-  log_message(LOG_DEBUG, "Debug: BN_new for X_plus_one succeeded\n");
-  if (!X) {
-    log_message(LOG_FATAL, "Input BIGNUM X is NULL\n");
-    exit(EXIT_FAILURE);
-  }
-  log_message(LOG_DEBUG, "Debug: Input BIGNUM X is not NULL\n");
-  log_message(LOG_DEBUG, "Debug: X = %s\n", BN_bn2dec(X));
-  if (!BN_copy(X_plus_one, X)) {
-    log_message(LOG_FATAL, "BN_copy failed\n");
-    exit(EXIT_FAILURE);
-  }
-  log_message(LOG_DEBUG, "Debug: BN_copy succeeded\n");
-  if (!BN_add_word(X_plus_one, 1)) {
-    log_message(LOG_FATAL, "BN_add_word failed\n");
-    exit(EXIT_FAILURE);
-  }
-  log_message(LOG_DEBUG, "Debug: BN_add_word succeeded\n");
-  log_message(LOG_DEBUG, "Debug: X + 1 = %s\n", BN_bn2dec(X_plus_one));
 
-  // loop through each message and perform q, noise, M, n, c calculations
+  if (!BN_copy(X_plus_one, X) || !BN_add_word(X_plus_one, 1)) {
+    log_message(LOG_FATAL, "Initialization of X_plus_one failed\n");
+    exit(EXIT_FAILURE);
+  }
+
+  // Pre-compute rho + alpha
+  if (!BN_set_word(rho_alpha, rho + alpha)) {
+    log_message(LOG_FATAL, "BN_set_word failed\n");
+    exit(EXIT_FAILURE);
+  }
+
+  // Loop through each message and perform calculations
   for (int i = 0; i < BN_get_word(list_size); i++) {
-    // q -> [0,X]
     q = rand_bignum_below(X_plus_one);
-    if (!q) {
-      log_message(LOG_FATAL, "rand_bignum_below failed\n");
-      exit(EXIT_FAILURE);
-    }
-    log_message(LOG_DEBUG, "Debug: q = %s\n", BN_bn2dec(q));
-
-    // noise > [0, 1^rho] bits
     noise = rand_bits_below(rho);
-    if (!noise) {
-      log_message(LOG_FATAL, "rand_bits_below failed\n");
-      exit(EXIT_FAILURE);
-    }
-    log_message(LOG_DEBUG, "Debug: noise = %s\n", BN_bn2dec(noise));
 
-    // calculating M...
-    if (!BN_set_word(rho_alpha, rho + alpha)) {
-      log_message(LOG_FATAL, "BN_set_word failed\n");
-      exit(EXIT_FAILURE);
-    }
-    log_message(LOG_DEBUG, "Debug: rho + alpha = %s\n", BN_bn2dec(rho_alpha));
-
-    // Creating ciphertext...
-    ciphertext_list[i] = BN_new();
-    if (ciphertext_list[i] == NULL) {
-      log_message(LOG_FATAL, "BN_new failed for index %d\n", i);
-      for (int j = 0; j < i; j++) {
-        BN_free(ciphertext_list[j]);
-      }
-      free(ciphertext_list);
+    if (!q || !noise) {
+      log_message(LOG_FATAL, "Random number generation failed\n");
       exit(EXIT_FAILURE);
     }
 
+    // Calculate message << (rho + alpha)
     if (!BN_lshift(rho_alpha_shift, message_list[i], rho + alpha)) {
       log_message(LOG_FATAL, "BN_lshift failed\n");
-      for (int j = 0; j <= i; j++) {
-        BN_free(ciphertext_list[j]);
-      }
-      free(ciphertext_list);
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_DEBUG, "Debug: message << (rho + alpha) = %s\n",
-                BN_bn2dec(rho_alpha_shift));
 
     // M = (message << (rho + alpha)) + noise
     if (!BN_add(M, rho_alpha_shift, noise)) {
       log_message(LOG_FATAL, "BN_add for M failed\n");
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_DEBUG, "Debug: M = %s\n", BN_bn2dec(M));
 
     // n = p * q
     if (!BN_mul(n, p, q, ctx)) {
       log_message(LOG_FATAL, "BN_mul failed\n");
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_DEBUG, "Debug: n = %s\n", BN_bn2dec(n));
 
     // c = n + M
     if (!BN_add(c, n, M)) {
       log_message(LOG_FATAL, "BN_add for c failed\n");
       exit(EXIT_FAILURE);
     }
-    log_message(LOG_DEBUG, "Debug: c = %s\n", BN_bn2dec(c));
 
-    if (!BN_copy(ciphertext_list[i], c)) {
-      log_message(LOG_FATAL, "BN_copy failed for ciphertext_list[%d]\n", i);
+    ciphertext_list[i] = BN_dup(c);
+    if (!ciphertext_list[i]) {
+      log_message(LOG_FATAL, "BN_dup failed\n");
       exit(EXIT_FAILURE);
     }
-
-    BN_free(q);
-    BN_free(noise);
   }
 
   // Free temporary BIGNUMs and context
+  BN_free(q);
+  BN_free(noise);
   BN_free(X_plus_one);
   BN_free(M);
   BN_free(n);
@@ -433,7 +387,6 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
 
   return ciphertext_list;
 }
-
 BIGNUM *fahe1_decrypt(BIGNUM *p, int m_max, int rho, int alpha,
                       BIGNUM *ciphertext) {
   BIGNUM *m_full = BN_new();
