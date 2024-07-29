@@ -6,7 +6,6 @@
 #include "fahe2.h"
 #include "helper.h"
 #include "logger.h"
-#include "threads.h"
 
 // TestSuite(fahe2, .init = thread_setup, .fini = thread_teardown);
 

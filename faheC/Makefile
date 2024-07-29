@@ -16,8 +16,7 @@ SRC_FILES = $(SRC_DIR)/fahe1.c \
 			$(SRC_DIR)/fahe2.c \
             $(SRC_DIR)/helper.c \
             $(SRC_DIR)/logger.c \
-            $(SRC_DIR)/threads.c
-
+			
 TEST_FILES = $(TEST_DIR)/phase1.c \
 			 $(TEST_DIR)/phase2.c \
              $(TEST_DIR)/testfahe1.c \

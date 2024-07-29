@@ -6,9 +6,6 @@
 #include "fahe1.h"
 #include "helper.h"
 #include "logger.h"
-#include "threads.h"
-
-TestSuite(fahe1, .init = thread_setup, .fini = thread_teardown);
 
 Test(fahe1, fahe1_analysis_fahe1_full) {
   // Number of trials

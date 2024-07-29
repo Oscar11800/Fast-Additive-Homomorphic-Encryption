@@ -12,7 +12,6 @@
 #include "fahe1.h"
 #include "helper.h"
 #include "logger.h"
-#include "threads.h"
 
 fahe1 *fahe1_init_op(const fahe_params *params) {
   fahe1 *fahe1_instance = (fahe1 *)malloc(sizeof(fahe1));
