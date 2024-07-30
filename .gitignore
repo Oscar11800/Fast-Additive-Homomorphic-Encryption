@@ -1,3 +1,9 @@
+# Visual Studio
+.vs/
+
+# Visual Studio Code
+.vscode/
+
 # Compiled object files
 *.o
 
