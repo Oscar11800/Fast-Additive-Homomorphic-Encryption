@@ -1,5 +1,5 @@
 #include <openssl/bn.h>
-#include "fahe2.h"
+#include "fahe2.cuh"
 
 BIGNUM *rand_bignum_below(const BIGNUM *upper_bound);
 int rand_int_below(int x);
