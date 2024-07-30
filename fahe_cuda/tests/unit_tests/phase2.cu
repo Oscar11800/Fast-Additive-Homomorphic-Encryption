@@ -3,9 +3,9 @@
 #include <openssl/bn.h>
 #include <stdio.h>
 
-#include "fahe2.h"
-#include "helper.h"
-#include "logger.h"
+#include "fahe2.cuh"
+#include "helper.cuh"
+#include "logger.cuh"
 
 // Phase 1 Tests --------------
 

@@ -38,11 +38,10 @@
  * @see helper.h for additional helper functions such as random primes
  * @see logger.h for conditional logging functionalities.
  */
-#include "fahe2.cuh"
-
 #include <math.h>
 #include <openssl/bn.h>
 
+#include "fahe2.cuh"
 #include "helper.cuh"
 #include "logger.cuh"
 
@@ -109,7 +108,8 @@ fahe2_key fahe2_keygen(int lambda, int m_max, int alpha) {
   int rho = lambda + alpha + m_max;
   key.rho = rho;
   int eta = rho + alpha;
-  int gamma = (int)(rho / log2(rho) * ((eta - rho) * (eta - rho)));
+  int gamma =
+      (int)(rho / log2(static_cast<double>(rho)) * ((eta - rho) * (eta - rho)));
   log_message(LOG_DEBUG, "GAMMA: %d\n", gamma);
 
   // Generate a large prime p
@@ -314,7 +314,8 @@ BIGNUM *fahe2_encrypt(fahe2_key key, BIGNUM *message, BN_CTX *ctx) {
   return c;
 }
 
-BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list, int list_size, BN_CTX *ctx) {
+BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list, int list_size,
+                            BN_CTX *ctx) {
   log_message(LOG_INFO, "Initializing List Encryption");
   log_message(LOG_DEBUG, "LIST SIZE: %d\n", list_size);
 
@@ -366,7 +367,7 @@ BIGNUM **fahe2_encrypt_list(fahe2_key key, BIGNUM **message_list, int list_size,
   }
   log_message(LOG_DEBUG, "X+1 = %s\n", BN_bn2dec(X_plus_one));
 
-  BIGNUM **ciphertext_list = (BIGNUM**)malloc(list_size * sizeof(BIGNUM *));
+  BIGNUM **ciphertext_list = (BIGNUM **)malloc(list_size * sizeof(BIGNUM *));
   if (ciphertext_list == NULL) {
     log_message(LOG_FATAL, "Memory allocation failed\n");
     return NULL;
@@ -527,7 +528,8 @@ BIGNUM **fahe2_decrypt_list(fahe2_key key, BIGNUM **ciphertext_list,
   }
 
   // Allocate memory for the list of decrypted messages
-  BIGNUM **decrypted_list = (BIGNUM**)malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
+  BIGNUM **decrypted_list =
+      (BIGNUM **)malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
   if (decrypted_list == NULL) {
     log_message(LOG_FATAL, "Memory allocation for decrypted_list failed\n");
     BN_free(m_full);

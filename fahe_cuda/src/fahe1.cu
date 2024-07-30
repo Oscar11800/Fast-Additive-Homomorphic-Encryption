@@ -41,11 +41,10 @@
  * these functions without memory checks nor logging.
  */
 
-#include "fahe1.cuh"
-
 #include <math.h>
 #include <openssl/bn.h>
 
+#include "fahe1.cuh"
 #include "helper.cuh"
 #include "logger.cuh"
 
@@ -111,7 +110,8 @@ fahe1_key fahe1_keygen(int lambda, int m_max, int alpha) {
   int rho = lambda;
   key.rho = rho;
   double eta = rho + (2 * alpha) + m_max;
-  int gamma = (int)(rho / log2(rho) * ((eta - rho) * (eta - rho)));
+  int gamma =
+      (int)(rho / log2(static_cast<double>(rho)) * ((eta - rho) * (eta - rho)));
   log_message(LOG_DEBUG, "GAMMA: %d\n", gamma);
 
   // Generate a large prime p
@@ -294,85 +294,76 @@ BIGNUM *fahe1_encrypt(BIGNUM *p, BIGNUM *X, int rho, int alpha,
 
   return c;
 }
-BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
-                            BIGNUM **message_list, BIGNUM *list_size) {
-  log_message(LOG_INFO, "Initializing List Encryption");
+__global__ void encrypt_kernel(BIGNUM *p, BIGNUM *X, int rho, int alpha,
+                               BIGNUM **message_list, BIGNUM *list_size,
+                               BIGNUM **ciphertext_list) {
+  unsigned long long i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i >= BN_get_word(list_size)) return;
 
   // Initialize BIGNUM values
-  BIGNUM *q = NULL;
-  BIGNUM *noise = NULL;
+  BN_CTX *ctx = BN_CTX_new();
+  BIGNUM *q = BN_new();
+  BIGNUM *noise = BN_new();
   BIGNUM *M = BN_new();
   BIGNUM *n = BN_new();
   BIGNUM *c = BN_new();
   BIGNUM *rho_alpha_shift = BN_new();
   BIGNUM *rho_alpha = BN_new();
-  BN_CTX *ctx = BN_CTX_new();
+  BIGNUM *X_plus_one = BN_new();
 
-  BIGNUM **ciphertext_list = (BIGNUM**)malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
-  if (!ciphertext_list || !M || !n || !c || !rho_alpha_shift || !rho_alpha ||
-      !ctx) {
-    log_message(LOG_FATAL, "Memory allocation failed\n");
-    exit(EXIT_FAILURE);
+  if (!ctx || !q || !noise || !M || !n || !c || !rho_alpha_shift ||
+      !rho_alpha || !X_plus_one) {
+    printf("Memory allocation failed\n");
+    return;
   }
 
   // q < X + 1
-  BIGNUM *X_plus_one = BN_new();
-  if (!X_plus_one) {
-    log_message(LOG_FATAL, "BN_new for X_plus_one failed\n");
-    exit(EXIT_FAILURE);
-  }
-
   if (!BN_copy(X_plus_one, X) || !BN_add_word(X_plus_one, 1)) {
-    log_message(LOG_FATAL, "Initialization of X_plus_one failed\n");
-    exit(EXIT_FAILURE);
+    printf("Initialization of X_plus_one failed\n");
+    return;
   }
 
   // Pre-compute rho + alpha
   if (!BN_set_word(rho_alpha, rho + alpha)) {
-    log_message(LOG_FATAL, "BN_set_word failed\n");
-    exit(EXIT_FAILURE);
+    printf("BN_set_word failed\n");
+    return;
   }
 
-  // Loop through each message and perform calculations
-  for (int i = 0; i < BN_get_word(list_size); i++) {
-    q = rand_bignum_below(X_plus_one);
-    noise = rand_bits_below(rho);
+  // Generate random q and noise
+  q = rand_bignum_below(X_plus_one);
+  noise = rand_bits_below(rho);
 
-    if (!q || !noise) {
-      log_message(LOG_FATAL, "Random number generation failed\n");
-      exit(EXIT_FAILURE);
-    }
-
-    // Calculate message << (rho + alpha)
-    if (!BN_lshift(rho_alpha_shift, message_list[i], rho + alpha)) {
-      log_message(LOG_FATAL, "BN_lshift failed\n");
-      exit(EXIT_FAILURE);
-    }
-
-    // M = (message << (rho + alpha)) + noise
-    if (!BN_add(M, rho_alpha_shift, noise)) {
-      log_message(LOG_FATAL, "BN_add for M failed\n");
-      exit(EXIT_FAILURE);
-    }
-
-    // n = p * q
-    if (!BN_mul(n, p, q, ctx)) {
-      log_message(LOG_FATAL, "BN_mul failed\n");
-      exit(EXIT_FAILURE);
-    }
-
-    // c = n + M
-    if (!BN_add(c, n, M)) {
-      log_message(LOG_FATAL, "BN_add for c failed\n");
-      exit(EXIT_FAILURE);
-    }
-
-    ciphertext_list[i] = BN_dup(c);
-    if (!ciphertext_list[i]) {
-      log_message(LOG_FATAL, "BN_dup failed\n");
-      exit(EXIT_FAILURE);
-    }
+  if (!q || !noise) {
+    printf("Random number generation failed\n");
+    return;
   }
+
+  // Calculate message << (rho + alpha)
+  if (!BN_lshift(rho_alpha_shift, message_list[i], rho + alpha)) {
+    printf("BN_lshift failed\n");
+    return;
+  }
+
+  // M = (message << (rho + alpha)) + noise
+  if (!BN_add(M, rho_alpha_shift, noise)) {
+    printf("BN_add for M failed\n");
+    return;
+  }
+
+  // n = p * q
+  if (!BN_mul(n, p, q, ctx)) {
+    printf("BN_mul failed\n");
+    return;
+  }
+
+  // c = n + M
+  if (!BN_add(c, n, M)) {
+    printf("BN_add for c failed\n");
+    return;
+  }
+
+  // Store result in ciphertext_list
+  ciphertext_list[i] = BN_dup(c);
 
   // Free temporary BIGNUMs and context
   BN_free(q);
@@ -384,6 +375,41 @@ BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
   BN_free(rho_alpha_shift);
   BN_free(rho_alpha);
   BN_CTX_free(ctx);
+}
+
+BIGNUM **fahe1_encrypt_list(BIGNUM *p, BIGNUM *X, int rho, int alpha,
+                            BIGNUM **message_list, BIGNUM *list_size) {
+  log_message(LOG_INFO, "Initializing List Encryption");
+
+  // Allocate memory for ciphertext list on host and device
+  BIGNUM **ciphertext_list =
+      (BIGNUM **)malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
+  if (!ciphertext_list) {
+    log_message(LOG_FATAL, "Memory allocation failed\n");
+    exit(EXIT_FAILURE);
+  }
+
+  BIGNUM **d_message_list, **d_ciphertext_list;
+  cudaMalloc(&d_message_list, BN_get_word(list_size) * sizeof(BIGNUM *));
+  cudaMalloc(&d_ciphertext_list, BN_get_word(list_size) * sizeof(BIGNUM *));
+  cudaMemcpy(d_message_list, message_list,
+             BN_get_word(list_size) * sizeof(BIGNUM *), cudaMemcpyHostToDevice);
+
+  // Set grid and block dimensions
+  int blockSize = 256;
+  int numBlocks = (BN_get_word(list_size) + blockSize - 1) / blockSize;
+
+  // Launch the kernel
+  encrypt_kernel<<<numBlocks, blockSize>>>(p, X, rho, alpha, d_message_list,
+                                           list_size, d_ciphertext_list);
+
+  // Copy the result back to host
+  cudaMemcpy(ciphertext_list, d_ciphertext_list,
+             BN_get_word(list_size) * sizeof(BIGNUM *), cudaMemcpyDeviceToHost);
+
+  // Free device memory
+  cudaFree(d_message_list);
+  cudaFree(d_ciphertext_list);
 
   return ciphertext_list;
 }
@@ -453,7 +479,8 @@ BIGNUM **fahe1_decrypt_list(BIGNUM *p, int m_max, int rho, int alpha,
   }
 
   // Allocate memory for the list of decrypted messages
-  BIGNUM **decrypted_list = (BIGNUM**)malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
+  BIGNUM **decrypted_list =
+      (BIGNUM **)malloc(BN_get_word(list_size) * sizeof(BIGNUM *));
   if (decrypted_list == NULL) {
     log_message(LOG_FATAL, "Memory allocation for decrypted_list failed\n");
     BN_free(m_full);

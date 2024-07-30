@@ -168,7 +168,7 @@ helper.c functions. Examples of the code in here include:
 
 Test(fahe1, fahe1_full_multiple) {
     // Initialize parameters
-    fahe_params params = {128, 64, 20, 64};
+    fahe_params params = {128, 32, 6, 32};
     fahe1 *fahe1_instance = fahe1_init(&params);
     cr_assert_not_null(fahe1_instance, "fahe1_init failed");
     debug_fahe1_init(fahe1_instance);

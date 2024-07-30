@@ -16,7 +16,7 @@
 
 #include <openssl/bn.h>
 
-#include "fahe1.h"  //for the fahe_params struct
+#include "fahe1.cuh"  //for the fahe_params struct
 
 /**
  * @struct fahe2_key
